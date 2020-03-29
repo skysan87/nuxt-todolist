@@ -1,8 +1,8 @@
 <template>
   <div class="container">
     <div>
-      <logo />
       <h1 class="title">
+        <fa :icon="['fab', 'chrome']" />
         nuxt-todolist
       </h1>
       <h2 class="subtitle">
@@ -28,29 +28,9 @@
   </div>
 </template>
 
-<script>
-import Logo from '~/components/Logo.vue'
-
-export default {
-  components: {
-    Logo
-  }
-}
-</script>
-
 <style>
-/* Sample `apply` at-rules with Tailwind CSS
 .container {
   @apply min-h-screen flex justify-center items-center text-center mx-auto;
-}
-*/
-.container {
-  margin: 0 auto;
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
 }
 
 .title {
