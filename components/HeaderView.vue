@@ -2,11 +2,8 @@
   <div class="header-container">
     <!-- 登録フォーム -->
     <form class="input-form" @submit.prevent="doAdd">
-      <label class="form-label" for="comment">Todo</label>
-      <input id="comment" ref="comment" class="input-comment flex-grow-1" type="text">
-      <button type="submit" class="btn-regular">
-        OK
-      </button>
+      <input type="text" id="comment" ref="comment" class="input-comment" placeholder="Add New Task...">
+      <button type="submit" class="btn-regular">Add</button>
     </form>
 
     <div class="status-boxes">
@@ -126,17 +123,6 @@ export default {
   margin: 0 auto;
 }
 
-.form-label {
-  display: flex;
-  font-size: 1rem;
-  border: 1px solid #979797;
-  background: #faf9f9;
-  line-height: 1.5;
-  padding: .25rem .5rem;
-  text-align: center;
-  vertical-align: baseline;
-}
-
 .badge {
   display: inline-block;
   padding: 2px 5px;
@@ -160,6 +146,11 @@ export default {
 /* ステータスラベル */
 .status-label {
   margin: 0 5px;
+}
+
+.input-comment {
+  @apply px-2 py-1 !important;
+  @apply shadow appearance-none border w-full mr-1;
 }
 
 .btn-switch-green {

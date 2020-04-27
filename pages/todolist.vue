@@ -110,7 +110,7 @@ export default {
   left: 0;
   position: fixed;
   width: 100%;
-  height: 100px;
+  height: 120px;
 }
 
 .list-style {
@@ -119,7 +119,7 @@ export default {
 }
 
 .main-content {
-  padding-top: 100px;
+  padding-top: 120px;
 }
 
 .list-group {
