@@ -20,7 +20,7 @@
       </div>
     </div>
 
-    <!-- <modal-dialog ref="dialog"></modal-dialog> -->
+    <modal-dialog ref="dialog" v-show="isModal" @close="closeModal"/>
   </div>
 </template>
 
@@ -28,7 +28,7 @@
 import draggable from 'vuedraggable'
 import HeaderView from '@/components/HeaderView.vue'
 import TodoItem from '@/components/TodoItem.vue'
-// import ModalDialog from '@/components/ModalDialog.vue'
+import ModalDialog from '@/components/ModalDialog.vue'
 import { getStateColor } from '@/util/StateColor'
 import { TaskState } from '@/util/TaskState'
 
@@ -38,14 +38,14 @@ export default {
   components: {
     draggable,
     TodoItem,
-    HeaderView
-    // ModalDialog
+    HeaderView,
+    ModalDialog
   },
   data () {
     return {
       options: Object.values(TaskState),
       isAllSelected: false,
-      editingItem: null
+      isModal: false
     }
   },
   computed: {
@@ -68,7 +68,11 @@ export default {
      * コメント編集
      */
     editComment (id) {
+      this.isModal = true
       this.$refs.dialog.open(id)
+    },
+    closeModal () {
+      this.isModal = false
     },
     /**
      * ドラッグ終了時

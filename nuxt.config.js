@@ -30,7 +30,8 @@ export default {
   ** Plugins to load before mounting the App
   */
   plugins: [
-    '@/plugins/fontawesome'
+    '@/plugins/fontawesome',
+    { src: '@/plugins/focusin', ssr: false } //client only
   ],
   /*
   ** Nuxt.js dev-modules
