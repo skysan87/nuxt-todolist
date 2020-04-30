@@ -16,7 +16,7 @@
           </div>
 
           <div class="modal-body">
-            <input ref="modalcomment" v-model="comment" class="input-text" type="text">
+            <input ref="modalComment" v-model="comment" class="input-text" type="text">
           </div>
           <div class="modal-body">
             <textarea v-model="note" class="detail" maxlength="1000" rows="6" />
@@ -65,7 +65,6 @@ export default {
         this.note = this.target.note
         this.state = this.target.state
       }
-      this.$refs.modalcomment.focus()
     },
     update () {
       this.target.comment = this.comment
@@ -79,7 +78,7 @@ export default {
     },
     checkFocus (ev) {
       if (ev.target !== null && ev.target.className === 'dummy') {
-        this.$refs.modalcomment.focus()
+        this.$refs.modalComment.focus()
       }
     },
     deleteTodo () {
