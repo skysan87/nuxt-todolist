@@ -1,10 +1,5 @@
 <template>
   <div class="header-container">
-    <!-- 登録フォーム -->
-    <form class="input-form" @submit.prevent="doAdd">
-      <input type="text" id="comment" ref="comment" class="input-comment" placeholder="Add New Task...">
-      <button type="submit" class="btn-regular">Add</button>
-    </form>
 
     <div class="status-boxes">
       <label>
@@ -53,18 +48,6 @@ export default {
     }
   },
   methods: {
-    /**
-     * todoを追加する
-     */
-    // eslint-disable-next-line
-    doAdd: function (event, value) {
-      const comment = this.$refs.comment
-      if (!comment.value.length) { return }
-
-      this.$store.dispatch('todo/add', comment.value)
-
-      comment.value = ''
-    },
     /**
      * 各ステータスのタスク数
      */
