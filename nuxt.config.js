@@ -31,7 +31,7 @@ export default {
   */
   plugins: [
     '@/plugins/fontawesome',
-    { src: '@/plugins/focusin', ssr: false } //client only
+    { src: '@/plugins/focusin', ssr: false } // client only
   ],
   /*
   ** Nuxt.js dev-modules
