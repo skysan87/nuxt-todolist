@@ -4,7 +4,7 @@
       <div class="modal-wrapper">
         <div class="modal-container">
           <!-- フォーカスアウト防止 -->
-          <div tabindex="0" class="dummy" v-focusin="checkFocus" />
+          <div v-focusin="checkFocus" tabindex="0" class="dummy" />
 
           <div class="modal-body">
             <div class="status-labels">
@@ -35,7 +35,7 @@
           </div>
 
           <!-- フォーカスアウト防止 -->
-          <div tabindex="0" class="dummy" v-focusin="checkFocus" />
+          <div v-focusin="checkFocus" tabindex="0" class="dummy" />
         </div>
       </div>
     </div>
