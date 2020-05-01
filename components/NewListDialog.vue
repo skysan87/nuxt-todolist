@@ -7,19 +7,17 @@
           <div v-focusin="checkFocus" tabindex="0" class="dummy" />
 
           <div class="modal-body">
-            <div class="status-labels">
-              <label v-for="viewOp in options" :key="viewOp.value" class="status-label">
-                <input v-model="state" type="radio" :value="viewOp.value">
-                <span class="">{{ viewOp.label }}</span>
-              </label>
-            </div>
-          </div>
-
-          <div class="modal-body">
-            <input ref="modalComment" v-model="comment" class="input-text" type="text">
-          </div>
-          <div class="modal-body">
-            <textarea v-model="note" class="detail" maxlength="1000" rows="6" />
+            <input
+              ref="inputField"
+              v-model="inputText"
+              class="input-text"
+              :class="{'border border-red-500': errorMsg !== ''}"
+              type="text"
+              placeholder="Add New List Title..."
+            >
+            <p v-show="(errorMsg !== '')" class="text-red-500 text-xs italic">
+              {{ errorMsg }}
+            </p>
           </div>
 
           <div class="modal-footer">
@@ -28,9 +26,6 @@
             </button>
             <button class="btn-default modal-default-button" @click="cancel">
               Cancel
-            </button>
-            <button class="btn-default modal-default-button" @click="deleteTodo">
-              Delete
             </button>
           </div>
 
@@ -43,47 +38,39 @@
 </template>
 
 <script>
-import { TaskState } from '@/util/TaskState'
-
 export default {
-  name: 'ModalDialog',
+  name: 'NewListDialog',
+  props: {
+    title: String
+  },
   data () {
     return {
-      target: null,
-      comment: '',
-      note: '',
-      state: '',
-      options: Object.values(TaskState)
+      inputText: '',
+      errorMsg: ''
     }
   },
   methods: {
     open (id) {
-      this.target = this.$store.getters['todo/getTodoById'](id)
-
-      if (this.target !== null) {
-        this.comment = this.target.comment
-        this.note = this.target.note
-        this.state = this.target.state
-      }
+      this.inputText = ''
+      this.errorMsg = ''
     },
     update () {
-      this.target.comment = this.comment
-      this.target.note = this.note
-      this.target.state = this.state
-      this.$store.dispatch('todo/update', this.target)
-      this.$emit('close')
+      // TODO: バリデーション
+      if (this.inputText !== '') {
+        this.errorMsg = ''
+        this.$store.dispatch('todolist/add', this.inputText)
+        this.$emit('close')
+      } else {
+        this.errorMsg = '必須項目です'
+      }
     },
     cancel () {
       this.$emit('close')
     },
     checkFocus (ev) {
       if (ev.target !== null && ev.target.className === 'dummy') {
-        this.$refs.modalComment.focus()
+        this.$refs.inputField.focus()
       }
-    },
-    deleteTodo () {
-      this.$store.dispatch('todo/delete', this.target.id)
-      this.$emit('close')
     }
   }
 }
@@ -136,27 +123,9 @@ export default {
   font-size: 14px;
 }
 
-.detail {
-  width: 100%;
-  resize: none;
-  padding: 5px 5px;
-  font-size: 14px;
-  line-height: 1.5;
-  border: 2px solid #0a0;
-}
-
 .modal-default-button {
   margin-left: 10px;
   float: right;
-}
-
-.status-label span {
-  margin: 0 5px;
-}
-
-.status-labels {
-  display: flex;
-  justify-content: space-evenly;
 }
 
 /* transition="modal"に適用される */

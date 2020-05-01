@@ -1,26 +1,38 @@
 <template>
-  <div class="container">
-    <header-View class="fix-top" />
-
-    <div class="main-content">
-      <div class="list-group">
-        <draggable
-          v-model="filteredTodos"
-          handle=".move-icon"
-          @end="onDragEnd"
-        >
-          <todo-item
-            v-for="item in filteredTodos"
-            :key="item.id"
-            :todo="item"
-            class="list-group-item list-style"
-            @edit="editComment"
-          />
-        </draggable>
+  <div class="flex-1 flex flex-col bg-white">
+    <header class="border-b flex px-6 py-2 items-center flex-none">
+      <!-- TODO: リスト名 -->
+      <header-view />
+    </header>
+    <main class="flex-1 pt-2 overflow-y-scroll">
+      <div class="h-full flex flex-col ml-6">
+        <div class="flex-grow overflow-x-hidden">
+          <div class="list-group">
+            <draggable
+              v-model="filteredTodos"
+              handle=".move-icon"
+              @end="onDragEnd"
+            >
+              <todo-item
+                v-for="item in filteredTodos"
+                :key="item.id"
+                :todo="item"
+                class="list-group-item list-style"
+                @edit="editComment"
+              />
+            </draggable>
+          </div>
+        </div>
       </div>
-    </div>
-
-    <modal-dialog ref="dialog" v-show="isModal" @close="closeModal"/>
+    </main>
+    <footer class="px-4 py-2 flex-none">
+      <div class="flex rounded-lg border-2 border-grey overflow-hidden">
+        <form class="w-full" @submit.prevent="doAdd">
+          <input id="comment" ref="comment" type="text" class="input-comment" placeholder="Add New Task...">
+        </form>
+      </div>
+    </footer>
+    <modal-dialog v-show="isModal" ref="dialog" @close="closeModal" />
   </div>
 </template>
 
@@ -33,7 +45,7 @@ import { getStateColor } from '@/util/StateColor'
 import { TaskState } from '@/util/TaskState'
 
 export default {
-  // layout: 'todolist',
+  layout: 'board',
   name: 'TodoList',
   components: {
     draggable,
@@ -59,11 +71,19 @@ export default {
       }
     }
   },
-  created () {
-    // TODO: 動作確認用 あとで消す
-    this.$store.dispatch('todolist/init')
-  },
   methods: {
+    /**
+     * todoを追加する
+     */
+    // eslint-disable-next-line
+    doAdd: function (event, value) {
+      const comment = this.$refs.comment
+      if (!comment.value.length) { return }
+
+      this.$store.dispatch('todo/add', comment.value)
+
+      comment.value = ''
+    },
     /**
      * コメント編集
      */
@@ -152,5 +172,10 @@ export default {
 /* ステータスラベル */
 .status-label {
   margin: 0 5px;
+}
+
+.input-comment {
+  @apply px-2 py-1 !important;
+  @apply shadow appearance-none border w-full mr-1 outline-none;
 }
 </style>
