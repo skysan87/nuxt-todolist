@@ -37,7 +37,7 @@ export default {
   data () {
     return {
       options: Object.values(TaskState),
-      filterOption: this.$store.getters.getSelectedState,
+      filterOption: this.$store.getters['todo/getSelectedState'],
       isAllSelected: false
     }
   },
@@ -63,17 +63,18 @@ export default {
      * すべて表示
      */
     selectAll () {
-      if (this.isAllSelected) {
+      // イベント発生時,値は更新されていない
+      if (this.isAllSelected === false) {
         this.filterOption = []
         this.options.forEach(op => this.filterOption.push(op.value))
       } else {
         this.filterOption = []
       }
-      this.$store.dispatch('changeFilter', this.filterOption)
+      this.$store.dispatch('todo/changeFilter', this.filterOption)
     },
     filterChanged () {
       this.isAllSelected = this.options.length === this.filterOption.length
-      this.$store.dispatch('changeFilter', this.filterOption)
+      this.$store.dispatch('todo/changeFilter', this.filterOption)
     },
     /**
      * 完了済みのタスクを削除
