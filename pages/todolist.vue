@@ -71,10 +71,6 @@ export default {
       }
     }
   },
-  created () {
-    // TODO: 動作確認用 あとで消す
-    this.$store.dispatch('todolist/init')
-  },
   methods: {
     /**
      * todoを追加する
