@@ -28,11 +28,11 @@
     <footer class="px-4 py-2 flex-none">
       <div class="flex rounded-lg border-2 border-grey overflow-hidden">
         <form class="w-full" @submit.prevent="doAdd">
-          <input type="text" id="comment" ref="comment" class="input-comment" placeholder="Add New Task...">
+          <input id="comment" ref="comment" type="text" class="input-comment" placeholder="Add New Task...">
         </form>
       </div>
     </footer>
-    <modal-dialog ref="dialog" v-show="isModal" @close="closeModal"/>
+    <modal-dialog v-show="isModal" ref="dialog" @close="closeModal" />
   </div>
 </template>
 

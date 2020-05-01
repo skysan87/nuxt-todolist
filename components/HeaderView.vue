@@ -1,6 +1,5 @@
 <template>
   <div class="header-container">
-
     <div class="status-boxes">
       <label>
         <input v-model="isAllSelected" type="checkbox" @click="selectAll">
