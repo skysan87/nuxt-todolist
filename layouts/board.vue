@@ -1,4 +1,5 @@
 <template>
+  <transition name="layout" mode="out-in">
   <div class="flex h-screen overflow-hidden">
     <div class="w-56 flex flex-col flex-none bg-gray-800 text-white pt-3">
       <div class="flex justify-between items-center px-4">
@@ -8,7 +9,7 @@
         <fa :icon="['far', 'bell']" />
       </div>
       <div class="flex-none px-4">
-        User@Name
+        {{ userName }}
       </div>
       <div class="flex-1 py-4 overflow-y-scroll scrollable-container">
         <!-- <div class="mt-5 px-4 flex justify-between items-center">
@@ -55,6 +56,7 @@
     </div>
     <new-list-dialog v-show="isModal" ref="listDialog" @close="closeModal" />
   </div>
+  </transition>
 </template>
 
 <script>
@@ -66,7 +68,8 @@ export default {
   },
   data () {
     return {
-      isModal: false
+      isModal: false,
+      userName: this.$store.getters['user/displayName']
     }
   },
   computed: {

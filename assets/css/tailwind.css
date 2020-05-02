@@ -4,9 +4,18 @@
 /* purgecss end ignore */
 @import 'tailwindcss/utilities';
 
+/* ページ遷移時のアニメーション */
 .page-enter-active, .page-leave-active {
   transition: opacity .5s;
 }
 .page-enter, .page-leave-to {
+  opacity: 0;
+}
+
+/* レイアウト変更時のアニメーション */
+.layout-enter-active, .layout-leave-to {
+  transition: opacity .5s;
+}
+.layout-enter, .layout-leave-to {
   opacity: 0;
 }

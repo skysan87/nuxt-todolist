@@ -52,6 +52,10 @@ export default {
     // Doc: https://github.com/nuxt-community/dotenv-module
     '@nuxtjs/dotenv'
   ],
+  router: {
+    // middleware: 全てのページで有効になる
+    middleware: ['authentication']
+  },
   /*
   ** Axios module configuration
   ** See https://axios.nuxtjs.org/options
