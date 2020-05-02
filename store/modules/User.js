@@ -41,10 +41,6 @@ export default {
   },
 
   actions: {
-    init () {
-      dao.init()
-    },
-
     stateChanged ({ commit }, user) {
       if (user !== null) {
         // login
