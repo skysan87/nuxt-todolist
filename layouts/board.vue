@@ -1,37 +1,45 @@
 <template>
   <transition name="layout" mode="out-in">
-  <div class="flex h-screen overflow-hidden">
-    <div class="w-56 flex flex-col flex-none bg-gray-800 text-white pt-3">
-      <div class="flex justify-between items-center px-4">
-        <h1 class="font-semibold text-xl leading-tight">
-          To-Do List
-        </h1>
-        <fa :icon="['far', 'bell']" />
-      </div>
-      <div class="flex-none px-4">
-        {{ userName }}
-      </div>
-      <div class="flex-1 py-4 overflow-y-scroll scrollable-container">
-        <!-- <div class="mt-5 px-4 flex justify-between items-center">
+    <div class="flex h-screen overflow-hidden">
+      <div class="w-56 flex flex-col flex-none bg-gray-800 text-white pt-3">
+        <div
+          class="flex justify-between items-center px-4 cursor-pointer"
+          @click.left="(isMenuExpanded = !isMenuExpanded)"
+        >
+          <h1 class="font-semibold text-xl leading-tight">
+            To-Do List
+          </h1>
+          <fa :icon="['fas', 'caret-down']" :class="{'fa-rotate-180': isMenuExpanded}" />
+        </div>
+        <div v-show="isMenuExpanded" class="flex-none mt-2">
+          <a class="block px-6 text-sm hover:bg-blue-600 cursor-pointer" @click.left="logout">
+            ログアウト
+          </a>
+        </div>
+        <div class="flex-none px-4">
+          {{ userName }}
+        </div>
+        <div class="flex-1 py-4 overflow-y-scroll scrollable-container">
+          <!-- <div class="mt-5 px-4 flex justify-between items-center">
           <div class="font-bold opacity-50 text-lg">
             今日の予定
           </div>
         </div> -->
-        <div class="mt-5 px-4 flex justify-between items-center">
-          <div class="font-bold opacity-50 text-lg">
-            プロジェクト
+          <div class="mt-5 px-4 flex justify-between items-center">
+            <div class="font-bold opacity-50 text-lg">
+              プロジェクト
+            </div>
+            <fa :icon="['far', 'plus-square']" class="opacity-50 cursor-pointer" @click.left="openListDialog" />
           </div>
-          <fa :icon="['far', 'plus-square']" class="opacity-50 cursor-pointer" @click.left="openListDialog" />
-        </div>
-        <div
-          v-for="todolist in todolists"
-          :key="todolist.id"
-          class="opacity-50 mt-1 px-4 cursor-pointer"
-          :class="{'bg-blue-600' : currentListId == todolist.id}"
-          @click.left="onSelectList(todolist.id)"
-        >
-          # {{ todolist.title }}
-        </div>
+          <div
+            v-for="todolist in todolists"
+            :key="todolist.id"
+            class="opacity-50 mt-1 px-4 cursor-pointer"
+            :class="{'bg-blue-600' : currentListId == todolist.id}"
+            @click.left="onSelectList(todolist.id)"
+          >
+            # {{ todolist.title }}
+          </div>
         <!-- <div class="mt-5 px-4 flex justify-between items-center">
           <div class="font-bold opacity-50 text-lg">
             習慣
@@ -49,13 +57,13 @@
         <div class="opacity-50 mt-1 px-4">
           その他 - Others -
         </div> -->
+        </div>
       </div>
+      <div class="flex-auto flex">
+        <nuxt />
+      </div>
+      <new-list-dialog v-show="isModal" ref="listDialog" @close="closeModal" />
     </div>
-    <div class="flex-auto flex">
-      <nuxt />
-    </div>
-    <new-list-dialog v-show="isModal" ref="listDialog" @close="closeModal" />
-  </div>
   </transition>
 </template>
 
@@ -69,7 +77,8 @@ export default {
   data () {
     return {
       isModal: false,
-      userName: this.$store.getters['user/displayName']
+      userName: this.$store.getters['user/displayName'],
+      isMenuExpanded: false
     }
   },
   computed: {
@@ -104,6 +113,15 @@ export default {
     },
     closeModal () {
       this.isModal = false
+    },
+    logout () {
+      this.$store
+        .dispatch('user/logout')
+        .then(() => {
+          console.log('logout')
+          this.$router.push('/login')
+        })
+        .catch(err => console.error(err))
     }
   }
 }
