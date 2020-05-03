@@ -89,7 +89,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 @import '@/assets/css/common.css';
 
 .header-container {
@@ -129,11 +129,6 @@ export default {
 /* ステータスラベル */
 .status-label {
   margin: 0 5px;
-}
-
-.input-comment {
-  @apply px-2 py-1 !important;
-  @apply shadow appearance-none border w-full mr-1;
 }
 
 .btn-switch-green {
