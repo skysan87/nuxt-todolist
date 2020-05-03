@@ -1,16 +1,16 @@
 import Vue from 'vue'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { config, library } from '@fortawesome/fontawesome-svg-core'
-import { faEllipsisV, faEdit, faCircleNotch } from '@fortawesome/free-solid-svg-icons'
-import { faBell, faPlusSquare } from '@fortawesome/free-regular-svg-icons'
+import { faEllipsisV, faEdit, faCircleNotch, faCaretDown } from '@fortawesome/free-solid-svg-icons'
+import { faPlusSquare } from '@fortawesome/free-regular-svg-icons'
 import { faGoogle } from '@fortawesome/free-brands-svg-icons'
 
 // nuxt.config.jsでCSSファイルを追加
 config.autoAddCss = false
 
 // 利用するアイコンを配列に追加
-const solidIcons = [faEllipsisV, faEdit, faCircleNotch]
-const regularIcons = [faBell, faPlusSquare]
+const solidIcons = [faEllipsisV, faEdit, faCircleNotch, faCaretDown]
+const regularIcons = [faPlusSquare]
 const bransIcons = [faGoogle]
 
 // 利用するアイコンをlibraryに追加
