@@ -1,6 +1,5 @@
 import { auth, authProvider } from '@/plugins/firebase'
 import { UserDaoBase } from '@/dao/base/UserDaoBase'
-// import store from '@/store'
 
 export class UserDao extends UserDaoBase {
   async login () {
@@ -22,6 +21,4 @@ export class UserDao extends UserDaoBase {
       throw error
     }
   }
-
-  init () {}
 }
