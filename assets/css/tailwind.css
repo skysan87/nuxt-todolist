@@ -19,3 +19,35 @@
 .layout-enter, .layout-leave-to {
   opacity: 0;
 }
+
+.btn {
+  @apply py-1 px-2 text-sm;
+}
+
+.btn-regular {
+  @apply bg-blue-500 text-white;
+}
+
+.btn-regular:hover {
+  @apply bg-blue-700;
+}
+
+.btn-outline {
+  @apply bg-transparent text-blue-700 border border-blue-500;
+}
+
+.btn-outline:hover {
+  @apply bg-blue-500 text-white border-transparent;
+}
+
+.input-label {
+  @apply block uppercase tracking-wide text-xs font-bold mb-1;
+}
+
+.input-text {
+  @apply block w-full border py-1 px-2 bg-gray-200;
+}
+
+.input-textarea {
+  @apply w-full border py-1 px-2 bg-gray-200;
+}
