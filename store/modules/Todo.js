@@ -167,9 +167,9 @@ export default {
       commit('switchEdit')
     },
 
-    async add ({ commit, state, rootGetters }, comment) {
+    async add ({ commit, state, rootGetters }, params) {
       const userId = rootGetters['user/userId']
-      const result = await dao.add(state.listId, comment, userId)
+      const result = await dao.add(state.listId, params, userId)
       if (result.isSuccess) {
         commit('add', result.value)
       }

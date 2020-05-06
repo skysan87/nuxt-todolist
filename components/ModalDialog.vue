@@ -21,6 +21,10 @@
           <div class="modal-body">
             <textarea v-model="note" class="detail" maxlength="1000" rows="6" />
           </div>
+          <div class="modal-body">
+            <v-date-picker v-model="deadline" class="inline-block" />
+            <fa :icon="['far', 'calendar']" />
+          </div>
 
           <div class="modal-footer">
             <button class="btn-regular modal-default-button" @click="update">
@@ -43,6 +47,7 @@
 </template>
 
 <script>
+import moment from 'moment'
 import { TaskState } from '@/util/TaskState'
 
 export default {
@@ -53,7 +58,8 @@ export default {
       comment: '',
       note: '',
       state: '',
-      options: Object.values(TaskState)
+      options: Object.values(TaskState),
+      deadline: null
     }
   },
   methods: {
@@ -64,12 +70,19 @@ export default {
         this.comment = this.target.comment
         this.note = this.target.note
         this.state = this.target.state
+        this.deadline = moment(this.target.deadline).toDate()
+      } else {
+        this.comment = ''
+        this.note = ''
+        this.state = TaskState.Todo.value
+        this.deadline = null
       }
     },
     update () {
       this.target.comment = this.comment
       this.target.note = this.note
       this.target.state = this.state
+      this.target.deadline = moment(this.deadline).endOf('days').toJSON()
       this.$store.dispatch('todo/update', this.target)
       this.$emit('close')
     },

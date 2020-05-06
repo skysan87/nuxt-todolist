@@ -22,8 +22,10 @@
     "@nuxtjs/axios": "^5.3.6",
     "@nuxtjs/dotenv": "^1.4.0",
     "@nuxtjs/pwa": "^3.0.0-0",
-    "firebase": "^7.13.1",
+    "firebase": "^7.14.2",
+    "moment": "^2.25.3",
     "nuxt": "^2.0.0",
+    "v-calendar": "^1.0.6",
     "vuedraggable": "^2.23.2"
   },
   "devDependencies": {

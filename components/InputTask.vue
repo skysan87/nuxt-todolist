@@ -7,16 +7,19 @@
         type="text"
         class="input-comment"
         placeholder="Add New Task..."
-      />
-      <div class="mt-1">
-        <div class="inline-block">
+      >
+      <div class="mt-1 flex flex-row">
+        <div class="flex-none inline-block">
           <span class="px-2 align-middle font-bold">期限</span>
         </div>
-        <div class="inline-block">
-          <label class="ml-2" v-for="dl in deadlines" :key="dl.value">
-            <input v-model="checkedDeadline" type="radio" name="deadline" :value="dl.value" />
+        <div class="flex-1 inline-block">
+          <label v-for="dl in deadlines" :key="dl.value" class="ml-2">
+            <input v-model="checkedDeadline" type="radio" name="deadline" :value="dl.value">
             <span class="align-middle">{{ dl.label }}</span>
           </label>
+        </div>
+        <div class="flex-none inline-block">
+          <button class="mr-2 align-middle font-bold" @click.left="doAdd">Add</button>
         </div>
       </div>
     </form>
@@ -24,6 +27,8 @@
 </template>
 
 <script>
+import moment from 'moment'
+
 export default {
   name: 'InputTask',
   data () {
@@ -32,7 +37,6 @@ export default {
       deadlines: [
         { label: '今日', value: 'today' },
         { label: '明日', value: 'tomorrow' },
-        { label: '今週末', value: 'thisweekend' },
         { label: 'あとで', value: 'later' }
       ]
     }
@@ -47,8 +51,22 @@ export default {
       if (!comment.value.length) {
         return
       }
-      // TODO: 日時指定
-      this.$store.dispatch('todo/add', comment.value)
+      const params = {}
+      params.comment = comment.value
+
+      switch (this.checkedDeadline) {
+        case 'today':
+          params.deadline = moment(new Date()).endOf('days').toJSON()
+          break
+        case 'tomorrow':
+          params.deadline = moment(new Date()).add(1, 'days').endOf('days').toJSON()
+          break
+        default:
+          params.deadline = null
+          break
+      }
+
+      this.$store.dispatch('todo/add', params)
       comment.value = ''
     }
   }
