@@ -1,6 +1,6 @@
 <template>
   <div class="flex-1 flex flex-col bg-white">
-    <header class="border-b flex px-6 py-2 items-center flex-none">
+    <header class="border-b flex-none">
       <!-- TODO: リスト名 -->
       <header-view />
     </header>

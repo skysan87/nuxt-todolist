@@ -2,10 +2,9 @@
   <div class="flex overflow-hidden">
     <form class="w-full" @submit.prevent="doAdd">
       <input
-        id="comment"
         ref="comment"
         type="text"
-        class="input-comment"
+        class="input-text appearance-none outline-none"
         placeholder="Add New Task..."
       >
       <div class="mt-1 flex flex-row">
@@ -19,7 +18,9 @@
           </label>
         </div>
         <div class="flex-none inline-block">
-          <button class="mr-2 align-middle font-bold" @click.left="doAdd">Add</button>
+          <button class="btn btn-regular focus:outline-none" @click.left="doAdd">
+            Add
+          </button>
         </div>
       </div>
     </form>
@@ -72,10 +73,3 @@ export default {
   }
 }
 </script>
-
-<style>
-.input-comment {
-  @apply px-2 py-1 !important;
-  @apply appearance-none border w-full mr-1 outline-none;
-}
-</style>

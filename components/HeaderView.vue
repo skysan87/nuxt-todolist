@@ -1,30 +1,32 @@
 <template>
-  <div class="header-container">
-    <div class="status-boxes">
-      <label>
-        <input v-model="isAllSelected" type="checkbox" @click="selectAll">
-        <span class="status-label">All</span>
-        <span class="badge" :class="badgeColor(-1)">
-          {{ todoCounts(-1) }}
-        </span>
-      </label>
-      <label v-for="viewOp in options" :key="viewOp.value">
-        <input v-model="filterOption" type="checkbox" :value="viewOp.value" @change="filterChanged">
-        <span class="status-label">{{ viewOp.label }}</span>
-        <span class="badge" :class="badgeColor(viewOp.value)">
-          {{ todoCounts(viewOp.value) }}
-        </span>
-      </label>
-      <button
-        class="btn-clear-done"
-        @click="deleteDone"
-      >
-        Clear Done
-      </button>
-      <button class="modal-btn btn-switch-green" :class="{'switch-on': canRemove}" @click="switchRemoveButton">
-        Edit
-      </button>
-    </div>
+  <div class="flex flex-row px-6 py-2 items-center justify-center">
+    <label class="mx-1">
+      <input v-model="isAllSelected" type="checkbox" @click="selectAll">
+      <span class="p-1 align-middle">All</span>
+      <span class="badge" :class="badgeColor(-1)">
+        {{ todoCounts(-1) }}
+      </span>
+    </label>
+    <label v-for="viewOp in options" :key="viewOp.value" class="mx-1">
+      <input v-model="filterOption" type="checkbox" :value="viewOp.value" @change="filterChanged">
+      <span class="p-1 align-middle">{{ viewOp.label }}</span>
+      <span class="badge" :class="badgeColor(viewOp.value)">
+        {{ todoCounts(viewOp.value) }}
+      </span>
+    </label>
+    <button
+      class="btn btn-outline btn-clear-done mx-1"
+      @click="deleteDone"
+    >
+      Clear Done
+    </button>
+    <button
+      class="btn btn-outline btn-switch-edit mx-1"
+      :class="{'switch-on': canRemove}"
+      @click="switchRemoveButton"
+    >
+      Edit
+    </button>
   </div>
 </template>
 
@@ -90,14 +92,6 @@ export default {
 </script>
 
 <style scoped>
-@import '@/assets/css/common.css';
-
-.header-container {
-  padding: 0 15px;
-  text-align: center;
-  background: white;
-}
-
 .input-form {
   display: flex;
   width: 100%;
@@ -117,27 +111,12 @@ export default {
   font-weight: bold;
 }
 
-.status-boxes {
-  display: flex;
-  justify-content: center;
+.btn-switch-edit {
+  @apply text-green-500 border border-green-500 outline-none;
 }
 
-.status-boxes label {
-  padding: .5rem;
-}
-
-/* ステータスラベル */
-.status-label {
-  margin: 0 5px;
-}
-
-.btn-switch-green {
-  margin: .25rem;
-  @apply bg-transparent;
-  @apply text-green-500;
-  @apply font-semibold;
-  @apply py-2 px-2;
-  @apply border border-green-500;
+.btn-switch-edit:hover {
+  @apply bg-green-500 text-white border-transparent;
 }
 
 .switch-on {
@@ -145,13 +124,9 @@ export default {
 }
 
 .btn-clear-done {
-  margin: .25rem;
-  @apply bg-transparent;
-  @apply text-red-500;
-  @apply font-semibold;
-  @apply py-2 px-2;
-  @apply border border-red-500;
+  @apply text-red-500 border border-red-500 outline-none;
 }
+
 .btn-clear-done:hover {
   @apply bg-red-500 text-white border-transparent;
 }

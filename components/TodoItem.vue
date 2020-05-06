@@ -1,28 +1,28 @@
 <template>
   <div>
-    <div class="flex-container">
-      <div class="move-icon">
+    <div class="flex w-full">
+      <div class="move-icon p-1">
         <fa :icon="['fas', 'ellipsis-v']" />
       </div>
-      <div @click="changeEventHandler">
+      <div class="p-1" @click="changeEventHandler">
         <span
           :class="badgeColor(todo.state)"
-          class="circle-button pointer"
+          class="circle-button cursor-pointer"
         />
       </div>
-      <div :title="todo.comment" class="flex-grow-1 no-wrap todo-text">
+      <div :title="todo.comment" class="flex-1 no-wrap text-left p-1">
         {{ todo.comment }}
       </div>
-      <div @click.stop="editEventHandler">
-        <fa :icon="['fas', 'edit']" size="xs" class="pointer" />
+      <div class="p-1" @click.stop="editEventHandler">
+        <fa :icon="['fas', 'edit']" size="xs" class="cursor-pointer" />
       </div>
       <transition name="slide-fade">
         <div
           v-show="canRemove"
-          class="todo-x-pointer"
+          class="todo-x-pointer p-1"
           @click="removeEventHandler"
         >
-          <span class="pointer">×</span>
+          <span class="cursor-pointer">×</span>
         </div>
       </transition>
     </div>
@@ -63,27 +63,8 @@ export default {
 </script>
 
 <style scoped>
-@import '@/assets/css/common.css';
-
-.flex-container {
-  width: 100%;
-  display: flex;
-}
-
-.flex-container div {
-  padding: 0.25rem;
-}
-
 .move-icon {
   cursor: move;
-}
-
-.todo-text {
-  text-align: left;
-}
-
-.pointer {
-  cursor: pointer;
 }
 
 .no-wrap {
