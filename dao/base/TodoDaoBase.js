@@ -26,7 +26,7 @@ export class TodoDaoBase {
     return todos
   }
 
-  async add(listId, comment, userId) {
+  async add(listId, params, userId) {
     const returnValues = {
       isSuccess: false,
       value: null
@@ -34,7 +34,8 @@ export class TodoDaoBase {
     const tmpId = Date.now()
     const todo = new Todo('', {})
     todo.id = tmpId.toString()
-    todo.comment = comment
+    todo.comment = params.comment
+    todo.deadline = params.deadline
     todo.listId = listId
     todo.userId = userId
     this[maxIndex] += 1

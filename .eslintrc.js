@@ -13,6 +13,7 @@ module.exports = {
   ],
   // add your custom rules here
   rules: {
-    "no-lonely-if": "off"
+    "no-lonely-if": "off",
+    "no-unused-vars": "off"
   }
 }

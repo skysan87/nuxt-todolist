@@ -4,6 +4,7 @@ export class Todo {
     this.comment = params.comment || null
     this.state = params.state || 0
     this.note = params.note || null
+    this.deadline = params.deadline || null
     this.orderIndex = params.orderIndex || 0
     this.listId = params.listId || ''
     this.userId = params.userId || ''
@@ -16,6 +17,7 @@ export class Todo {
       comment: this.comment,
       state: this.state,
       note: this.note,
+      deadline: this.deadline,
       orderIndex: this.orderIndex,
       listId: this.listId,
       userId: this.userId,
