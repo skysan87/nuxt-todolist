@@ -23,15 +23,17 @@ export default {
   ** Global CSS
   */
   css: [
-    '~/assets/css/tailwind.css',
-    '@fortawesome/fontawesome-svg-core/styles.css'
+    '@/assets/css/tailwind.css',
+    '@fortawesome/fontawesome-svg-core/styles.css',
+    '@assets/css/common.css'
   ],
   /*
   ** Plugins to load before mounting the App
   */
   plugins: [
     '@/plugins/fontawesome',
-    { src: '@/plugins/focusin', ssr: false } // client only
+    { src: '@/plugins/focusin', ssr: false },
+    { src: '@/plugins/v-calendar', ssr: false }
   ],
   /*
   ** Nuxt.js dev-modules

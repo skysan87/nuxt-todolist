@@ -19,10 +19,11 @@ export class TodoDao extends TodoDaoBase {
     }
   }
 
-  async add (listId, comment, userId) {
+  async add (listId, params, userId) {
     const todo = new Todo('', {})
     todo.userId = userId
-    todo.comment = comment
+    todo.comment = params.comment
+    todo.deadline = params.deadline
     todo.listId = listId
     todo.createdAt = getServerTimestamp()
     todo.updatedAt = getServerTimestamp()
