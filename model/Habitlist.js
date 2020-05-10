@@ -1,20 +1,14 @@
-export class Todolist {
+export class Habitlist {
   constructor (id, params) {
     this.id = id
-    this.title = params.title || ''
     this.userId = params.userId || ''
     this.maxIndex = params.maxIndex || 0
-    this.orderIndex = params.orderIndex || 0
     this.createdAt = params.createdAt || null
     this.updatedAt = params.updatedAt || null
   }
 
   getData () {
     const params = {
-      id: this.id,
-      title: this.title,
-      deleteFlag: false,
-      orderIndex: this.orderIndex,
       userId: this.userId,
       maxIndex: this.maxIndex,
       createdAt: this.createdAt,

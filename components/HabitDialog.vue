@@ -26,47 +26,26 @@
           </div>
 
           <div class="modal-body">
-            <label class="input-label">期限</label>
-            <div class="flex">
-              <v-date-picker
-                v-model="deadline"
-                :popover="{ placement: 'bottom', visibility: 'click' }"
-              >
-                <input
-                  slot-scope="{ inputProps, inputEvents }"
-                  class="input-text"
-                  :class="{'border border-red-500': errorMsg.deadline !== ''}"
-                  v-bind="inputProps"
-                  v-on="inputEvents"
-                >
-              </v-date-picker>
-              <button type="button" class="btn btn-outline" @click="deadline = null">
-                Clear
-              </button>
-            </div>
-            <p class="text-red-500 text-xs italic">
-              <span>{{ errorMsg.deadline }}</span>
-            </p>
-          </div>
-
-          <div class="modal-body">
             <label class="input-label">頻度</label>
             <div>
               <label>
-                <input v-model="frequency" name="frequency" type="radio" value="daily">
+                <input v-model="frequency" name="frequency" type="radio" :value="FREQ_DAILY">
                 <span>毎日</span>
               </label>
             </div>
             <div>
               <label>
-                <input v-model="frequency" name="frequency" type="radio" value="weekly">
+                <input v-model="frequency" name="frequency" type="radio" :value="FREQ_WEEKLY">
                 <span>毎週</span>
               </label>
-              <label v-for="(label, id) in weekdays" v-show="frequency === 'weekly'" :key="id" class="mx-1">
+              <label v-for="(label, id) in weekdays" v-show="frequency === FREQ_WEEKLY" :key="id" class="mx-1">
                 <input v-model="selectedWeekDays" type="checkbox" :value="id">
                 <span class="p-1 align-middle">{{ label }}</span>
               </label>
             </div>
+            <p class="text-red-500 text-xs italic">
+              <span>{{ errorMsg.frequency }}</span>
+            </p>
           </div>
 
           <div class="modal-body">
@@ -81,9 +60,9 @@
             <button class="btn btn-outline mx-1" @click="cancel">
               Cancel
             </button>
-            <!-- <button class="btn btn-outline mx-1" @click="deleteTodo">
+            <button v-if="!isCreateMode" class="btn btn-outline mx-1" @click="deleteHabit">
               Delete
-            </button> -->
+            </button>
           </div>
 
           <!-- フォーカスアウト防止 -->
@@ -96,45 +75,65 @@
 
 <script>
 import moment from 'moment'
+import isEmpty from 'lodash/isEmpty'
 import { TaskState } from '@/util/TaskState'
+import { Habit } from '@/model/Habit'
 
 export default {
   name: 'HabitDialog',
   data () {
     return {
-      target: null,
+      habit: null,
       title: '',
       detail: '',
-      deadline: null,
       isActive: true,
-      errorMsg: { title: '', deadline: '' },
-      weekdays: { 0: '日', 1: '月', 2: '火', 3: '水', 4: '木', 5: '金', 6: '土' },
+      errorMsg: { title: '', frequency: '' },
+      weekdays: Habit.WEEKDAYS,
       selectedWeekDays: [],
-      frequency: 'daily'
+      frequency: Habit.FREQ_DAILY,
+      isCreateMode: false,
+      FREQ_DAILY: Habit.FREQ_DAILY,
+      FREQ_WEEKLY: Habit.FREQ_WEEKLY
     }
   },
   methods: {
-    open () {
-      this.title = ''
-      this.detail = ''
-      this.deadline = null
-      this.isActive = true
-      this.errorMsg = { title: '', deadline: '' }
+    open (id = null) {
+      this.isCreateMode = isEmpty(id)
+
+      if (this.isCreateMode) {
+        this.habit = new Habit('', {})
+      } else {
+        this.habit = this.$store.getters['habit/getById'](id)
+      }
+
+      this.title = this.habit.title
+      this.detail = this.habit.detail
+      this.isActive = this.habit.isActive
+      this.selectedWeekDays = this.habit.weekdays
+      this.frequency = this.habit.frequency
+      this.errorMsg = { title: '', frequency: '' }
+
       this.$nextTick(() => {
         this.$refs.refTitle.focus()
       })
     },
     update () {
-      this.errorMsg = { title: '', deadline: '' }
-      if (this.validate()) {
-        // this.target.title = this.title
-        // this.target.detail = this.detail
-        // if (this.deadline !== null || this.deadline !== '') {
-        //   this.target.deadline = moment(this.deadline).endOf('days').toJSON()
-        // }
-        // this.$store.dispatch('todo/update', this.target)
-        this.$emit('close')
+      if (!this.validate()) {
+        return
       }
+      this.habit.title = this.title
+      this.habit.detail = this.detail
+      this.habit.frequency = this.frequency
+      this.habit.weekdays = this.frequency === Habit.FREQ_WEEKLY ? this.selectedWeekDays : []
+      this.habit.isActive = this.isActive
+      this.habit.rootId = this.$store.getters['habit/getRootId']
+
+      if (this.isCreateMode) {
+        this.$store.dispatch('habit/add', this.habit)
+      } else {
+        this.$store.dispatch('habit/update', this.habit)
+      }
+      this.$emit('close')
     },
     cancel () {
       this.$emit('close')
@@ -144,23 +143,22 @@ export default {
         this.$refs.refTitle.focus()
       }
     },
-    deleteTodo () {
-      // this.$store.dispatch('todo/delete', this.target.id)
+    deleteHabit () {
+      this.$store.dispatch('habit/delete', this.habit)
       this.$emit('close')
     },
     validate () {
       let valid = true
+      this.errorMsg = { title: '', frequency: '' }
 
-      if (this.title === '') {
+      if (isEmpty(this.title)) {
         valid = false
         this.errorMsg.title = '必須項目です'
       }
 
-      const today = moment()
-      if (this.deadline !== null &&
-        moment(this.deadline).isBefore(today, 'day')) {
-        valid = false
-        this.errorMsg.deadline = '日付が本日より過去です'
+      if (this.frequency === Habit.FREQ_WEEKLY &&
+        this.selectedWeekDays.length === 0) {
+        this.errorMsg.frequency = '1つ以上選択してください'
       }
       return valid
     }
