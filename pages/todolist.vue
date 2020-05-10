@@ -53,8 +53,6 @@ export default {
   },
   data () {
     return {
-      options: Object.values(TaskState),
-      isAllSelected: false,
       isModal: false
     }
   },
