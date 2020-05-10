@@ -68,6 +68,7 @@ export default {
   ** Build configuration
   */
   build: {
+    analyze: true,
     /*
     ** You can extend webpack config here
     */

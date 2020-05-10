@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { config, library } from '@fortawesome/fontawesome-svg-core'
-import { faEllipsisV, faEdit, faCircleNotch, faCaretDown } from '@fortawesome/free-solid-svg-icons'
+import { faEllipsisV, faEdit, faCircleNotch, faCaretDown, faPlus } from '@fortawesome/free-solid-svg-icons'
 import { faPlusSquare, faCalendar } from '@fortawesome/free-regular-svg-icons'
 import { faGoogle } from '@fortawesome/free-brands-svg-icons'
 
@@ -9,7 +9,7 @@ import { faGoogle } from '@fortawesome/free-brands-svg-icons'
 config.autoAddCss = false
 
 // 利用するアイコンを配列に追加
-const solidIcons = [faEllipsisV, faEdit, faCircleNotch, faCaretDown]
+const solidIcons = [faEllipsisV, faEdit, faCircleNotch, faCaretDown, faPlus]
 const regularIcons = [faPlusSquare, faCalendar]
 const bransIcons = [faGoogle]
 

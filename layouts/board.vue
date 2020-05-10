@@ -20,43 +20,46 @@
           {{ userName }}
         </div>
         <div class="flex-1 py-4 overflow-y-scroll scrollable-container">
-          <!-- <div class="mt-5 px-4 flex justify-between items-center">
-          <div class="font-bold opacity-50 text-lg">
-            今日の予定
+          <!--
+          <div class="mt-5 px-4 flex justify-between items-center">
+            <div class="font-bold opacity-50 text-lg">
+              今日の予定
+            </div>
           </div>
-        </div> -->
+          -->
           <div class="mt-5 px-4 flex justify-between items-center">
             <div class="font-bold opacity-50 text-lg">
               プロジェクト
             </div>
             <fa :icon="['far', 'plus-square']" class="opacity-50 cursor-pointer" @click.left="openListDialog" />
           </div>
-          <div
-            v-for="todolist in todolists"
-            :key="todolist.id"
-            class="opacity-50 mt-1 px-4 cursor-pointer"
-            :class="{'bg-blue-600' : currentListId == todolist.id}"
-            @click.left="onSelectList(todolist.id)"
-          >
-            # {{ todolist.title }}
+          <nuxt-link to="/todolist">
+            <div
+              v-for="todolist in todolists"
+              :key="todolist.id"
+              class="opacity-50 mt-1 px-4 cursor-pointer"
+              :class="{'bg-blue-600' : (selectedType === viewType.Todo && currentListId == todolist.id)}"
+              @click.left="onSelectList(todolist.id)"
+            >
+              # {{ todolist.title }}
+            </div>
+          </nuxt-link>
+          <div class="mt-5 px-4 flex justify-between items-center">
+            <div class="font-bold opacity-50 text-lg">
+              習慣
+            </div>
           </div>
-        <!-- <div class="mt-5 px-4 flex justify-between items-center">
-          <div class="font-bold opacity-50 text-lg">
-            習慣
-          </div>
-        </div>
-        <div class="opacity-50 mt-1 px-4">
-          日 - Daily -
-        </div>
-        <div class="opacity-50 mt-1 px-4">
-          週 - Weekly -
-        </div>
-        <div class="opacity-50 mt-1 px-4">
-          月 - Monthly -
-        </div>
-        <div class="opacity-50 mt-1 px-4">
-          その他 - Others -
-        </div> -->
+          <nuxt-link to="/habit">
+            <div
+              v-for="habitfilter in habitFilters"
+              :key="habitfilter.value"
+              class="opacity-50 mt-1 px-4 cursor-pointer"
+              :class="{'bg-blue-600' : (selectedType === viewType.Habit && currentFilter === habitfilter.value)}"
+              @click.left="onSelectHabit(habitfilter.value)"
+            >
+              # {{ habitfilter.label }}
+            </div>
+          </nuxt-link>
         </div>
       </div>
       <div class="flex-auto flex">
@@ -69,6 +72,7 @@
 
 <script>
 import NewListDialog from '@/components/NewListDialog'
+import { HabitFilter } from '@/util/HabitFilter'
 
 export default {
   components: {
@@ -78,7 +82,10 @@ export default {
     return {
       isModal: false,
       userName: this.$store.getters['user/displayName'],
-      isMenuExpanded: false
+      isMenuExpanded: false,
+      habitFilters: Object.values(HabitFilter),
+      viewType: { Todo: 0, Habit: 1 },
+      selectedType: 0
     }
   },
   computed: {
@@ -95,6 +102,11 @@ export default {
       get () {
         return this.$store.getters['todo/getCurrentListId']
       }
+    },
+    currentFilter: {
+      get () {
+        return this.$store.getters['habit/getCurrentFilter']
+      }
     }
   },
   mounted () {
@@ -103,9 +115,15 @@ export default {
   methods: {
     init () {
       this.$store.dispatch('todolist/init')
+      this.$store.dispatch('habit/init')
     },
     onSelectList (id) {
+      this.selectedType = this.viewType.Todo
       this.$store.dispatch('todo/init', id)
+    },
+    onSelectHabit (filter) {
+      this.selectedType = this.viewType.Habit
+      this.$store.dispatch('habit/changeFilter', filter)
     },
     openListDialog () {
       this.isModal = true
