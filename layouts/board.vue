@@ -38,7 +38,7 @@
               v-for="todolist in todolists"
               :key="todolist.id"
               class="opacity-50 mt-1 px-4 cursor-pointer"
-              :class="{'bg-blue-600' : (selectedType === 'todo' && currentListId == todolist.id)}"
+              :class="{'bg-blue-600' : (selectedType === viewType.Todo && currentListId == todolist.id)}"
               @click.left="onSelectList(todolist.id)"
             >
               # {{ todolist.title }}
@@ -51,13 +51,13 @@
           </div>
           <nuxt-link to="/habit">
             <div
-              v-for="(val, name) in habits"
-              :key="name"
+              v-for="habitfilter in habitFilters"
+              :key="habitfilter.value"
               class="opacity-50 mt-1 px-4 cursor-pointer"
-              :class="{'bg-blue-600' : (selectedType === 'habit' && selectedHabit === name)}"
-              @click.left="onSelectHabit(name)"
+              :class="{'bg-blue-600' : (selectedType === viewType.Habit && currentFilter === habitfilter.value)}"
+              @click.left="onSelectHabit(habitfilter.value)"
             >
-              # {{ val }}
+              # {{ habitfilter.label }}
             </div>
           </nuxt-link>
         </div>
@@ -72,6 +72,7 @@
 
 <script>
 import NewListDialog from '@/components/NewListDialog'
+import { HabitFilter } from '@/util/HabitFilter'
 
 export default {
   components: {
@@ -82,9 +83,9 @@ export default {
       isModal: false,
       userName: this.$store.getters['user/displayName'],
       isMenuExpanded: false,
-      habits: { today: '今日', enable: '有効', all: '全て' },
-      selectedType: 'todo', // todo, habit
-      selectedHabit: ''
+      habitFilters: Object.values(HabitFilter),
+      viewType: { Todo: 0, Habit: 1 },
+      selectedType: 0
     }
   },
   computed: {
@@ -101,6 +102,11 @@ export default {
       get () {
         return this.$store.getters['todo/getCurrentListId']
       }
+    },
+    currentFilter: {
+      get () {
+        return this.$store.getters['habit/getCurrentFilter']
+      }
     }
   },
   mounted () {
@@ -109,15 +115,15 @@ export default {
   methods: {
     init () {
       this.$store.dispatch('todolist/init')
+      this.$store.dispatch('habit/init')
     },
     onSelectList (id) {
-      this.selectedType = 'todo'
+      this.selectedType = this.viewType.Todo
       this.$store.dispatch('todo/init', id)
     },
-    onSelectHabit (habit) {
-      // TODO:$store
-      this.selectedType = 'habit'
-      this.selectedHabit = habit
+    onSelectHabit (filter) {
+      this.selectedType = this.viewType.Habit
+      this.$store.dispatch('habit/changeFilter', filter)
     },
     openListDialog () {
       this.isModal = true
