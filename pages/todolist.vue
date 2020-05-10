@@ -18,7 +18,7 @@
                 :key="item.id"
                 :todo="item"
                 class="list-group-item list-style"
-                @edit="editComment"
+                @edit="editTodo"
               />
             </draggable>
           </div>
@@ -28,11 +28,11 @@
     <footer class="px-2 py-2 flex-none bg-gray-500">
       <input-task />
     </footer>
-    <modal-dialog v-show="isModal" ref="dialog" @close="closeModal" />
   </div>
 </template>
 
 <script>
+import Vue from 'vue'
 import draggable from 'vuedraggable'
 import HeaderView from '@/components/HeaderView.vue'
 import TodoItem from '@/components/TodoItem.vue'
@@ -41,6 +41,8 @@ import InputTask from '@/components/InputTask.vue'
 import { getStateColor } from '@/util/StateColor'
 import { TaskState } from '@/util/TaskState'
 
+const DialogController = Vue.extend(ModalDialog)
+
 export default {
   layout: 'board',
   name: 'TodoList',
@@ -48,12 +50,11 @@ export default {
     draggable,
     TodoItem,
     HeaderView,
-    ModalDialog,
     InputTask
   },
   data () {
     return {
-      isModal: false
+      dialog: null
     }
   },
   computed: {
@@ -71,12 +72,22 @@ export default {
     /**
      * コメント編集
      */
-    editComment (id) {
-      this.isModal = true
-      this.$refs.dialog.open(id)
-    },
-    closeModal () {
-      this.isModal = false
+    editTodo (id) {
+      this.dialog = null
+      this.dialog = new DialogController({
+        propsData: {
+          parent: this.$root.$el,
+          target: this.$store.getters['todo/getTodoById'](id),
+          isCreateMode: false
+        }
+      })
+      this.dialog.$on('update', (todo) => {
+        this.$store.dispatch('todo/update', todo)
+      })
+      this.dialog.$on('delete', (todoId) => {
+        this.$store.dispatch('todo/delete', todoId)
+      })
+      this.dialog.$mount()
     },
     /**
      * ドラッグ終了時
