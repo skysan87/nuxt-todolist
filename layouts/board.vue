@@ -65,27 +65,26 @@
       <div class="flex-auto flex">
         <nuxt />
       </div>
-      <new-list-dialog v-show="isModal" ref="listDialog" @close="closeModal" />
     </div>
   </transition>
 </template>
 
 <script>
+import Vue from 'vue'
 import NewListDialog from '@/components/NewListDialog'
 import { HabitFilter } from '@/util/HabitFilter'
 
+const DialogController = Vue.extend(NewListDialog)
+
 export default {
-  components: {
-    NewListDialog
-  },
   data () {
     return {
-      isModal: false,
       userName: this.$store.getters['user/displayName'],
       isMenuExpanded: false,
       habitFilters: Object.values(HabitFilter),
       viewType: { Todo: 0, Habit: 1 },
-      selectedType: 0
+      selectedType: 0,
+      dialog: null
     }
   },
   computed: {
@@ -126,11 +125,17 @@ export default {
       this.$store.dispatch('habit/changeFilter', filter)
     },
     openListDialog () {
-      this.isModal = true
-      this.$refs.listDialog.open()
+      this.dialog = null
+      this.dialog = new DialogController({
+        propsData: {
+          parent: this.$root.$el
+        }
+      })
+      this.dialog.$on('add', this.addList)
+      this.dialog.$mount()
     },
-    closeModal () {
-      this.isModal = false
+    addList (title) {
+      this.$store.dispatch('todolist/add', title)
     },
     logout () {
       this.$store

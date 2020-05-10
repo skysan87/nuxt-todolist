@@ -1,8 +1,17 @@
 <template>
-  <div class="flex-1 flex flex-col bg-white relative">
-    <header class="border-b flex-none">
-      <div class="px-6 py-2">
-        フィルター：{{ currentFilterName }} ( {{ habitsCount }} )
+  <div class="flex-1 flex flex-col bg-white">
+    <header class="border-b flex-none relative">
+      <div class="px-6 py-2 flex flex-row">
+        <div class="inline-block flex-1 m-auto">
+          <span>フィルター：{{ currentFilterName }} ( {{ habitsCount }} )</span>
+        </div>
+        <button
+          type="button"
+          class="flex-none add-button focus:outline-none"
+          @click.left="addHabit"
+        >
+          <fa :icon="['fas', 'plus']" size="lg" />
+        </button>
       </div>
     </header>
     <main class="flex-1 pt-2 overflow-y-scroll">
@@ -26,34 +35,28 @@
         </div>
       </div>
     </main>
-    <button
-      type="button"
-      class="absolute bottom-0 right-0 add-button focus:outline-none"
-      @click.left="showModal"
-    >
-      <fa :icon="['fas', 'plus']" size="lg" />
-    </button>
-
-    <habit-dialog v-show="isModal" ref="dialog" @close="closeModal" />
   </div>
 </template>
 
 <script>
+import Vue from 'vue'
 import draggable from 'vuedraggable'
 import HabitDialog from '@/components/HabitDialog.vue'
 import HabitItem from '@/components/HabitItem.vue'
+import { Habit } from '@/model/Habit'
 import { HabitFilter } from '@/util/HabitFilter'
+
+const DialogController = Vue.extend(HabitDialog)
 
 export default {
   layout: 'board',
   components: {
     draggable,
-    HabitDialog,
     HabitItem
   },
   data () {
     return {
-      isModal: false
+      dialog: null
     }
   },
   computed: {
@@ -85,9 +88,38 @@ export default {
     }
   },
   methods: {
-    showModal () {
-      this.isModal = true
-      this.$refs.dialog.open()
+    addHabit () {
+      this.dialog = null
+      this.dialog = new DialogController({
+        propsData: {
+          parent: this.$root.$el,
+          target: new Habit('', {
+            rootId: this.$store.getters['habit/getRootId']
+          }),
+          isCreateMode: true
+        }
+      })
+      this.dialog.$on('add', (habit) => {
+        this.$store.dispatch('habit/add', habit)
+      })
+      this.dialog.$mount()
+    },
+    editHabit (id) {
+      this.dialog = null
+      this.dialog = new DialogController({
+        propsData: {
+          parent: this.$root.$el,
+          target: this.$store.getters['habit/getById'](id),
+          isCreateMode: false
+        }
+      })
+      this.dialog.$on('update', (habit) => {
+        this.$store.dispatch('habit/update', habit)
+      })
+      this.dialog.$on('delete', (habit) => {
+        this.$store.dispatch('habit/delete', habit)
+      })
+      this.dialog.$mount()
     },
     onDragEnd (ev) {
       if (ev.oldIndex === ev.newIndex) {
@@ -98,13 +130,6 @@ export default {
         newIndex: ev.newIndex
       }
       this.$store.dispatch('habit/changeOrder', params)
-    },
-    editHabit (id) {
-      this.isModal = true
-      this.$refs.dialog.open(id)
-    },
-    closeModal () {
-      this.isModal = false
     }
   }
 }
@@ -112,7 +137,7 @@ export default {
 
 <style scoped>
 .add-button {
-  @apply bg-blue-500 text-white mr-8 mb-4 p-2 px-4 shadow-md;
+  @apply bg-blue-500 text-white p-2 px-4 shadow-md;
 }
 .add-button:hover {
   @apply bg-blue-700;
@@ -135,5 +160,14 @@ export default {
   border-left: 1px solid #979797;
   border-right: 1px solid #979797;
   border-bottom: 1px solid #979797;
+}
+
+/* ドラッグするアイテム */
+.sortable-chosen {
+  opacity: 0.3;
+}
+
+.sortable-ghost {
+  background-color: #979797;
 }
 </style>

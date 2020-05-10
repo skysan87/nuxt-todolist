@@ -1,19 +1,19 @@
 <template>
-  <div class="container mx-auto px-4 h-full">
+  <div class="login-container mx-auto px-4 h-full">
     <div v-if="!isLogin && isMounted" class="flex content-center items-center justify-center h-full">
       <div class="w-full px-4 pt-32">
         <div
-          class="flex flex-col w-full shadow-lg rounded bg-gray-300 border-0"
+          class="flex flex-col w-full bg-gray-300 border-0"
         >
-          <div class="rounded-t mb-0 px-6 py-6">
+          <div class="px-6 py-6">
             <div class="text-center mb-3">
-              <h6 class="text-gray-600 text-sm font-bold">
+              <h6 class="text-gray-600 text-base font-bold">
                 Sign in with
               </h6>
             </div>
             <div class="text-center">
               <button
-                class="bg-white text-gray-800 px-4 py-2 rounded outline-none focus:outline-none mr-1 mb-1 shadow hover:shadow-md inline-flex items-center font-bold text-sm"
+                class="bg-white text-gray-800 px-8 py-2 outline-none focus:outline-none shadow hover:bg-gray-500 inline-flex items-center font-bold justify-center"
                 type="button"
                 @click="doLogin"
               >
@@ -85,3 +85,9 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.login-container {
+  max-width: 480px;
+}
+</style>
