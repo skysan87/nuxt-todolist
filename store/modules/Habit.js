@@ -58,7 +58,7 @@ export default {
 
     update (state, habit) {
       const index = state.habits.findIndex(v => v.id === habit.id)
-      state.habits[index] = habit
+      Object.assign(state.habits[index], habit)
     },
 
     delete (state, id) {

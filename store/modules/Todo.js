@@ -85,7 +85,7 @@ export default {
 
     update (state, payload) {
       const index = state.todos.findIndex(v => v.id === payload.id)
-      state.todos[index] = payload
+      Object.assign(state.todos[index], payload)
     },
 
     deleteDone (state) {

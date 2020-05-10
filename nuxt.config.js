@@ -32,7 +32,6 @@ export default {
   */
   plugins: [
     '@/plugins/fontawesome',
-    { src: '@/plugins/focusin', ssr: false },
     { src: '@/plugins/v-calendar', ssr: false }
   ],
   /*
