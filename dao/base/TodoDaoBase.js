@@ -17,9 +17,9 @@ export class TodoDaoBase {
       todo.id = 'dummy' + i
       todo.listId = listId
       todo.userId = 'dummy_user_id'
-      todo.comment = `${listId}_${i}`
+      todo.title = `${listId}_${i}`
       todo.orderIndex = i * 1000,
-      todo.note = 'dummy_note' + i
+      todo.detail = 'dummy_detail' + i
       todos.push(todo)
       this[maxIndex] = i
     }
@@ -34,7 +34,8 @@ export class TodoDaoBase {
     const tmpId = Date.now()
     const todo = new Todo('', {})
     todo.id = tmpId.toString()
-    todo.comment = params.comment
+    todo.title = params.title
+    todo.detail = params.detail || null
     todo.deadline = params.deadline
     todo.listId = listId
     todo.userId = userId

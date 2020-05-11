@@ -18,8 +18,8 @@
         <div class="modal-body">
           <label class="input-label">タイトル</label>
           <input
-            ref="modalComment"
-            v-model="todo.comment"
+            ref="title"
+            v-model="todo.title"
             class="input-text"
             :class="{'border border-red-500': errorMsg !== ''}"
             type="text"
@@ -30,7 +30,7 @@
         </div>
         <div class="modal-body">
           <label class="input-label">説明</label>
-          <textarea v-model="todo.note" class="input-textarea resize-none" maxlength="1000" rows="6" />
+          <textarea v-model="todo.detail" class="input-textarea resize-none" maxlength="1000" rows="6" />
         </div>
         <div class="modal-body">
           <label class="input-label">期限</label>
@@ -119,11 +119,11 @@ export default {
         Object.assign(this.todo, this.target)
       }
       this.deadline = moment(this.target.deadline).toDate()
-      this.$refs.modalComment.focus()
+      this.$refs.title.focus()
     },
     update () {
       this.errorMsg = ''
-      if (isEmpty(this.todo.comment)) {
+      if (isEmpty(this.todo.title)) {
         this.errorMsg = '必須項目です'
       } else {
         this.todo.deadline = moment(this.deadline).endOf('days').toJSON()
@@ -140,7 +140,7 @@ export default {
     },
     checkFocus (ev) {
       if (ev.target !== null && ev.target.className === 'dummy') {
-        this.$refs.modalComment.focus()
+        this.$refs.title.focus()
       }
     },
     deleteTodo () {
