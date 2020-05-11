@@ -6,6 +6,7 @@ export class Todo {
     this.title = params.title || null
     this.state = params.state || TaskState.Todo.value
     this.detail = params.detail || null
+    this.startdate = params.startdate || null
     this.deadline = params.deadline || null
     this.orderIndex = params.orderIndex || 0
     this.listId = params.listId || ''
@@ -23,7 +24,8 @@ export class Todo {
       title: this.title,
       state: this.state,
       detail: this.detail,
-      isDone: this.isDone(),
+      isDone: this.isDone,
+      startdate: this.startdate,
       deadline: this.deadline,
       orderIndex: this.orderIndex,
       listId: this.listId,

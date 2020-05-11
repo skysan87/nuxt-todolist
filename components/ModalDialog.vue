@@ -33,11 +33,13 @@
           <textarea v-model="todo.detail" class="input-textarea resize-none" maxlength="1000" rows="6" />
         </div>
         <div class="modal-body">
-          <label class="input-label">期限</label>
+          <label class="input-label">期間</label>
           <div class="flex">
             <v-date-picker
-              v-model="deadline"
-              :popover="{ placement: 'bottom', visibility: 'click' }"
+              mode="range"
+              v-model="range"
+              class="flex-1"
+              :popover="{ placement: 'top', visibility: 'click' }"
             >
               <input
                 slot-scope="{ inputProps, inputEvents }"
@@ -46,20 +48,20 @@
                 v-on="inputEvents"
               >
             </v-date-picker>
-            <button type="button" class="btn btn-outline" @click="deadline = null">
+            <button type="button" class="btn btn-outline flex-none" @click="range = null" tabindex="-1">
               Clear
             </button>
           </div>
         </div>
 
         <div class="flex flex-row-reverse">
-          <button class="btn btn-regular mx-1" @click="update">
+          <button class="btn btn-regular ml-2" @click="update">
             OK
           </button>
-          <button class="btn btn-outline mx-1" @click="cancel">
+          <button class="btn btn-outline ml-2" @click="cancel">
             Cancel
           </button>
-          <button class="btn btn-red-outline mx-1" @click="deleteTodo" v-if="!isCreateMode">
+          <button class="btn btn-red-outline" @click="deleteTodo" v-if="!isCreateMode">
             Delete
           </button>
         </div>
@@ -96,7 +98,7 @@ export default {
   data () {
     return {
       todo: new Todo('', {}),
-      deadline: null,
+      range: null,
       options: Object.values(TaskState),
       errorMsg: ''
     }
@@ -118,7 +120,10 @@ export default {
       if (this.target !== null) {
         Object.assign(this.todo, this.target)
       }
-      this.deadline = moment(this.target.deadline).toDate()
+      this.range = {
+        start: moment(this.todo.startdate).toDate(),
+        end: moment(this.todo.deadline).toDate()
+      }
       this.$refs.title.focus()
     },
     update () {
@@ -126,7 +131,13 @@ export default {
       if (isEmpty(this.todo.title)) {
         this.errorMsg = '必須項目です'
       } else {
-        this.todo.deadline = moment(this.deadline).endOf('days').toJSON()
+        if (this.range === null) {
+          this.todo.startdate = null
+          this.todo.deadline = null
+        } else {
+          this.todo.startdate = moment(this.range.start).startOf('days').toJSON()
+          this.todo.deadline = moment(this.range.end).endOf('days').toJSON()
+        }
         if (this.isCreateMode) {
           this.$emit('add', this.todo)
         } else {
