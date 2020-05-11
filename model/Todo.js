@@ -1,9 +1,11 @@
+import { TaskState } from '@/util/TaskState'
+
 export class Todo {
   constructor (id, params) {
     this.id = id
-    this.comment = params.comment || null
-    this.state = params.state || 0
-    this.note = params.note || null
+    this.title = params.title || null
+    this.state = params.state || TaskState.Todo.value
+    this.detail = params.detail || null
     this.deadline = params.deadline || null
     this.orderIndex = params.orderIndex || 0
     this.listId = params.listId || ''
@@ -12,11 +14,16 @@ export class Todo {
     this.updatedAt = params.updatedAt || null
   }
 
+  get isDone () {
+    return this.state === TaskState.Done.value
+  }
+
   getData () {
     const params = {
-      comment: this.comment,
+      title: this.title,
       state: this.state,
-      note: this.note,
+      detail: this.detail,
+      isDone: this.isDone(),
       deadline: this.deadline,
       orderIndex: this.orderIndex,
       listId: this.listId,

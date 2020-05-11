@@ -2,7 +2,7 @@
   <div class="flex overflow-hidden">
     <div class="w-full">
       <input
-        v-model="todo.comment"
+        v-model="todo.title"
         type="text"
         class="input-text appearance-none outline-none"
         placeholder="Add New Task..."
@@ -60,13 +60,13 @@ export default {
      */
     // eslint-disable-next-line
     doAdd () {
-      if (isEmpty(this.todo.comment)) {
+      if (isEmpty(this.todo.title)) {
         return
       }
       this.todo.deadline = this.checkDeadline()
 
       this.$store.dispatch('todo/add', this.todo.getData())
-      this.todo.comment = ''
+      this.todo.title = ''
     },
     addDetail () {
       this.todo.deadline = this.checkDeadline()
@@ -81,7 +81,7 @@ export default {
       })
       this.dialog.$on('add', (todo) => {
         this.$store.dispatch('todo/add', todo.getData())
-        this.todo.comment = ''
+        this.todo.title = ''
       })
       this.dialog.$mount()
     },

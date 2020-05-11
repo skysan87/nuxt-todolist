@@ -10,8 +10,8 @@
           class="circle-button cursor-pointer"
         />
       </div>
-      <div :title="todo.comment" class="flex-1 no-wrap text-left p-1">
-        {{ todo.comment }}
+      <div :title="todo.title" class="flex-1 no-wrap text-left p-1">
+        {{ todo.title }}
       </div>
       <div class="p-1" @click.stop="editEventHandler">
         <fa :icon="['fas', 'edit']" size="xs" class="cursor-pointer" />

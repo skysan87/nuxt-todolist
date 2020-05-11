@@ -22,7 +22,7 @@ export class TodoDao extends TodoDaoBase {
   async add (listId, params, userId) {
     const todo = new Todo('', {})
     todo.userId = userId
-    todo.comment = params.comment
+    todo.title = params.title
     todo.deadline = params.deadline
     todo.listId = listId
     todo.createdAt = getServerTimestamp()
@@ -69,9 +69,9 @@ export class TodoDao extends TodoDaoBase {
   async update (todo) {
     try {
       await todosRef.doc(todo.id).update({
-        comment: todo.comment,
+        title: todo.title,
         state: todo.state,
-        note: todo.note,
+        detail: todo.detail,
         orderIndex: todo.orderIndex,
         updatedAt: getServerTimestamp()
       })
