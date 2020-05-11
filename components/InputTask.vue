@@ -1,13 +1,14 @@
 <template>
   <div class="flex overflow-hidden">
     <div class="w-full">
-      <input
-        v-model="todo.title"
-        type="text"
-        class="input-text appearance-none outline-none"
-        placeholder="Add New Task..."
-        @keyup.enter="doAdd"
-      >
+      <form  @submit.prevent="doAdd">
+        <input
+          v-model="todo.title"
+          type="text"
+          class="input-text appearance-none outline-none"
+          placeholder="Add New Task..."
+        >
+      </form>
       <div class="mt-1 flex flex-row">
         <div class="flex-none inline-block">
           <span class="px-2 align-middle font-bold">期限</span>
