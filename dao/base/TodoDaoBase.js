@@ -32,11 +32,8 @@ export class TodoDaoBase {
       value: null
     }
     const tmpId = Date.now()
-    const todo = new Todo('', {})
+    const todo = new Todo('', params)
     todo.id = tmpId.toString()
-    todo.title = params.title
-    todo.detail = params.detail || null
-    todo.deadline = params.deadline
     todo.listId = listId
     todo.userId = userId
     this[maxIndex] += 1

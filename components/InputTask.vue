@@ -63,13 +63,12 @@ export default {
       if (isEmpty(this.todo.title)) {
         return
       }
-      this.todo.deadline = this.checkDeadline()
-
+      this.todo.startdate = this.todo.deadline = this.checkDeadline()
       this.$store.dispatch('todo/add', this.todo.getData())
       this.todo.title = ''
     },
     addDetail () {
-      this.todo.deadline = this.checkDeadline()
+      this.todo.startdate = this.todo.deadline = this.checkDeadline()
 
       this.dialog = null
       this.dialog = new DialogController({
