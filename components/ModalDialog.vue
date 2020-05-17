@@ -36,8 +36,8 @@
           <label class="input-label">期間</label>
           <div class="flex">
             <v-date-picker
-              mode="range"
               v-model="range"
+              mode="range"
               class="flex-1"
               :popover="{ placement: 'top', visibility: 'click' }"
             >
@@ -48,7 +48,7 @@
                 v-on="inputEvents"
               >
             </v-date-picker>
-            <button type="button" class="btn btn-outline flex-none" @click="range = null" tabindex="-1">
+            <button type="button" class="btn btn-outline flex-none" tabindex="-1" @click="range = null">
               Clear
             </button>
           </div>
@@ -61,7 +61,7 @@
           <button class="btn btn-outline ml-2" @click="cancel">
             Cancel
           </button>
-          <button class="btn btn-red-outline" @click="deleteTodo" v-if="!isCreateMode">
+          <button v-if="!isCreateMode" class="btn btn-red-outline" @click="deleteTodo">
             Delete
           </button>
         </div>

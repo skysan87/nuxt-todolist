@@ -8,7 +8,7 @@
       </span>
     </label>
     <label v-for="viewOp in options" :key="viewOp.value">
-      <input class="ml-2" v-model="filterOption" type="checkbox" :value="viewOp.value" @change="filterChanged">
+      <input v-model="filterOption" class="ml-2" type="checkbox" :value="viewOp.value" @change="filterChanged">
       <span class="p-1 align-middle">{{ viewOp.label }}</span>
       <span class="badge" :class="badgeColor(viewOp.value)">
         {{ todoCounts(viewOp.value) }}
