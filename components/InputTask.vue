@@ -1,7 +1,7 @@
 <template>
   <div class="flex overflow-hidden">
     <div class="w-full">
-      <form  @submit.prevent="doAdd">
+      <form @submit.prevent="doAdd">
         <input
           v-model="todo.title"
           type="text"
