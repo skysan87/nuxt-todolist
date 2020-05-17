@@ -112,6 +112,11 @@ export default {
       commit('init', { data: [], listId })
     },
 
+    async initTodaylist ({ commit, rootGetters }) {
+      const userId = rootGetters['user/userId']
+      // TODO: 今日のタスクを取得
+    },
+
     async changeOrder ({ commit, getters }, params) {
       const filtered = getters.getFilteredTodos
       const srcTodo = filtered[params.oldIndex]

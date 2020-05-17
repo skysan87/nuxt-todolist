@@ -20,13 +20,16 @@
           {{ userName }}
         </div>
         <div class="flex-1 py-4 overflow-y-scroll scrollable-container">
-          <!--
-          <div class="mt-5 px-4 flex justify-between items-center">
-            <div class="font-bold opacity-50 text-lg">
-              今日の予定
+          <nuxt-link to="/today">
+            <div
+              class="flex items-center px-4 opacity-50 cursor-pointer"
+              :class="{'bg-blue-600' : (selectedType === viewType.Today)}"
+              @click.left="onSelectToday"
+            >
+              <fa :icon="['fas', 'calendar-day']" class="cursor-pointer" />
+              <div class="pl-2 text-lg">今日の予定</div>
             </div>
-          </div>
-          -->
+          </nuxt-link>
           <div class="mt-5 px-4 flex justify-between items-center">
             <div class="font-bold opacity-50 text-lg">
               プロジェクト
@@ -37,7 +40,7 @@
             <div
               v-for="todolist in todolists"
               :key="todolist.id"
-              class="opacity-50 mt-1 px-4 cursor-pointer"
+              class="opacity-50 mt-1 px-5 cursor-pointer"
               :class="{'bg-blue-600' : (selectedType === viewType.Todo && currentListId == todolist.id)}"
               @click.left="onSelectList(todolist.id)"
             >
@@ -53,7 +56,7 @@
             <div
               v-for="habitfilter in habitFilters"
               :key="habitfilter.value"
-              class="opacity-50 mt-1 px-4 cursor-pointer"
+              class="opacity-50 mt-1 px-5 cursor-pointer"
               :class="{'bg-blue-600' : (selectedType === viewType.Habit && currentFilter === habitfilter.value)}"
               @click.left="onSelectHabit(habitfilter.value)"
             >
@@ -82,7 +85,7 @@ export default {
       userName: this.$store.getters['user/displayName'],
       isMenuExpanded: false,
       habitFilters: Object.values(HabitFilter),
-      viewType: { Todo: 0, Habit: 1 },
+      viewType: { Todo: 0, Habit: 1, Today: 2 },
       selectedType: 0,
       dialog: null
     }
@@ -115,6 +118,10 @@ export default {
     init () {
       this.$store.dispatch('todolist/init')
       this.$store.dispatch('habit/init')
+    },
+    onSelectToday () {
+      this.selectedType = this.viewType.Today
+      this.$store.dispatch('todo/initTodaylist')
     },
     onSelectList (id) {
       this.selectedType = this.viewType.Todo

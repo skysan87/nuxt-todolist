@@ -7,36 +7,26 @@
       <div class="h-full flex flex-col ml-6">
         <div class="flex-grow overflow-x-hidden">
           <div class="list-group">
-            <draggable
-              v-model="filteredTodos"
-              handle=".move-icon"
-              @end="onDragEnd"
-            >
-              <todo-item
-                v-for="item in filteredTodos"
-                :key="item.id"
-                :todo="item"
-                class="list-group-item list-style"
-                @edit="editTodo"
-              />
-            </draggable>
+            <!-- TODO:pointerをなくす -->
+            <todo-item
+              v-for="item in filteredTodos"
+              :key="item.id"
+              :todo="item"
+              class="list-group-item list-style"
+              @edit="editTodo"
+            />
           </div>
         </div>
       </div>
     </main>
-    <footer class="px-2 py-2 flex-none bg-gray-500">
-      <input-task />
-    </footer>
   </div>
 </template>
 
 <script>
 import Vue from 'vue'
-import draggable from 'vuedraggable'
 import HeaderView from '@/components/HeaderView.vue'
 import TodoItem from '@/components/TodoItem.vue'
 import ModalDialog from '@/components/ModalDialog.vue'
-import InputTask from '@/components/InputTask.vue'
 import { getStateColor } from '@/util/StateColor'
 import { TaskState } from '@/util/TaskState'
 
@@ -46,10 +36,8 @@ export default {
   layout: 'board',
   name: 'TodoList',
   components: {
-    draggable,
     TodoItem,
-    HeaderView,
-    InputTask
+    HeaderView
   },
   data () {
     return {
@@ -60,10 +48,6 @@ export default {
     filteredTodos: {
       get () {
         return this.$store.getters['todo/getFilteredTodos']
-      },
-      // eslint-disable-next-line
-      set(value) {
-        // vuedraggable用
       }
     }
   },
@@ -87,20 +71,6 @@ export default {
         this.$store.dispatch('todo/delete', todoId)
       })
       this.dialog.$mount()
-    },
-    /**
-     * ドラッグ終了時
-     */
-    onDragEnd (ev) {
-      // filteredTodosはすでに並び替えられている
-      if (ev.oldIndex === ev.newIndex) {
-        return
-      }
-      const params = {
-        oldIndex: ev.oldIndex,
-        newIndex: ev.newIndex
-      }
-      this.$store.dispatch('todo/changeOrder', params)
     },
     /**
      * 各ステータスのタスク数
