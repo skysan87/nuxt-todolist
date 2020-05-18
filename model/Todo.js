@@ -7,7 +7,7 @@ export class Todo {
     this.state = params.state || TaskState.Todo.value
     this.detail = params.detail || null
     this.startdate = params.startdate || null
-    this.deadline = params.deadline || null
+    this.enddate = params.enddate || null
     this.orderIndex = params.orderIndex || 0
     this.listId = params.listId || ''
     this.userId = params.userId || ''
@@ -26,7 +26,7 @@ export class Todo {
       detail: this.detail,
       isDone: this.isDone,
       startdate: this.startdate,
-      deadline: this.deadline,
+      enddate: this.enddate,
       orderIndex: this.orderIndex,
       listId: this.listId,
       userId: this.userId,

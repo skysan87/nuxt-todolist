@@ -121,8 +121,8 @@ export default {
         Object.assign(this.todo, this.target)
       }
       this.range = {
-        start: moment(this.todo.startdate).toDate(),
-        end: moment(this.todo.deadline).toDate()
+        start: this.todo.startdate !== null ? moment(this.todo.startdate.toString()).toDate() : null,
+        end: this.todo.enddate !== null ? moment(this.todo.enddate.toString()).toDate() : null
       }
       this.$refs.title.focus()
     },
@@ -133,10 +133,10 @@ export default {
       } else {
         if (this.range === null) {
           this.todo.startdate = null
-          this.todo.deadline = null
+          this.todo.enddate = null
         } else {
-          this.todo.startdate = moment(this.range.start).startOf('days').toJSON()
-          this.todo.deadline = moment(this.range.end).endOf('days').toJSON()
+          this.todo.startdate = parseInt(moment(this.range.start).format('YYYYMMDD'))
+          this.todo.enddate = parseInt(moment(this.range.end).format('YYYYMMDD'))
         }
         if (this.isCreateMode) {
           this.$emit('add', this.todo)

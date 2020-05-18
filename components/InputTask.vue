@@ -64,12 +64,12 @@ export default {
       if (isEmpty(this.todo.title)) {
         return
       }
-      this.todo.startdate = this.todo.deadline = this.checkDeadline()
+      this.todo.startdate = this.todo.enddate = this.checkDeadline()
       this.$store.dispatch('todo/add', this.todo.getData())
       this.todo.title = ''
     },
     addDetail () {
-      this.todo.startdate = this.todo.deadline = this.checkDeadline()
+      this.todo.startdate = this.todo.enddate = this.checkDeadline()
 
       this.dialog = null
       this.dialog = new DialogController({
@@ -89,10 +89,10 @@ export default {
       let deadline = null
       switch (this.checkedDeadline) {
         case 'today':
-          deadline = moment(new Date()).endOf('days').toJSON()
+          deadline = parseInt(moment().format('YYYYMMDD'))
           break
         case 'tomorrow':
-          deadline = moment(new Date()).add(1, 'days').endOf('days').toJSON()
+          deadline = parseInt(moment().add(1, 'days').format('YYYYMMDD').toNumber())
           break
         default:
           deadline = null
