@@ -71,7 +71,7 @@ export class TodoDao extends TodoDaoBase {
         state: todo.state,
         detail: todo.detail,
         startdate: todo.startdate,
-        deadline: todo.deadline,
+        enddate: todo.enddate,
         isDone: todo.isDone,
         orderIndex: todo.orderIndex,
         updatedAt: getServerTimestamp()
