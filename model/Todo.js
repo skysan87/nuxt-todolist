@@ -3,6 +3,7 @@ import { TaskState } from '@/util/TaskState'
 export class Todo {
   constructor (id, params) {
     this.id = id
+    this.type = params.type || 'todo' // todo/habit
     this.title = params.title || null
     this.state = params.state || TaskState.Todo.value
     this.detail = params.detail || null
@@ -11,8 +12,9 @@ export class Todo {
     this.orderIndex = params.orderIndex || 0
     this.listId = params.listId || ''
     this.userId = params.userId || ''
-    this.createdAt = params.createdAt || null
-    this.updatedAt = params.updatedAt || null
+    this.stateChangeDate = params.stateChangeDate || null // 更新日: フィルター用
+    this.createdAt = params.createdAt || null // 管理用
+    this.updatedAt = params.updatedAt || null // 管理用
   }
 
   get isDone () {
@@ -22,6 +24,7 @@ export class Todo {
   getData () {
     const params = {
       title: this.title,
+      type: this.type,
       state: this.state,
       detail: this.detail,
       isDone: this.isDone,
@@ -30,6 +33,7 @@ export class Todo {
       orderIndex: this.orderIndex,
       listId: this.listId,
       userId: this.userId,
+      stateChangeDate: this.stateChangeDate,
       createdAt: this.createdAt,
       updatedAt: this.updatedAt
     }

@@ -78,6 +78,7 @@ import moment from 'moment'
 import isEmpty from 'lodash/isEmpty'
 import { TaskState } from '@/util/TaskState'
 import { Todo } from '@/model/Todo'
+import { getDateNumber } from '@/util/MomentEx'
 
 export default {
   name: 'ModalDialog',
@@ -98,7 +99,7 @@ export default {
   data () {
     return {
       todo: new Todo('', {}),
-      range: null,
+      range: { start: null, end: null },
       options: Object.values(TaskState),
       errorMsg: ''
     }
@@ -131,12 +132,12 @@ export default {
       if (isEmpty(this.todo.title)) {
         this.errorMsg = '必須項目です'
       } else {
-        if (this.range === null) {
+        if (this.range === null || this.range.start === null || this.range.end === null) {
           this.todo.startdate = null
           this.todo.enddate = null
         } else {
-          this.todo.startdate = parseInt(moment(this.range.start).format('YYYYMMDD'))
-          this.todo.enddate = parseInt(moment(this.range.end).format('YYYYMMDD'))
+          this.todo.startdate = getDateNumber(moment(this.range.start.toString()))
+          this.todo.enddate = getDateNumber(moment(this.range.end.toString()))
         }
         if (this.isCreateMode) {
           this.$emit('add', this.todo)

@@ -38,6 +38,7 @@ import moment from 'moment'
 import isEmpty from 'lodash/isEmpty'
 import ModalDialog from '@/components/ModalDialog.vue'
 import { Todo } from '@/model/Todo'
+import { getDateNumber } from '@/util/MomentEx'
 
 const DialogController = Vue.extend(ModalDialog)
 
@@ -89,10 +90,10 @@ export default {
       let deadline = null
       switch (this.checkedDeadline) {
         case 'today':
-          deadline = parseInt(moment().format('YYYYMMDD'))
+          deadline = getDateNumber()
           break
         case 'tomorrow':
-          deadline = parseInt(moment().add(1, 'days').format('YYYYMMDD').toNumber())
+          deadline = getDateNumber(moment().add(1, 'days'))
           break
         default:
           deadline = null
