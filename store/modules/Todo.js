@@ -1,6 +1,7 @@
 import orderBy from 'lodash/orderBy'
 import { TaskState } from '@/util/TaskState'
 import { CreateTodoDao } from '@/dao'
+import { getDateNumber } from '@/util/MomentEx'
 
 const dao = CreateTodoDao()
 
@@ -112,9 +113,14 @@ export default {
       commit('init', { data: [], listId })
     },
 
-    async initTodaylist ({ commit, rootGetters }) {
+    initTodayActivelist ({ commit, rootGetters }) {
       const userId = rootGetters['user/userId']
-      // TODO: 今日のタスクを取得
+      // TODO: 今日のタスクで完了していないものを取得
+    },
+
+    initTodayDonelist ({ commit, rootGetters }) {
+      const userId = rootGetters['user/userId']
+      // TODO: 今日のタスクで完了済みを取得
     },
 
     async changeOrder ({ commit, getters }, params) {
@@ -174,6 +180,7 @@ export default {
 
     async add ({ commit, state, rootGetters }, params) {
       const userId = rootGetters['user/userId']
+      params.stateChangeDate = getDateNumber()
       const result = await dao.add(state.listId, params, userId)
       if (result.isSuccess) {
         commit('add', result.value)
@@ -186,7 +193,13 @@ export default {
       }
     },
 
-    async update ({ commit }, payload) {
+    async update ({ commit, getters }, payload) {
+      const lastTodo = getters.getTodoById(payload.id)
+      console.log(lastTodo)
+      if (lastTodo.state !== payload.state) {
+        payload.stateChangeDate = getDateNumber()
+      }
+
       if (await dao.update(payload)) {
         commit('update', payload)
       }
@@ -208,7 +221,7 @@ export default {
           item.state = TaskState.Todo.value
           break
       }
-
+      item.stateChangeDate = getDateNumber()
       if (await dao.update(item)) {
         commit('update', item)
       }
