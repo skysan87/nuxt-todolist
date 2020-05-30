@@ -89,7 +89,7 @@ export default {
   },
   methods: {
     addHabit () {
-      this.dialog = null
+      delete this.dialog
       this.dialog = new DialogController({
         propsData: {
           parent: this.$root.$el,
@@ -105,7 +105,7 @@ export default {
       this.dialog.$mount()
     },
     editHabit (id) {
-      this.dialog = null
+      delete this.dialog
       this.dialog = new DialogController({
         propsData: {
           parent: this.$root.$el,
