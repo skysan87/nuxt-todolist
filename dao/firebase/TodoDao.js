@@ -1,6 +1,7 @@
 import { firestore, getServerTimestamp } from '@/plugins/firebase'
 import { TodoDaoBase } from '@/dao/base/TodoDaoBase'
 import { Todo } from '@/model/Todo'
+import { TaskState } from '@/util/TaskState'
 
 const todosRef = firestore.collection('todos')
 const todolistsRef = firestore.collection('lists')
@@ -9,6 +10,66 @@ export class TodoDao extends TodoDaoBase {
   async getTodos (listId) {
     try {
       const querySnapshot = await todosRef.where('listId', '==', listId).get()
+      const todos = querySnapshot.docs.map((doc) => {
+        return new Todo(doc.id, doc.data())
+      })
+      return todos
+    } catch (error) {
+      console.error(error)
+      throw error
+    }
+  }
+
+  /**
+   * 今日が期間に入っている未実施のタスクを取得
+   * @param {Number} date 今日の日付(YYYYMMDD)
+   */
+  async getTodaysToDo (date) {
+    try {
+      const querySnapshot = await todosRef.where('type', '==', 'todo')
+        .where('state', '==', TaskState.Todo.value)
+        .where('startdate', '<=', date)
+        .get()
+      const todos = querySnapshot.docs.map((doc) => {
+        return new Todo(doc.id, doc.data())
+      })
+      return todos
+    } catch (error) {
+      console.error(error)
+      throw error
+    }
+  }
+
+  /**
+   * 今日が期間内の作業中のタスクを取得
+   * @param {Number} date 今日の日付(YYYYMMDD)
+   */
+  async getTodaysInProgress (date) {
+    try {
+      const querySnapshot = await todosRef.where('type', '==', 'todo')
+        .where('state', '==', TaskState.InProgress.value)
+        .where('startdate', '<=', date)
+        .get()
+      const todos = querySnapshot.docs.map((doc) => {
+        return new Todo(doc.id, doc.data())
+      })
+      return todos
+    } catch (error) {
+      console.error(error)
+      throw error
+    }
+  }
+
+  /**
+   * 今日完了したタスクを取得
+   * @param {Number} date 今日の日付(YYYYMMDD)
+   */
+  async getTodaysDone (date) {
+    try {
+      const querySnapshot = await todosRef.where('type', '==', 'todo')
+        .where('state', '==', TaskState.Done.value)
+        .where('stateChangeDate', '==', date)
+        .get()
       const todos = querySnapshot.docs.map((doc) => {
         return new Todo(doc.id, doc.data())
       })

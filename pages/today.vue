@@ -1,17 +1,15 @@
 <template>
   <div class="flex-1 flex flex-col bg-white">
-    <header class="border-b flex-none">
-      <header-view />
-    </header>
+    <header class="border-b flex-none" />
     <main class="flex-1 pt-2 overflow-y-scroll">
       <div class="h-full flex flex-col ml-6">
         <div class="flex-grow overflow-x-hidden">
           <div class="list-group">
-            <!-- TODO:pointerをなくす -->
             <todo-item
               v-for="item in filteredTodos"
               :key="item.id"
               :todo="item"
+              :option="{showPointer: false, showEdit: false}"
               class="list-group-item list-style"
               @edit="editTodo"
             />
@@ -24,7 +22,6 @@
 
 <script>
 import Vue from 'vue'
-import HeaderView from '@/components/HeaderView.vue'
 import TodoItem from '@/components/TodoItem.vue'
 import ModalDialog from '@/components/ModalDialog.vue'
 import { getStateColor } from '@/util/StateColor'
@@ -36,8 +33,7 @@ export default {
   layout: 'board',
   name: 'TodoList',
   components: {
-    TodoItem,
-    HeaderView
+    TodoItem
   },
   data () {
     return {
@@ -56,7 +52,7 @@ export default {
      * コメント編集
      */
     editTodo (id) {
-      this.dialog = null
+      delete this.dialog
       this.dialog = new DialogController({
         propsData: {
           parent: this.$root.$el,
@@ -110,15 +106,6 @@ export default {
   border-left: 1px solid #979797;
   border-right: 1px solid #979797;
   border-bottom: 1px solid #979797;
-}
-
-/* ドラッグするアイテム */
-.sortable-chosen {
-  opacity: 0.3;
-}
-
-.sortable-ghost {
-  background-color: #979797;
 }
 
 /* ステータスラベル */
