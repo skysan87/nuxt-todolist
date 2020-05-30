@@ -20,14 +20,20 @@
           {{ userName }}
         </div>
         <div class="flex-1 py-4 overflow-y-scroll scrollable-container">
+          <div class="mt-5 px-4 flex items-center">
+            <div class="font-bold opacity-50 text-lg">
+              今日の予定
+            </div>
+          </div>
           <nuxt-link to="/today">
             <div
-              class="flex items-center px-4 opacity-50 cursor-pointer"
-              :class="{'bg-blue-600' : (selectedType === viewType.Today)}"
-              @click.left="onSelectToday"
+              v-for="filter in todayFilters"
+              :key="filter.value"
+              class="opacity-50 mt-1 px-5 cursor-pointer"
+              :class="{'bg-blue-600' : (selectedType === viewType.Today && selectedTodayFilter === filter.value)}"
+              @click.left="onSelectToday(filter.value)"
             >
-              <fa :icon="['fas', 'calendar-day']" class="cursor-pointer" />
-              <div class="pl-2 text-lg">今日の予定</div>
+              # {{ filter.label }}
             </div>
           </nuxt-link>
           <div class="mt-5 px-4 flex justify-between items-center">
@@ -76,6 +82,7 @@
 import Vue from 'vue'
 import NewListDialog from '@/components/NewListDialog'
 import { HabitFilter } from '@/util/HabitFilter'
+import { TodayFilter } from '@/util/TodayFilter'
 
 const DialogController = Vue.extend(NewListDialog)
 
@@ -85,8 +92,10 @@ export default {
       userName: this.$store.getters['user/displayName'],
       isMenuExpanded: false,
       habitFilters: Object.values(HabitFilter),
+      todayFilters: Object.values(TodayFilter),
       viewType: { Todo: 0, Habit: 1, Today: 2 },
       selectedType: 0,
+      selectedTodayFilter: TodayFilter.Remain.value,
       dialog: null
     }
   },
@@ -119,9 +128,10 @@ export default {
       this.$store.dispatch('todolist/init')
       this.$store.dispatch('habit/init')
     },
-    onSelectToday () {
+    onSelectToday (filter) {
       this.selectedType = this.viewType.Today
-      this.$store.dispatch('todo/initTodaylist')
+      this.selectedTodayFilter = filter
+      this.$store.dispatch('todo/initTodaylist', filter)
     },
     onSelectList (id) {
       this.selectedType = this.viewType.Todo
@@ -143,6 +153,9 @@ export default {
     },
     addList (title) {
       this.$store.dispatch('todolist/add', title)
+      // 新規作成画面に遷移
+      this.selectedType = this.viewType.Todo
+      this.$router.push('/todolist')
     },
     logout () {
       this.$store
