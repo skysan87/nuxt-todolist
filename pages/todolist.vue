@@ -72,7 +72,7 @@ export default {
      * コメント編集
      */
     editTodo (id) {
-      this.dialog = null
+      delete this.dialog
       this.dialog = new DialogController({
         propsData: {
           parent: this.$root.$el,

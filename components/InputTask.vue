@@ -72,7 +72,7 @@ export default {
     addDetail () {
       this.todo.startdate = this.todo.enddate = this.checkDeadline()
 
-      this.dialog = null
+      delete this.dialog
       this.dialog = new DialogController({
         propsData: {
           parent: this.$root.$el,

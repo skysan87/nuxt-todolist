@@ -142,7 +142,7 @@ export default {
       this.$store.dispatch('habit/changeFilter', filter)
     },
     openListDialog () {
-      this.dialog = null
+      delete this.dialog
       this.dialog = new DialogController({
         propsData: {
           parent: this.$root.$el
