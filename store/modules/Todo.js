@@ -1,5 +1,6 @@
 import orderBy from 'lodash/orderBy'
 import { TaskState } from '@/util/TaskState'
+import { TodayFilter } from '@/util/TodayFilter'
 import { CreateTodoDao } from '@/dao'
 import { getDateNumber } from '@/util/MomentEx'
 
@@ -113,14 +114,18 @@ export default {
       commit('init', { data: [], listId })
     },
 
-    initTodayActivelist ({ commit, rootGetters }) {
+    initTodaylist ({ commit, rootGetters }, todayFilterValue) {
       const userId = rootGetters['user/userId']
-      // TODO: 今日のタスクで完了していないものを取得
-    },
-
-    initTodayDonelist ({ commit, rootGetters }) {
-      const userId = rootGetters['user/userId']
-      // TODO: 今日のタスクで完了済みを取得
+      switch (todayFilterValue) {
+        case TodayFilter.Remain.value:
+          // 今日の残タスク
+          break
+        case TodayFilter.Done.value:
+          // 今日完了したタスク
+          break
+        default:
+          break
+      }
     },
 
     async changeOrder ({ commit, getters }, params) {
