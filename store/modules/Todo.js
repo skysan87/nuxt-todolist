@@ -72,7 +72,14 @@ export default {
   // 状態の更新
   mutations: {
     init (state, payload) {
+      state.selectedState = [TaskState.Todo.value, TaskState.InProgress.value]
       state.listId = payload.listId
+      state.todos = payload.data
+    },
+
+    initToday (state, payload) {
+      state.selectedState = [payload.state]
+      state.listId = ''
       state.todos = payload.data
     },
 
@@ -114,14 +121,21 @@ export default {
       commit('init', { data: [], listId })
     },
 
-    initTodaylist ({ commit, rootGetters }, todayFilterValue) {
+    async initTodaylist ({ commit, rootGetters }, todayFilterValue) {
       const userId = rootGetters['user/userId']
+      const today = getDateNumber()
       switch (todayFilterValue) {
         case TodayFilter.Remain.value:
           // 今日の残タスク
+          commit('initToday', { data: await dao.getTodaysToDo(today), state: TaskState.Todo.value })
+          break
+        case TodayFilter.InProgress.value:
+          // 作業中
+          commit('initToday', { data: await dao.getTodaysInProgress(today), state: TaskState.InProgress.value })
           break
         case TodayFilter.Done.value:
           // 今日完了したタスク
+          commit('initToday', { data: await dao.getTodaysDone(today), state: TaskState.Done.value })
           break
         default:
           break
@@ -200,7 +214,6 @@ export default {
 
     async update ({ commit, getters }, payload) {
       const lastTodo = getters.getTodoById(payload.id)
-      console.log(lastTodo)
       if (lastTodo.state !== payload.state) {
         payload.stateChangeDate = getDateNumber()
       }

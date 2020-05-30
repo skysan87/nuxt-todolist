@@ -3,8 +3,12 @@ export const TodayFilter = {
     value: 0,
     label: '今日のタスク'
   },
-  Done: {
+  InProgress: {
     value: 1,
-    label: '完了したタスク'
+    label: '作業中'
+  },
+  Done: {
+    value: 2,
+    label: '今日完了したもの'
   }
 }

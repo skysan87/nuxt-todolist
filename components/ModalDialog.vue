@@ -136,8 +136,8 @@ export default {
           this.todo.startdate = null
           this.todo.enddate = null
         } else {
-          this.todo.startdate = getDateNumber(moment(this.range.start.toString()))
-          this.todo.enddate = getDateNumber(moment(this.range.end.toString()))
+          this.todo.startdate = getDateNumber(moment(this.range.start))
+          this.todo.enddate = getDateNumber(moment(this.range.end))
         }
         if (this.isCreateMode) {
           this.$emit('add', this.todo)

@@ -1,5 +1,8 @@
 /* eslint-disable */
+import moment from 'moment'
 import { Todo } from '@/model/Todo'
+import { getDateNumber } from '@/util/MomentEx'
+import { TaskState } from '@/util/TaskState'
 
 // private
 const maxIndex = Symbol('maxIndex')
@@ -15,6 +18,7 @@ export class TodoDaoBase {
     for (let i = 1; i <= 10; i++) {
       const todo = new Todo('', {})
       todo.id = 'dummy' + i
+      todo.type ='todo'
       todo.listId = listId
       todo.userId = 'dummy_user_id'
       todo.title = `${listId}_${i}`
@@ -22,6 +26,42 @@ export class TodoDaoBase {
       todo.detail = 'dummy_detail' + i
       todos.push(todo)
       this[maxIndex] = i
+    }
+    return todos
+  }
+
+  /**
+   * 今日の残タスクを取得する
+   */
+  async getTodaysToDo(date) {
+    return this.createDummyTodo(TaskState.Todo)
+  }
+
+  async getTodaysInProgress(date) {
+    return this.createDummyTodo(TaskState.InProgress)
+  }
+
+  async getTodaysDone(date) {
+    return this.createDummyTodo(TaskState.Done)
+  }
+
+  createDummyTodo(state) {
+    const todos = []
+    for (let i = 1; i <= 10; i++) {
+      const today = moment()
+      const todo = new Todo('', {})
+      todo.id = 'dummy' + i
+      todo.type ='todo'
+      todo.listId = 'list' + (i % 3)
+      todo.userId = 'dummy_user_id'
+      todo.title = `title_${i}_${state.label}`
+      todo.detail = `detail_${i}_${state.label}`
+      todo.state = state.value
+      todo.startdate = getDateNumber(today)
+      todo.enddate = getDateNumber(today.add(i, 'days'))
+      todos.push(todo)
+      todo.orderIndex = this[maxIndex] * 1000
+      this[maxIndex] += 1
     }
     return todos
   }
@@ -54,5 +94,9 @@ export class TodoDaoBase {
 
   async deleteTodos(todos, taskState) {
     return true
+  }
+
+  getDate(offset) {
+    new Date()
   }
 }
