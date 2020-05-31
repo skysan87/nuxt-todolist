@@ -3,6 +3,7 @@ import { TaskState } from '@/util/TaskState'
 import { TodayFilter } from '@/util/TodayFilter'
 import { CreateTodoDao } from '@/dao'
 import { getDateNumber } from '@/util/MomentEx'
+import { Todo } from '@/model/Todo'
 
 const dao = CreateTodoDao()
 
@@ -38,11 +39,11 @@ export default {
         state.selectedState,
         selectAll
       )
-      return orderBy(filterd, 'orderIndex')
+      return orderBy(filterd, ['type', 'listId', 'orderIndex'])
     },
 
     getOrderdTodos: (state) => {
-      return orderBy(state.todos, 'orderIndex')
+      return orderBy(state.todos, ['type', 'listId', 'orderIndex'])
     },
 
     getTodoById: state => (id) => {
@@ -78,7 +79,7 @@ export default {
     },
 
     initToday (state, payload) {
-      state.selectedState = [payload.state]
+      state.selectedState = payload.selectedState
       state.listId = ''
       state.todos = payload.data
     },
@@ -123,23 +124,56 @@ export default {
 
     async initTodaylist ({ commit, rootGetters }, todayFilterValue) {
       const userId = rootGetters['user/userId']
-      const today = getDateNumber()
+      const today = getDateNumber() // YYYYMMDD
+      // 1. 今日の習慣をメモリgettersで取得
+      const todaysHabits = rootGetters['habit/getTodayList']
+      // 2. 習慣のToDoをサーバーから取得
+      const habitTodo = await dao.getHabits(userId, today)
+      // 3. 1と2を比較して、2が存在しないものは、追加する
+      const missinglist = todaysHabits.reduce((pre, _habit) => {
+        // Habit.id === Todo.listId
+        if (habitTodo.findIndex(v => v.listId === _habit.id) < 0) {
+          const todo = new Todo('', {})
+          todo.type = 'habit'
+          todo.listId = _habit.id // habitsのサブコレクションのId
+          todo.userId = _habit.userId
+          todo.title = _habit.title
+          todo.detail = _habit.detail
+          todo.startdate = today
+          todo.enddate = today
+          todo.orderIndex = _habit.orderIndex
+          pre.push(todo)
+        }
+        return pre
+      }, [])
+      // 4. 追加
+      if (missinglist.length > 0) {
+        const newhabitToDo = await dao.addHabits(missinglist)
+        habitTodo.push(...newhabitToDo)
+      }
+
+      const selectedState = []
+      const todos = [...habitTodo]
       switch (todayFilterValue) {
         case TodayFilter.Remain.value:
           // 今日の残タスク
-          commit('initToday', { data: await dao.getTodaysToDo(today), state: TaskState.Todo.value })
+          selectedState.push(TaskState.Todo.value)
+          todos.push(...await dao.getTodaysToDo(userId, today))
           break
         case TodayFilter.InProgress.value:
           // 作業中
-          commit('initToday', { data: await dao.getTodaysInProgress(today), state: TaskState.InProgress.value })
+          selectedState.push(TaskState.InProgress.value)
+          todos.push(...await dao.getTodaysInProgress(userId, today))
           break
         case TodayFilter.Done.value:
           // 今日完了したタスク
-          commit('initToday', { data: await dao.getTodaysDone(today), state: TaskState.Done.value })
+          selectedState.push(TaskState.Done.value)
+          todos.push(...await dao.getTodaysDone(userId, today))
           break
         default:
           break
       }
+      commit('initToday', { data: todos, selectedState })
     },
 
     async changeOrder ({ commit, getters }, params) {
