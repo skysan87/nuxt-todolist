@@ -24,9 +24,10 @@ export class TodoDao extends TodoDaoBase {
    * 今日が期間に入っている未実施のタスクを取得
    * @param {Number} date 今日の日付(YYYYMMDD)
    */
-  async getTodaysToDo (date) {
+  async getTodaysToDo (userId, date) {
     try {
       const querySnapshot = await todosRef.where('type', '==', 'todo')
+        .where('userId', '==', userId)
         .where('state', '==', TaskState.Todo.value)
         .where('startdate', '<=', date)
         .get()
@@ -44,9 +45,10 @@ export class TodoDao extends TodoDaoBase {
    * 今日が期間内の作業中のタスクを取得
    * @param {Number} date 今日の日付(YYYYMMDD)
    */
-  async getTodaysInProgress (date) {
+  async getTodaysInProgress (userId, date) {
     try {
       const querySnapshot = await todosRef.where('type', '==', 'todo')
+        .where('userId', '==', userId)
         .where('state', '==', TaskState.InProgress.value)
         .where('startdate', '<=', date)
         .get()
@@ -64,11 +66,28 @@ export class TodoDao extends TodoDaoBase {
    * 今日完了したタスクを取得
    * @param {Number} date 今日の日付(YYYYMMDD)
    */
-  async getTodaysDone (date) {
+  async getTodaysDone (userId, date) {
     try {
       const querySnapshot = await todosRef.where('type', '==', 'todo')
+        .where('userId', '==', userId)
         .where('state', '==', TaskState.Done.value)
         .where('stateChangeDate', '==', date)
+        .get()
+      const todos = querySnapshot.docs.map((doc) => {
+        return new Todo(doc.id, doc.data())
+      })
+      return todos
+    } catch (error) {
+      console.error(error)
+      throw error
+    }
+  }
+
+  async getHabits (userId, date) {
+    try {
+      const querySnapshot = await todosRef.where('type', '==', 'habit')
+        .where('userId', '==', userId)
+        .where('startdate', '==', date)
         .get()
       const todos = querySnapshot.docs.map((doc) => {
         return new Todo(doc.id, doc.data())
@@ -123,6 +142,28 @@ export class TodoDao extends TodoDaoBase {
       returnValues.isSuccess = false
       return returnValues
     }
+  }
+
+  addHabits (todos) {
+    const promisses = []
+    for (const todo of todos) {
+      const p = new Promise((resolve, reject) => {
+        try {
+          todo.createdAt = getServerTimestamp()
+          todo.updatedAt = getServerTimestamp()
+          todosRef.add(todo.getData())
+            .then((docRef) => {
+              todo.id = docRef.id
+              resolve(todo)
+            })
+        } catch (error) {
+          console.error(error)
+          reject(error)
+        }
+      })
+      promisses.push(p)
+    }
+    return Promise.all(promisses)
   }
 
   async update (todo) {

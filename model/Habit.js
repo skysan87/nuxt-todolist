@@ -8,7 +8,7 @@ export class Habit {
     this.rootId = params.rootId
     this.title = params.title || null
     this.detail = params.detail || null
-    this.isActive = params.isActive || true
+    this.isActive = (params.isActive !== null || params.isActive !== undefined) ? params.isActive : true
     this.frequency = params.frequency || Habit.FREQ_DAILY // 頻度
     this.weekdays = params.weekdays || [] // 実施する曜日
     this.orderIndex = params.orderIndex || 0
