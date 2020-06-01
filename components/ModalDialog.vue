@@ -21,8 +21,9 @@
             ref="title"
             v-model="todo.title"
             class="input-text"
-            :class="{'border border-red-500': errorMsg !== ''}"
+            :class="{'border border-red-500': errorMsg !== '', 'btn-disabled': forbid.title}"
             type="text"
+            :disabled="forbid.title"
           >
           <p v-show="(errorMsg !== '')" class="text-red-500 text-xs italic">
             {{ errorMsg }}
@@ -30,7 +31,14 @@
         </div>
         <div class="modal-body">
           <label class="input-label">説明</label>
-          <textarea v-model="todo.detail" class="input-textarea resize-none" maxlength="1000" rows="6" />
+          <textarea
+            v-model="todo.detail"
+            class="input-textarea resize-none"
+            maxlength="1000"
+            rows="6"
+            :class="{'btn-disabled': forbid.detail}"
+            :disabled="forbid.detail"
+          />
         </div>
         <div class="modal-body">
           <label class="input-label">期間</label>
@@ -40,15 +48,25 @@
               mode="range"
               class="flex-1"
               :popover="{ placement: 'top', visibility: 'click' }"
+              :disabled="forbid.range"
             >
               <input
                 slot-scope="{ inputProps, inputEvents }"
                 class="input-text"
                 v-bind="inputProps"
+                :class="{'btn-disabled': forbid.range}"
+                :disabled="forbid.range"
                 v-on="inputEvents"
               >
             </v-date-picker>
-            <button type="button" class="btn btn-outline flex-none" tabindex="-1" @click="range = null">
+            <button
+              type="button"
+              class="btn btn-outline flex-none"
+              tabindex="-1"
+              :disabled="forbid.range"
+              :class="{'btn-disabled': forbid.range}"
+              @click="range = null"
+            >
               Clear
             </button>
           </div>
@@ -61,9 +79,16 @@
           <button class="btn btn-outline ml-2" @click="cancel">
             Cancel
           </button>
-          <button v-if="!isCreateMode" class="btn btn-red-outline" @click="deleteTodo">
+          <button
+            v-if="!isCreateMode"
+            class="btn btn-red-outline ml-2"
+            :disabled="forbid.delete"
+            :class="{'btn-disabled': forbid.delete}"
+            @click="deleteTodo"
+          >
             Delete
           </button>
+          <span class="text-sm text-gray-600 flex-1">{{ footerMsg }}</span>
         </div>
 
         <!-- フォーカスアウト防止 -->
@@ -101,7 +126,14 @@ export default {
       todo: new Todo('', {}),
       range: { start: null, end: null },
       options: Object.values(TaskState),
-      errorMsg: ''
+      errorMsg: '',
+      forbid: {
+        title: false,
+        detail: false,
+        range: false,
+        delete: false
+      },
+      footerMsg: ''
     }
   },
   mounted () {
@@ -125,6 +157,16 @@ export default {
         start: this.todo.startdate !== null ? moment(this.todo.startdate.toString()).toDate() : null,
         end: this.todo.enddate !== null ? moment(this.todo.enddate.toString()).toDate() : null
       }
+
+      // 編集の禁止
+      if (this.todo.type === 'habit') {
+        this.forbid.title = true
+        this.forbid.detail = true
+        this.forbid.range = true
+        this.forbid.delete = true
+        this.footerMsg = '習慣の内容は編集出来ません。'
+      }
+
       this.$refs.title.focus()
     },
     update () {
