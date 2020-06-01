@@ -63,3 +63,7 @@
 .input-textarea {
   @apply w-full border py-1 px-2 bg-gray-200;
 }
+
+.output-text {
+  @apply block w-full border py-1 px-2;
+}

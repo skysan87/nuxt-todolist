@@ -73,10 +73,14 @@ export default {
      */
     editTodo (id) {
       delete this.dialog
+
+      const todo = this.$store.getters['todo/getTodoById'](id)
+      todo.listName = this.$store.getters['todolist/getListName'](todo.listId)
+
       this.dialog = new DialogController({
         propsData: {
           parent: this.$root.$el,
-          target: this.$store.getters['todo/getTodoById'](id),
+          target: todo,
           isCreateMode: false
         }
       })
