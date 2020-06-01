@@ -11,11 +11,15 @@
                 Sign in with
               </h6>
             </div>
-            <div class="text-center">
+            <div class="text-center login-btn-box">
+              <div v-if="isClicked" class="py-2">
+                <fa :icon="['fas', 'circle-notch']" size="2x" class="fa-spin" />
+              </div>
               <button
-                class="bg-white text-gray-800 px-8 py-2 outline-none focus:outline-none shadow hover:bg-gray-500 inline-flex items-center font-bold justify-center"
+                v-else
+                class="login-button"
                 type="button"
-                @click="doLogin"
+                @click.once="doLogin"
               >
                 <fa :icon="['fab', 'google']" size="2x" class="mr-2 text-red-500" />Google
               </button>
@@ -42,7 +46,8 @@ const isDebug = process.env.DATABASE_MODE === 'local'
 export default {
   data () {
     return {
-      isMounted: false
+      isMounted: false,
+      isClicked: false
     }
   },
   computed: {
@@ -71,7 +76,9 @@ export default {
   },
   methods: {
     doLogin () {
+      this.isClicked = true
       if (isDebug) {
+        // 少し時間を置いてからログイン
         authMock.onAuthStateChanged((user) => {
           console.log(user)
           this.$store.dispatch('user/stateChanged', user)
@@ -89,5 +96,20 @@ export default {
 <style scoped>
 .login-container {
   max-width: 480px;
+}
+.login-btn-box {
+  min-height: 60px;
+}
+.login-button {
+  @apply bg-white text-gray-800 px-8 py-2 outline-none shadow  inline-flex items-center font-bold justify-center;
+}
+.login-button:focus {
+  @apply outline-none;
+}
+.login-button:active {
+  @apply bg-gray-500;
+}
+.login-button__disabled {
+  @apply bg-gray-500 !important;
 }
 </style>
