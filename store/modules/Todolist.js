@@ -16,6 +16,11 @@ export default {
   getters: {
     getLists: (state) => {
       return orderBy(state.lists, 'orderIndex')
+    },
+
+    getListName: state => (id) => {
+      const index = state.lists.findIndex(v => v.id === id)
+      return index >= 0 ? state.lists[index].title : ''
     }
   },
 

@@ -15,6 +15,14 @@
           </div>
         </div>
 
+        <div class="modal-body" v-if="todo.type === 'todo'">
+          <label class="input-label">プロジェクト</label>
+          <span class="output-text">{{ todo.listName }}</span>
+        </div>
+        <div v-else>
+          <span class="output-text text-xs text-gray-600">このタスクは習慣から生成されました。</span>
+        </div>
+
         <div class="modal-body">
           <label class="input-label">タイトル</label>
           <input
@@ -88,7 +96,7 @@
           >
             Delete
           </button>
-          <span class="text-sm text-gray-600 flex-1">{{ footerMsg }}</span>
+          <span class="text-xs text-gray-600 flex-1">{{ footerMsg }}</span>
         </div>
 
         <!-- フォーカスアウト防止 -->
@@ -164,7 +172,7 @@ export default {
         this.forbid.detail = true
         this.forbid.range = true
         this.forbid.delete = true
-        this.footerMsg = '習慣の内容は編集出来ません。'
+        this.footerMsg = '習慣から生成されたタスクはステータスの変更のみ可能です。'
       }
 
       this.$refs.title.focus()
