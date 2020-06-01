@@ -53,15 +53,18 @@
         </div>
 
         <div class="flex flex-row-reverse">
-          <button class="btn btn-regular mx-1" @click="update">
+          <button class="btn btn-regular ml-2" @click="update">
             OK
           </button>
-          <button class="btn btn-outline mx-1" @click="cancel">
+          <button class="btn btn-outline ml-2" @click="cancel">
             Cancel
           </button>
-          <button v-if="!isCreateMode" class="btn btn-red-outline mx-1" @click="deleteHabit">
+          <button v-if="!isCreateMode" class="btn btn-red-outline ml-2" @click="deleteHabit">
             Delete
           </button>
+          <span v-if="!isCreateMode" class="text-xs text-gray-600 flex-1">
+            変更や削除は明日以降のタスクに反映されます。
+          </span>
         </div>
 
         <!-- フォーカスアウト防止 -->
