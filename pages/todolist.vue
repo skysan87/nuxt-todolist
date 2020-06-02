@@ -5,7 +5,7 @@
     </header>
     <main class="flex-1 pt-2 overflow-y-scroll">
       <div class="h-full flex flex-col ml-6">
-        <div class="flex-grow overflow-x-hidden">
+        <div v-if="filteredTodos.length > 0" class="flex-grow overflow-x-hidden">
           <div class="list-group">
             <draggable
               v-model="filteredTodos"
@@ -22,6 +22,7 @@
             </draggable>
           </div>
         </div>
+        <no-data v-else />
       </div>
     </main>
     <footer class="px-2 py-2 flex-none bg-gray-500">
@@ -37,6 +38,7 @@ import HeaderView from '@/components/HeaderView.vue'
 import TodoItem from '@/components/TodoItem.vue'
 import ModalDialog from '@/components/ModalDialog.vue'
 import InputTask from '@/components/InputTask.vue'
+import NoData from '@/components/NoData.vue'
 import { getStateColor } from '@/util/StateColor'
 import { TaskState } from '@/util/TaskState'
 
@@ -49,7 +51,8 @@ export default {
     draggable,
     TodoItem,
     HeaderView,
-    InputTask
+    InputTask,
+    NoData
   },
   data () {
     return {
