@@ -71,6 +71,8 @@ export default {
     },
     addDetail () {
       this.todo.startdate = this.todo.enddate = this.checkDeadline()
+      const listId = this.$store.getters['todo/getCurrentListId']
+      this.todo.listName = this.$store.getters['todolist/getListName'](listId)
 
       delete this.dialog
       this.dialog = new DialogController({
