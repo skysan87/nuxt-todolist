@@ -1,6 +1,5 @@
 <template>
   <div class="flex-1 flex flex-col bg-white">
-
     <header class="border-b flex-none">
       <div class="px-6 py-2 flex flex-row">
         <div class="inline-block flex-1">
@@ -11,7 +10,7 @@
 
     <main class="flex-1 pt-2 overflow-y-scroll">
       <div class="h-full flex flex-col ml-6">
-        <div class="flex-grow overflow-x-hidden">
+        <div v-if="filteredTodos.length > 0" class="flex-grow overflow-x-hidden">
           <div class="list-group">
             <todo-item
               v-for="item in filteredTodos"
@@ -23,6 +22,7 @@
             />
           </div>
         </div>
+        <no-data v-else />
       </div>
     </main>
   </div>
@@ -33,6 +33,7 @@ import Vue from 'vue'
 import moment from 'moment'
 import TodoItem from '@/components/TodoItem.vue'
 import ModalDialog from '@/components/ModalDialog.vue'
+import NoData from '@/components/NoData.vue'
 import { getStateColor } from '@/util/StateColor'
 import { TaskState } from '@/util/TaskState'
 
@@ -42,7 +43,8 @@ export default {
   layout: 'board',
   name: 'TodoList',
   components: {
-    TodoItem
+    TodoItem,
+    NoData
   },
   data () {
     moment.locale('ja')

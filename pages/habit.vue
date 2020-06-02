@@ -16,7 +16,7 @@
     </header>
     <main class="flex-1 pt-2 overflow-y-scroll">
       <div class="h-full flex flex-col ml-6">
-        <div class="flex-grow overflow-x-hidden">
+        <div v-if="habits.length > 0" class="flex-grow overflow-x-hidden">
           <div class="list-group">
             <draggable
               v-model="habits"
@@ -33,6 +33,7 @@
             </draggable>
           </div>
         </div>
+        <no-data v-else />
       </div>
     </main>
   </div>
@@ -43,6 +44,7 @@ import Vue from 'vue'
 import draggable from 'vuedraggable'
 import HabitDialog from '@/components/HabitDialog.vue'
 import HabitItem from '@/components/HabitItem.vue'
+import NoData from '@/components/NoData.vue'
 import { Habit } from '@/model/Habit'
 import { HabitFilter } from '@/util/HabitFilter'
 
@@ -52,7 +54,8 @@ export default {
   layout: 'board',
   components: {
     draggable,
-    HabitItem
+    HabitItem,
+    NoData
   },
   data () {
     return {
