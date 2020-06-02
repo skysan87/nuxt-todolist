@@ -1,6 +1,14 @@
 <template>
   <div class="flex-1 flex flex-col bg-white">
-    <header class="border-b flex-none" />
+
+    <header class="border-b flex-none">
+      <div class="px-6 py-2 flex flex-row">
+        <div class="inline-block flex-1">
+          <span>{{ dateString }}：表示中の件数 ( {{ filteredTodos.length }} )</span>
+        </div>
+      </div>
+    </header>
+
     <main class="flex-1 pt-2 overflow-y-scroll">
       <div class="h-full flex flex-col ml-6">
         <div class="flex-grow overflow-x-hidden">
@@ -22,6 +30,7 @@
 
 <script>
 import Vue from 'vue'
+import moment from 'moment'
 import TodoItem from '@/components/TodoItem.vue'
 import ModalDialog from '@/components/ModalDialog.vue'
 import { getStateColor } from '@/util/StateColor'
@@ -36,8 +45,10 @@ export default {
     TodoItem
   },
   data () {
+    moment.locale('ja')
     return {
-      dialog: null
+      dialog: null,
+      dateString: moment().format('YYYY年M月D日(ddd)')
     }
   },
   computed: {
