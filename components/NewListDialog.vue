@@ -43,11 +43,15 @@ export default {
     parent: {
       type: Element,
       require: true
+    },
+    title: {
+      type: String,
+      required: false
     }
   },
   data () {
     return {
-      inputText: '',
+      inputText: this.title || '',
       errorMsg: ''
     }
   },
