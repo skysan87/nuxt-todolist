@@ -60,7 +60,7 @@
               <div
                 class="flex-none m-0 pr-4 opacity-0"
                 :class="{'opacity-100': activeItemId === todolist.id}"
-                @click.left="editTodolist(todolist.id)"
+                @click.left.prevent="editTodolist(todolist.id)"
               >
                 <fa :icon="['fas', 'edit']" size="xs" class="cursor-pointer" />
               </div>
@@ -165,13 +165,18 @@ export default {
       this.dialog.$on('add', this.addList)
       this.dialog.$mount()
     },
-    editTodolist () {
+    editTodolist (listId) {
       delete this.dialog
-      // TODO: リストの編集
+      const todolist = this.$store.getters['todolist/getListById'](listId)
       this.dialog = new DialogController({
         propsData: {
-          parent: this.$root.$el
+          parent: this.$root.$el,
+          title: todolist.title
         }
+      })
+      this.dialog.$on('add', (title) => {
+        todolist.title = title
+        this.$store.dispatch('todolist/update', todolist)
       })
       this.dialog.$mount()
     },

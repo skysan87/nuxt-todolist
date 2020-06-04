@@ -21,6 +21,11 @@ export default {
     getListName: state => (id) => {
       const index = state.lists.findIndex(v => v.id === id)
       return index >= 0 ? state.lists[index].title : ''
+    },
+
+    getListById: state => (id) => {
+      const index = state.lists.findIndex(v => v.id === id)
+      return state.lists[index]
     }
   },
 
