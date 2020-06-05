@@ -1,43 +1,38 @@
 <template>
   <div class="flex-1 flex flex-col bg-white">
     <header class="border-b flex-none">
-      <header-view />
+      <div class="px-6 py-2 flex flex-row">
+        <div class="inline-block flex-1">
+          <span>{{ dateString }}：表示中の件数 ( {{ filteredTodos.length }} )</span>
+        </div>
+      </div>
     </header>
+
     <main class="flex-1 pt-2 overflow-y-scroll">
       <div class="h-full flex flex-col ml-6">
         <div v-if="filteredTodos.length > 0" class="flex-grow overflow-x-hidden">
           <div class="list-group">
-            <draggable
-              v-model="filteredTodos"
-              handle=".move-icon"
-              @end="onDragEnd"
-            >
-              <todo-item
-                v-for="item in filteredTodos"
-                :key="item.id"
-                :todo="item"
-                class="list-group-item list-style"
-                @edit="editTodo"
-              />
-            </draggable>
+            <todo-item
+              v-for="item in filteredTodos"
+              :key="item.id"
+              :todo="item"
+              :option="{showPointer: false, showEdit: false}"
+              class="list-group-item list-style"
+              @edit="editTodo"
+            />
           </div>
         </div>
         <no-data v-else />
       </div>
     </main>
-    <footer class="px-2 py-2 flex-none bg-gray-500">
-      <input-task />
-    </footer>
   </div>
 </template>
 
 <script>
 import Vue from 'vue'
-import draggable from 'vuedraggable'
-import HeaderView from '@/components/HeaderView.vue'
+import moment from 'moment'
 import TodoItem from '@/components/TodoItem.vue'
 import ModalDialog from '@/components/ModalDialog.vue'
-import InputTask from '@/components/InputTask.vue'
 import NoData from '@/components/NoData.vue'
 import { getStateColor } from '@/util/StateColor'
 import { TaskState } from '@/util/TaskState'
@@ -48,25 +43,20 @@ export default {
   layout: 'board',
   name: 'TodoList',
   components: {
-    draggable,
     TodoItem,
-    HeaderView,
-    InputTask,
     NoData
   },
   data () {
+    moment.locale('ja')
     return {
-      dialog: null
+      dialog: null,
+      dateString: moment().format('YYYY年M月D日(ddd)')
     }
   },
   computed: {
     filteredTodos: {
       get () {
         return this.$store.getters['todo/getFilteredTodos']
-      },
-      // eslint-disable-next-line
-      set(value) {
-        // vuedraggable用
       }
     }
   },
@@ -94,20 +84,6 @@ export default {
         this.$store.dispatch('todo/delete', todoId)
       })
       this.dialog.$mount()
-    },
-    /**
-     * ドラッグ終了時
-     */
-    onDragEnd (ev) {
-      // filteredTodosはすでに並び替えられている
-      if (ev.oldIndex === ev.newIndex) {
-        return
-      }
-      const params = {
-        oldIndex: ev.oldIndex,
-        newIndex: ev.newIndex
-      }
-      this.$store.dispatch('todo/changeOrder', params)
     },
     /**
      * 各ステータスのタスク数
@@ -147,15 +123,6 @@ export default {
   border-left: 1px solid #979797;
   border-right: 1px solid #979797;
   border-bottom: 1px solid #979797;
-}
-
-/* ドラッグするアイテム */
-.sortable-chosen {
-  opacity: 0.3;
-}
-
-.sortable-ghost {
-  background-color: #979797;
 }
 
 /* ステータスラベル */

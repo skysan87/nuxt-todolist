@@ -15,14 +15,23 @@
           </div>
         </div>
 
+        <div class="modal-body" v-if="todo.type === 'todo'">
+          <label class="input-label">プロジェクト</label>
+          <span class="output-text">{{ todo.listName }}</span>
+        </div>
+        <div v-else>
+          <span class="output-text text-xs text-gray-600">このタスクは習慣から生成されました。</span>
+        </div>
+
         <div class="modal-body">
           <label class="input-label">タイトル</label>
           <input
-            ref="modalComment"
-            v-model="todo.comment"
+            ref="title"
+            v-model="todo.title"
             class="input-text"
-            :class="{'border border-red-500': errorMsg !== ''}"
+            :class="{'border border-red-500': errorMsg !== '', 'btn-disabled': forbid.title}"
             type="text"
+            :disabled="forbid.title"
           >
           <p v-show="(errorMsg !== '')" class="text-red-500 text-xs italic">
             {{ errorMsg }}
@@ -30,38 +39,64 @@
         </div>
         <div class="modal-body">
           <label class="input-label">説明</label>
-          <textarea v-model="todo.note" class="input-textarea resize-none" maxlength="1000" rows="6" />
+          <textarea
+            v-model="todo.detail"
+            class="input-textarea resize-none"
+            maxlength="1000"
+            rows="6"
+            :class="{'btn-disabled': forbid.detail}"
+            :disabled="forbid.detail"
+          />
         </div>
         <div class="modal-body">
-          <label class="input-label">期限</label>
+          <label class="input-label">期間</label>
           <div class="flex">
             <v-date-picker
-              v-model="deadline"
-              :popover="{ placement: 'bottom', visibility: 'click' }"
+              v-model="range"
+              mode="range"
+              class="flex-1"
+              :popover="{ placement: 'top', visibility: 'click' }"
+              :disabled="forbid.range"
             >
               <input
                 slot-scope="{ inputProps, inputEvents }"
                 class="input-text"
                 v-bind="inputProps"
+                :class="{'btn-disabled': forbid.range}"
+                :disabled="forbid.range"
                 v-on="inputEvents"
               >
             </v-date-picker>
-            <button type="button" class="btn btn-outline" @click="deadline = null">
+            <button
+              type="button"
+              class="btn btn-outline flex-none"
+              tabindex="-1"
+              :disabled="forbid.range"
+              :class="{'btn-disabled': forbid.range}"
+              @click="range = null"
+            >
               Clear
             </button>
           </div>
         </div>
 
         <div class="flex flex-row-reverse">
-          <button class="btn btn-regular mx-1" @click="update">
+          <button class="btn btn-regular ml-2" @click="update">
             OK
           </button>
-          <button class="btn btn-outline mx-1" @click="cancel">
+          <button class="btn btn-outline ml-2" @click="cancel">
             Cancel
           </button>
-          <button class="btn btn-red-outline mx-1" @click="deleteTodo" v-if="!isCreateMode">
+          <button
+            v-if="!isCreateMode"
+            class="btn btn-red-outline ml-2"
+            :disabled="forbid.delete"
+            :class="{'btn-disabled': forbid.delete}"
+            @click="deleteTodo"
+          >
             Delete
           </button>
+          <span class="text-xs text-gray-600 flex-1">{{ footerMsg }}</span>
         </div>
 
         <!-- フォーカスアウト防止 -->
@@ -76,6 +111,7 @@ import moment from 'moment'
 import isEmpty from 'lodash/isEmpty'
 import { TaskState } from '@/util/TaskState'
 import { Todo } from '@/model/Todo'
+import { getDateNumber } from '@/util/MomentEx'
 
 export default {
   name: 'ModalDialog',
@@ -96,9 +132,16 @@ export default {
   data () {
     return {
       todo: new Todo('', {}),
-      deadline: null,
+      range: { start: null, end: null },
       options: Object.values(TaskState),
-      errorMsg: ''
+      errorMsg: '',
+      forbid: {
+        title: false,
+        detail: false,
+        range: false,
+        delete: false
+      },
+      footerMsg: ''
     }
   },
   mounted () {
@@ -118,15 +161,34 @@ export default {
       if (this.target !== null) {
         Object.assign(this.todo, this.target)
       }
-      this.deadline = moment(this.target.deadline).toDate()
-      this.$refs.modalComment.focus()
+      this.range = {
+        start: this.todo.startdate !== null ? moment(this.todo.startdate.toString()).toDate() : null,
+        end: this.todo.enddate !== null ? moment(this.todo.enddate.toString()).toDate() : null
+      }
+
+      // 編集の禁止
+      if (this.todo.type === 'habit') {
+        this.forbid.title = true
+        this.forbid.detail = true
+        this.forbid.range = true
+        this.forbid.delete = true
+        this.footerMsg = '習慣から生成されたタスクはステータスの変更のみ可能です。'
+      }
+
+      this.$refs.title.focus()
     },
     update () {
       this.errorMsg = ''
-      if (isEmpty(this.todo.comment)) {
+      if (isEmpty(this.todo.title)) {
         this.errorMsg = '必須項目です'
       } else {
-        this.todo.deadline = moment(this.deadline).endOf('days').toJSON()
+        if (this.range === null || this.range.start === null || this.range.end === null) {
+          this.todo.startdate = null
+          this.todo.enddate = null
+        } else {
+          this.todo.startdate = getDateNumber(moment(this.range.start))
+          this.todo.enddate = getDateNumber(moment(this.range.end))
+        }
         if (this.isCreateMode) {
           this.$emit('add', this.todo)
         } else {
@@ -140,7 +202,7 @@ export default {
     },
     checkFocus (ev) {
       if (ev.target !== null && ev.target.className === 'dummy') {
-        this.$refs.modalComment.focus()
+        this.$refs.title.focus()
       }
     },
     deleteTodo () {

@@ -28,6 +28,12 @@ export default {
       return orderBy(fileteredArray, 'orderIndex')
     },
 
+    getTodayList: (state) => {
+      return orderBy(
+        state.habits.filter(h => HabitFilter.Today.filter(h, moment().weekday()))
+        , 'orderIndex')
+    },
+
     getOrderdList: (state) => {
       return orderBy(state.habits, 'orderIndex')
     },
