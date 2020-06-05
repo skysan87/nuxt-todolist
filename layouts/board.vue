@@ -1,7 +1,7 @@
 <template>
   <transition name="layout" mode="out-in">
     <div class="flex h-screen overflow-hidden">
-      <div class="w-56 flex flex-col flex-none bg-gray-800 text-white pt-3">
+      <div class="w-56 flex flex-col flex-none bg-gray-800 pt-3 text-gray-500">
         <div
           class="flex justify-between items-center px-4 cursor-pointer"
           @click.left="(isMenuExpanded = !isMenuExpanded)"
@@ -12,7 +12,7 @@
           <fa :icon="['fas', 'caret-down']" :class="{'fa-rotate-180': isMenuExpanded}" />
         </div>
         <div v-show="isMenuExpanded" class="flex-none mt-2">
-          <a class="block px-6 text-sm hover:bg-blue-600 cursor-pointer" @click.left="logout">
+          <a class="block px-6 text-sm hover:bg-blue-800 hover:opacity-75 cursor-pointer" @click.left="logout">
             ログアウト
           </a>
         </div>
@@ -20,32 +20,54 @@
           {{ userName }}
         </div>
         <div class="flex-1 py-4 overflow-y-scroll scrollable-container">
-          <!--
-          <div class="mt-5 px-4 flex justify-between items-center">
-            <div class="font-bold opacity-50 text-lg">
+          <div class="mt-5 px-4 flex items-center">
+            <div class="font-bold text-lg">
               今日の予定
             </div>
           </div>
-          -->
-          <div class="mt-5 px-4 flex justify-between items-center">
-            <div class="font-bold opacity-50 text-lg">
-              プロジェクト
-            </div>
-            <fa :icon="['far', 'plus-square']" class="opacity-50 cursor-pointer" @click.left="openListDialog" />
-          </div>
-          <nuxt-link to="/todolist">
+          <nuxt-link to="/today">
             <div
-              v-for="todolist in todolists"
-              :key="todolist.id"
-              class="opacity-50 mt-1 px-4 cursor-pointer"
-              :class="{'bg-blue-600' : (selectedType === viewType.Todo && currentListId == todolist.id)}"
-              @click.left="onSelectList(todolist.id)"
+              v-for="filter in todayFilters"
+              :key="filter.value"
+              class="py-1 px-5 cursor-pointer hover:bg-blue-700 hover:opacity-75"
+              :class="{'bg-blue-700' : (selectedType === viewType.Today && selectedTodayFilter === filter.value)}"
+              @click.left="onSelectToday(filter.value)"
             >
-              # {{ todolist.title }}
+              # {{ filter.label }}
             </div>
           </nuxt-link>
           <div class="mt-5 px-4 flex justify-between items-center">
-            <div class="font-bold opacity-50 text-lg">
+            <div class="font-bold text-lg">
+              プロジェクト
+            </div>
+            <fa :icon="['far', 'plus-square']" class="cursor-pointer" @click.left="openListDialog" />
+          </div>
+          <nuxt-link to="/todolist">
+            <div
+              class="py-1 flex justify-between items-center hover:bg-blue-700 hover:opacity-75"
+              :class="{'bg-blue-700' : (selectedType === viewType.Todo && currentListId == todolist.id)}"
+              v-for="todolist in todolists"
+              :key="todolist.id"
+              @mouseover="activeItemId = todolist.id"
+              @mouseout="activeItemId = ''"
+            >
+              <div
+                class="px-5 flex-1 cursor-pointer"
+                @click.left="onSelectList(todolist.id)"
+              >
+                # {{ todolist.title }}
+              </div>
+              <div
+                class="flex-none m-0 pr-4 opacity-0"
+                :class="{'opacity-100': activeItemId === todolist.id}"
+                @click.left.prevent="editTodolist(todolist.id)"
+              >
+                <fa :icon="['fas', 'edit']" size="xs" class="cursor-pointer" />
+              </div>
+            </div>
+          </nuxt-link>
+          <div class="mt-5 px-4 flex justify-between items-center">
+            <div class="font-bold text-lg">
               習慣
             </div>
           </div>
@@ -53,8 +75,8 @@
             <div
               v-for="habitfilter in habitFilters"
               :key="habitfilter.value"
-              class="opacity-50 mt-1 px-4 cursor-pointer"
-              :class="{'bg-blue-600' : (selectedType === viewType.Habit && currentFilter === habitfilter.value)}"
+              class="py-1 px-5 cursor-pointer  hover:bg-blue-700 hover:opacity-75"
+              :class="{'bg-blue-700' : (selectedType === viewType.Habit && currentFilter === habitfilter.value)}"
               @click.left="onSelectHabit(habitfilter.value)"
             >
               # {{ habitfilter.label }}
@@ -73,6 +95,7 @@
 import Vue from 'vue'
 import NewListDialog from '@/components/NewListDialog'
 import { HabitFilter } from '@/util/HabitFilter'
+import { TodayFilter } from '@/util/TodayFilter'
 
 const DialogController = Vue.extend(NewListDialog)
 
@@ -82,8 +105,11 @@ export default {
       userName: this.$store.getters['user/displayName'],
       isMenuExpanded: false,
       habitFilters: Object.values(HabitFilter),
-      viewType: { Todo: 0, Habit: 1 },
+      todayFilters: Object.values(TodayFilter),
+      viewType: { Todo: 0, Habit: 1, Today: 2 },
       selectedType: 0,
+      selectedTodayFilter: TodayFilter.Remain.value,
+      activeItemId: '',
       dialog: null
     }
   },
@@ -116,6 +142,11 @@ export default {
       this.$store.dispatch('todolist/init')
       this.$store.dispatch('habit/init')
     },
+    onSelectToday (filter) {
+      this.selectedType = this.viewType.Today
+      this.selectedTodayFilter = filter
+      this.$store.dispatch('todo/initTodaylist', filter)
+    },
     onSelectList (id) {
       this.selectedType = this.viewType.Todo
       this.$store.dispatch('todo/init', id)
@@ -125,7 +156,7 @@ export default {
       this.$store.dispatch('habit/changeFilter', filter)
     },
     openListDialog () {
-      this.dialog = null
+      delete this.dialog
       this.dialog = new DialogController({
         propsData: {
           parent: this.$root.$el
@@ -134,8 +165,26 @@ export default {
       this.dialog.$on('add', this.addList)
       this.dialog.$mount()
     },
+    editTodolist (listId) {
+      delete this.dialog
+      const todolist = this.$store.getters['todolist/getListById'](listId)
+      this.dialog = new DialogController({
+        propsData: {
+          parent: this.$root.$el,
+          title: todolist.title
+        }
+      })
+      this.dialog.$on('add', (title) => {
+        todolist.title = title
+        this.$store.dispatch('todolist/update', todolist)
+      })
+      this.dialog.$mount()
+    },
     addList (title) {
       this.$store.dispatch('todolist/add', title)
+      // 新規作成画面に遷移
+      this.selectedType = this.viewType.Todo
+      this.$router.push('/todolist')
     },
     logout () {
       this.$store

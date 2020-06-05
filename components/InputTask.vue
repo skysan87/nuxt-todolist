@@ -1,13 +1,14 @@
 <template>
   <div class="flex overflow-hidden">
     <div class="w-full">
-      <input
-        v-model="todo.comment"
-        type="text"
-        class="input-text appearance-none outline-none"
-        placeholder="Add New Task..."
-        @keyup.enter="doAdd"
-      >
+      <form @submit.prevent="doAdd">
+        <input
+          v-model="todo.title"
+          type="text"
+          class="input-text appearance-none outline-none"
+          placeholder="Add New Task..."
+        >
+      </form>
       <div class="mt-1 flex flex-row">
         <div class="flex-none inline-block">
           <span class="px-2 align-middle font-bold">期限</span>
@@ -37,6 +38,7 @@ import moment from 'moment'
 import isEmpty from 'lodash/isEmpty'
 import ModalDialog from '@/components/ModalDialog.vue'
 import { Todo } from '@/model/Todo'
+import { getDateNumber } from '@/util/MomentEx'
 
 const DialogController = Vue.extend(ModalDialog)
 
@@ -60,18 +62,19 @@ export default {
      */
     // eslint-disable-next-line
     doAdd () {
-      if (isEmpty(this.todo.comment)) {
+      if (isEmpty(this.todo.title)) {
         return
       }
-      this.todo.deadline = this.checkDeadline()
-
+      this.todo.startdate = this.todo.enddate = this.checkDeadline()
       this.$store.dispatch('todo/add', this.todo.getData())
-      this.todo.comment = ''
+      this.todo.title = ''
     },
     addDetail () {
-      this.todo.deadline = this.checkDeadline()
+      this.todo.startdate = this.todo.enddate = this.checkDeadline()
+      const listId = this.$store.getters['todo/getCurrentListId']
+      this.todo.listName = this.$store.getters['todolist/getListName'](listId)
 
-      this.dialog = null
+      delete this.dialog
       this.dialog = new DialogController({
         propsData: {
           parent: this.$root.$el,
@@ -81,7 +84,7 @@ export default {
       })
       this.dialog.$on('add', (todo) => {
         this.$store.dispatch('todo/add', todo.getData())
-        this.todo.comment = ''
+        this.todo.title = ''
       })
       this.dialog.$mount()
     },
@@ -89,10 +92,10 @@ export default {
       let deadline = null
       switch (this.checkedDeadline) {
         case 'today':
-          deadline = moment(new Date()).endOf('days').toJSON()
+          deadline = getDateNumber()
           break
         case 'tomorrow':
-          deadline = moment(new Date()).add(1, 'days').endOf('days').toJSON()
+          deadline = getDateNumber(moment().add(1, 'days'))
           break
         default:
           deadline = null

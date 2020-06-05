@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="flex w-full">
-      <div class="move-icon p-1">
+      <div v-if="option.showPointer" class="move-icon p-1">
         <fa :icon="['fas', 'ellipsis-v']" />
       </div>
       <div class="p-1" @click="changeEventHandler">
@@ -10,15 +10,15 @@
           class="circle-button cursor-pointer"
         />
       </div>
-      <div :title="todo.comment" class="flex-1 no-wrap text-left p-1">
-        {{ todo.comment }}
+      <div :title="todo.title" class="flex-1 no-wrap text-left p-1">
+        {{ todo.title }}
       </div>
       <div class="p-1" @click.stop="editEventHandler">
         <fa :icon="['fas', 'edit']" size="xs" class="cursor-pointer" />
       </div>
       <transition name="slide-fade">
         <div
-          v-show="canRemove"
+          v-show="option.showEdit && canRemove"
           class="todo-x-pointer p-1"
           @click="removeEventHandler"
         >
@@ -31,11 +31,27 @@
 
 <script>
 import { getStateColor } from '@/util/StateColor'
+import { Todo } from '@/model/Todo'
 
 export default {
   name: 'TodoItem',
   props: {
-    todo: Object
+    todo: {
+      type: Object,
+      required: true,
+      default () {
+        return new Todo('', {})
+      }
+    },
+    option: {
+      type: Object,
+      default () {
+        return {
+          showPointer: true,
+          showEdit: true
+        }
+      }
+    }
   },
   data () {
     return {}

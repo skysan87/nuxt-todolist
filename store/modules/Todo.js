@@ -1,6 +1,9 @@
 import orderBy from 'lodash/orderBy'
 import { TaskState } from '@/util/TaskState'
+import { TodayFilter } from '@/util/TodayFilter'
 import { CreateTodoDao } from '@/dao'
+import { getDateNumber } from '@/util/MomentEx'
+import { Todo } from '@/model/Todo'
 
 const dao = CreateTodoDao()
 
@@ -36,11 +39,11 @@ export default {
         state.selectedState,
         selectAll
       )
-      return orderBy(filterd, 'orderIndex')
+      return orderBy(filterd, ['type', 'listId', 'orderIndex'])
     },
 
     getOrderdTodos: (state) => {
-      return orderBy(state.todos, 'orderIndex')
+      return orderBy(state.todos, ['type', 'listId', 'orderIndex'])
     },
 
     getTodoById: state => (id) => {
@@ -70,7 +73,14 @@ export default {
   // 状態の更新
   mutations: {
     init (state, payload) {
+      state.selectedState = [TaskState.Todo.value, TaskState.InProgress.value]
       state.listId = payload.listId
+      state.todos = payload.data
+    },
+
+    initToday (state, payload) {
+      state.selectedState = payload.selectedState
+      state.listId = ''
       state.todos = payload.data
     },
 
@@ -110,6 +120,60 @@ export default {
 
     initNewList ({ commit }, listId) {
       commit('init', { data: [], listId })
+    },
+
+    async initTodaylist ({ commit, rootGetters }, todayFilterValue) {
+      const userId = rootGetters['user/userId']
+      const today = getDateNumber() // YYYYMMDD
+      // 1. 今日の習慣をメモリgettersで取得
+      const todaysHabits = rootGetters['habit/getTodayList']
+      // 2. 習慣のToDoをサーバーから取得
+      const habitTodo = await dao.getHabits(userId, today)
+      // 3. 1と2を比較して、2が存在しないものは、追加する
+      const missinglist = todaysHabits.reduce((pre, _habit) => {
+        // Habit.id === Todo.listId
+        if (habitTodo.findIndex(v => v.listId === _habit.id) < 0) {
+          const todo = new Todo('', {})
+          todo.type = 'habit'
+          todo.listId = _habit.id // habitsのサブコレクションのId
+          todo.userId = _habit.userId
+          todo.title = _habit.title
+          todo.detail = _habit.detail
+          todo.startdate = today
+          todo.enddate = today
+          todo.orderIndex = _habit.orderIndex
+          pre.push(todo)
+        }
+        return pre
+      }, [])
+      // 4. 追加
+      if (missinglist.length > 0) {
+        const newhabitToDo = await dao.addHabits(missinglist)
+        habitTodo.push(...newhabitToDo)
+      }
+
+      const selectedState = []
+      const todos = [...habitTodo]
+      switch (todayFilterValue) {
+        case TodayFilter.Remain.value:
+          // 今日の残タスク
+          selectedState.push(TaskState.Todo.value)
+          todos.push(...await dao.getTodaysToDo(userId, today))
+          break
+        case TodayFilter.InProgress.value:
+          // 作業中
+          selectedState.push(TaskState.InProgress.value)
+          todos.push(...await dao.getTodaysInProgress(userId, today))
+          break
+        case TodayFilter.Done.value:
+          // 今日完了したタスク
+          selectedState.push(TaskState.Done.value)
+          todos.push(...await dao.getTodaysDone(userId, today))
+          break
+        default:
+          break
+      }
+      commit('initToday', { data: todos, selectedState })
     },
 
     async changeOrder ({ commit, getters }, params) {
@@ -169,6 +233,7 @@ export default {
 
     async add ({ commit, state, rootGetters }, params) {
       const userId = rootGetters['user/userId']
+      params.stateChangeDate = getDateNumber()
       const result = await dao.add(state.listId, params, userId)
       if (result.isSuccess) {
         commit('add', result.value)
@@ -181,7 +246,12 @@ export default {
       }
     },
 
-    async update ({ commit }, payload) {
+    async update ({ commit, getters }, payload) {
+      const lastTodo = getters.getTodoById(payload.id)
+      if (lastTodo.state !== payload.state) {
+        payload.stateChangeDate = getDateNumber()
+      }
+
       if (await dao.update(payload)) {
         commit('update', payload)
       }
@@ -203,7 +273,7 @@ export default {
           item.state = TaskState.Todo.value
           break
       }
-
+      item.stateChangeDate = getDateNumber()
       if (await dao.update(item)) {
         commit('update', item)
       }

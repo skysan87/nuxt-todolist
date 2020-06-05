@@ -1,27 +1,27 @@
 <template>
-  <div class="flex flex-row px-6 py-2 items-center justify-center">
-    <label class="mx-1">
+  <div class="w-full flex items-center justify-center h-10">
+    <label>
       <input v-model="isAllSelected" type="checkbox" @click="selectAll">
       <span class="p-1 align-middle">All</span>
       <span class="badge" :class="badgeColor(-1)">
         {{ todoCounts(-1) }}
       </span>
     </label>
-    <label v-for="viewOp in options" :key="viewOp.value" class="mx-1">
-      <input v-model="filterOption" type="checkbox" :value="viewOp.value" @change="filterChanged">
+    <label v-for="viewOp in options" :key="viewOp.value">
+      <input v-model="filterOption" class="ml-2" type="checkbox" :value="viewOp.value" @change="filterChanged">
       <span class="p-1 align-middle">{{ viewOp.label }}</span>
       <span class="badge" :class="badgeColor(viewOp.value)">
         {{ todoCounts(viewOp.value) }}
       </span>
     </label>
     <button
-      class="btn btn-outline btn-clear-done mx-1"
+      class="btn btn-outline btn-clear-done ml-2"
       @click="deleteDone"
     >
       Clear Done
     </button>
     <button
-      class="btn btn-outline btn-switch-edit mx-1"
+      class="btn btn-outline btn-switch-edit ml-2"
       :class="{'switch-on': canRemove}"
       @click="switchRemoveButton"
     >

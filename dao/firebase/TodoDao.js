@@ -1,6 +1,7 @@
 import { firestore, getServerTimestamp } from '@/plugins/firebase'
 import { TodoDaoBase } from '@/dao/base/TodoDaoBase'
 import { Todo } from '@/model/Todo'
+import { TaskState } from '@/util/TaskState'
 
 const todosRef = firestore.collection('todos')
 const todolistsRef = firestore.collection('lists')
@@ -19,11 +20,88 @@ export class TodoDao extends TodoDaoBase {
     }
   }
 
+  /**
+   * 今日が期間に入っている未実施のタスクを取得
+   * @param {Number} date 今日の日付(YYYYMMDD)
+   */
+  async getTodaysToDo (userId, date) {
+    try {
+      const querySnapshot = await todosRef.where('type', '==', 'todo')
+        .where('userId', '==', userId)
+        .where('state', '==', TaskState.Todo.value)
+        .where('startdate', '<=', date)
+        .get()
+      const todos = querySnapshot.docs.map((doc) => {
+        return new Todo(doc.id, doc.data())
+      })
+      return todos
+    } catch (error) {
+      console.error(error)
+      throw error
+    }
+  }
+
+  /**
+   * 今日が期間内の作業中のタスクを取得
+   * @param {Number} date 今日の日付(YYYYMMDD)
+   */
+  async getTodaysInProgress (userId, date) {
+    try {
+      const querySnapshot = await todosRef.where('type', '==', 'todo')
+        .where('userId', '==', userId)
+        .where('state', '==', TaskState.InProgress.value)
+        .where('startdate', '<=', date)
+        .get()
+      const todos = querySnapshot.docs.map((doc) => {
+        return new Todo(doc.id, doc.data())
+      })
+      return todos
+    } catch (error) {
+      console.error(error)
+      throw error
+    }
+  }
+
+  /**
+   * 今日完了したタスクを取得
+   * @param {Number} date 今日の日付(YYYYMMDD)
+   */
+  async getTodaysDone (userId, date) {
+    try {
+      const querySnapshot = await todosRef.where('type', '==', 'todo')
+        .where('userId', '==', userId)
+        .where('state', '==', TaskState.Done.value)
+        .where('stateChangeDate', '==', date)
+        .get()
+      const todos = querySnapshot.docs.map((doc) => {
+        return new Todo(doc.id, doc.data())
+      })
+      return todos
+    } catch (error) {
+      console.error(error)
+      throw error
+    }
+  }
+
+  async getHabits (userId, date) {
+    try {
+      const querySnapshot = await todosRef.where('type', '==', 'habit')
+        .where('userId', '==', userId)
+        .where('startdate', '==', date)
+        .get()
+      const todos = querySnapshot.docs.map((doc) => {
+        return new Todo(doc.id, doc.data())
+      })
+      return todos
+    } catch (error) {
+      console.error(error)
+      throw error
+    }
+  }
+
   async add (listId, params, userId) {
-    const todo = new Todo('', {})
+    const todo = new Todo('', params)
     todo.userId = userId
-    todo.comment = params.comment
-    todo.deadline = params.deadline
     todo.listId = listId
     todo.createdAt = getServerTimestamp()
     todo.updatedAt = getServerTimestamp()
@@ -66,12 +144,38 @@ export class TodoDao extends TodoDaoBase {
     }
   }
 
+  addHabits (todos) {
+    const promisses = []
+    for (const todo of todos) {
+      const p = new Promise((resolve, reject) => {
+        try {
+          todo.createdAt = getServerTimestamp()
+          todo.updatedAt = getServerTimestamp()
+          todosRef.add(todo.getData())
+            .then((docRef) => {
+              todo.id = docRef.id
+              resolve(todo)
+            })
+        } catch (error) {
+          console.error(error)
+          reject(error)
+        }
+      })
+      promisses.push(p)
+    }
+    return Promise.all(promisses)
+  }
+
   async update (todo) {
     try {
       await todosRef.doc(todo.id).update({
-        comment: todo.comment,
+        title: todo.title,
         state: todo.state,
-        note: todo.note,
+        detail: todo.detail,
+        startdate: todo.startdate,
+        enddate: todo.enddate,
+        isDone: todo.isDone,
+        stateChangeDate: todo.stateChangeDate,
         orderIndex: todo.orderIndex,
         updatedAt: getServerTimestamp()
       })
