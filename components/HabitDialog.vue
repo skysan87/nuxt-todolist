@@ -25,7 +25,7 @@
         </div>
 
         <div class="modal-body">
-          <label class="input-label">頻度</label>
+          <label class="input-label">繰り返し設定</label>
           <div>
             <label>
               <input v-model="habit.frequency" name="frequency" type="radio" :value="FREQ_DAILY">
@@ -50,6 +50,16 @@
         <div class="modal-body">
           <label class="input-label">有効</label>
           <input v-model="habit.isActive" type="checkbox">
+        </div>
+
+        <div class="modal-body">
+          <label class="input-label">実績</label>
+          <div>
+            <span class="pr-4">継続期間 {{ habit.duration }}</span>
+            <span class="pr-4">最大継続期間 {{ habit.maxduration }}</span>
+            <span class="pr-4">通算 {{ habit.totalActivityCount }}</span>
+            <span class="pr-4">実行率 {{ activityRate }}％</span>
+          </div>
         </div>
 
         <div class="flex flex-row-reverse">
@@ -103,6 +113,11 @@ export default {
       weekdays: Habit.WEEKDAYS,
       FREQ_DAILY: Habit.FREQ_DAILY,
       FREQ_WEEKLY: Habit.FREQ_WEEKLY
+    }
+  },
+  computed: {
+    activityRate () {
+      return Math.floor(this.habit.totalActivityCount / this.habit.totalCount * 100)
     }
   },
   mounted () {

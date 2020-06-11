@@ -44,10 +44,10 @@
           </div>
           <nuxt-link to="/todolist">
             <div
-              class="py-1 flex justify-between items-center hover:bg-blue-700 hover:opacity-75"
-              :class="{'bg-blue-700' : (selectedType === viewType.Todo && currentListId == todolist.id)}"
               v-for="todolist in todolists"
               :key="todolist.id"
+              class="py-1 flex justify-between items-center hover:bg-blue-700 hover:opacity-75"
+              :class="{'bg-blue-700' : (selectedType === viewType.Todo && currentListId == todolist.id)}"
               @mouseover="activeItemId = todolist.id"
               @mouseout="activeItemId = ''"
             >
