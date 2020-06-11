@@ -84,9 +84,14 @@ export default {
 
       if (info.length > 0) {
         const habitlist = info[0]
+        const habits = await dao.get(habitlist.id, userId)
+        habits.forEach((h) => {
+          h.updateSummary()
+        })
+        // TODO: firebase.バッチ更新
         commit('init',
           {
-            habits: await dao.get(habitlist.id, userId),
+            habits,
             rootId: habitlist.id
           })
       } else {
