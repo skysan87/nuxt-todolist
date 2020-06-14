@@ -121,6 +121,26 @@ export class HabitDao extends HabitDaoBase {
     }
   }
 
+  async updateSummary (habits) {
+    const batch = firestore.batch()
+    habits.forEach((v) => {
+      if (v.needServerUpdate) {
+        const doc = habitsRef.doc(v.rootId).collection('habits').doc(v.id)
+        const param = v.getSummary()
+        param.updatedAt = getServerTimestamp()
+        batch.update(doc, param)
+      }
+    })
+
+    try {
+      await batch.commit()
+      return true
+    } catch (error) {
+      console.error(error)
+      return false
+    }
+  }
+
   async delete (habit) {
     try {
       await habitsRef.doc(habit.rootId).collection('habits').doc(habit.id).delete()

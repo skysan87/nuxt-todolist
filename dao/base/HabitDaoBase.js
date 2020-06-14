@@ -82,6 +82,10 @@ export class HabitDaoBase {
     return true
   }
 
+  async updateSummary(habits) {
+    return true
+  }
+
   async delete(habit) {
     return true
   }
