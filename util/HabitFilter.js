@@ -3,7 +3,7 @@ export const HabitFilter = {
     value: 0,
     label: '今日',
     filter: (habit) => {
-      return habit.isPlanDay
+      return habit.isActive && habit.isPlanDay
     }
   },
   OnlyActive: {

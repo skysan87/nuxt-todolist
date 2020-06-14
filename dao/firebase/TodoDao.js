@@ -187,7 +187,7 @@ export class TodoDao extends TodoDaoBase {
     }
   }
 
-  async updateHabit (todo, habitRootId, habitCounter) {
+  async updateHabit (todo, habitRootId, habitCounter, lastActivityDate) {
     // habitsRef
     const habitDocRef = habitsRef.doc(habitRootId).collection('habits').doc(todo.listId)
     const todoDocRef = todosRef.doc(todo.id)
@@ -201,8 +201,8 @@ export class TodoDao extends TodoDaoBase {
 
           const newTotalActivityCount = habitDoc.data().totalActivityCount + habitCounter
           const newDuration = habitDoc.data().duration + habitCounter
-
           transaction.update(habitDocRef, {
+            lastActivityDate, // 最終実行日
             totalActivityCount: newTotalActivityCount,
             duration: newDuration,
             updatedAt: getServerTimestamp()

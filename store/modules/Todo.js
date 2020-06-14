@@ -139,6 +139,7 @@ export default {
           todo.userId = _habit.userId
           todo.title = _habit.title
           todo.detail = _habit.detail
+          todo.lastActivityDate = _habit.lastActivityDate
           todo.startdate = today
           todo.enddate = today
           todo.orderIndex = _habit.orderIndex
@@ -246,14 +247,31 @@ export default {
       }
     },
 
-    async update ({ commit, getters }, payload) {
+    async update ({ commit, getters, rootGetters }, payload) {
       const lastTodo = getters.getTodoById(payload.id)
-      if (lastTodo.state !== payload.state) {
+      const stateChanged = lastTodo.state !== payload.state
+      if (stateChanged) {
         payload.stateChangeDate = getDateNumber()
       }
 
-      if (await dao.update(payload)) {
-        commit('update', payload)
+      if (payload.type === 'habit' && stateChanged) {
+        let habitCounter = 0
+        let lastActivityDate = null
+        if (payload.state === TaskState.Done.value) {
+          habitCounter = 1
+          lastActivityDate = getDateNumber()
+        } else {
+          habitCounter = -1
+          lastActivityDate = payload.lastActivityDate
+        }
+        const habitRootId = rootGetters['habit/getRootId']
+        if (await dao.updateHabit(payload, habitRootId, habitCounter, lastActivityDate)) {
+          commit('update', payload)
+        }
+      } else {
+        if (await dao.update(payload)) {
+          commit('update', payload)
+        }
       }
     },
 
@@ -265,16 +283,19 @@ export default {
 
       const item = state.todos[index]
       let habitCounter = 0
+      let lastActivityDate = null
       switch (item.state) {
         case TaskState.Todo.value:
           item.state = TaskState.InProgress.value
           break
         case TaskState.InProgress.value:
-          habitCounter += 1
+          habitCounter = 1
+          lastActivityDate = getDateNumber()
           item.state = TaskState.Done.value
           break
         case TaskState.Done.value:
-          habitCounter -= 1
+          habitCounter = -1
+          lastActivityDate = item.lastActivityDate
           item.state = TaskState.Todo.value
           break
       }
@@ -282,7 +303,7 @@ export default {
 
       if (item.type === 'habit' && habitCounter !== 0) {
         const habitRootId = rootGetters['habit/getRootId']
-        if (await dao.updateHabit(item, habitRootId, habitCounter)) {
+        if (await dao.updateHabit(item, habitRootId, habitCounter, lastActivityDate)) {
           commit('update', item)
         }
       } else {

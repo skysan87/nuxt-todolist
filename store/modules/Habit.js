@@ -87,7 +87,10 @@ export default {
         habits.forEach((h) => {
           h.updateSummary()
         })
-        // TODO: firebase.バッチ更新
+
+        // server update
+        await dao.updateSummary(habits)
+
         commit('init',
           {
             habits,

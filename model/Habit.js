@@ -21,8 +21,7 @@ export class Habit {
     this.totalActivityCount = params.totalActivityCount || 0 // 通算実施回数(分子)
     this.duration = params.duration || 0 // 継続期間
     this.maxduration = params.maxduration || 0 // 最長継続期間
-    this.frequencyChangeDate = this.frequencyChangeDate || null // 繰り返し設定変更日
-    this.summaryUpdatedAt = this.summaryUpdatedAt || null // 実績更新日
+    this.summaryUpdatedAt = params.summaryUpdatedAt || null // 実績更新日
     // 実施予定日
     if (!params.plan) {
       this.plan = {}
@@ -30,10 +29,23 @@ export class Habit {
     } else {
       this.plan = params.plan
     }
-    this.isPlanDay = false
     this.createdAt = params.createdAt || null
     this.updatedAt = params.updatedAt || null
-    this.lastActivityDate_bk = this.lastActivityDate // 元に戻す時のバックアップ
+    this.needServerUpdate = false // 実績の更新確認用
+  }
+
+  // 今日が実施日か
+  get isPlanDay () {
+    const today = new Date()
+    const _y = today.getFullYear()
+    const _m = today.getMonth()
+    const _d = today.getDate()
+    try {
+      const thisMonthPlan = this.unzip(this.plan[_y][_m])
+      return (thisMonthPlan[_d] === '1')
+    } catch {
+      return false
+    }
   }
 
   getData () {
@@ -51,13 +63,25 @@ export class Habit {
       duration: this.duration,
       maxduration: this.maxduration,
       totalActivityCount: this.totalActivityCount,
-      frequencyChangeDate: this.frequencyChangeDate,
       summaryUpdatedAt: this.summaryUpdatedAt,
       plan: this.plan,
       createdAt: this.createdAt,
       updatedAt: this.updatedAt
     }
     return params
+  }
+
+  /**
+   * 計算した実績の取得: サーバ更新用
+   */
+  getSummary () {
+    return {
+      totalCount: this.totalCount,
+      duration: this.duration,
+      maxduration: this.maxduration,
+      summaryUpdatedAt: this.summaryUpdatedAt,
+      plan: this.plan
+    }
   }
 
   /**
@@ -70,6 +94,9 @@ export class Habit {
     if (this.summaryUpdatedAt === null || this.summaryUpdatedAt < getDateNumber()) {
       this.calcSummary()
       this.summaryUpdatedAt = getDateNumber()
+      this.needServerUpdate = true
+    } else {
+      this.needServerUpdate = false
     }
   }
 
@@ -120,14 +147,6 @@ export class Habit {
           return true // 終了
         }
       })
-    }
-
-    // 今日が実施日か
-    const _y = today.getFullYear()
-    const _m = today.getMonth()
-    const _d = today.getDate()
-    if (unzipPlan[_y][_m][_d] === '1') {
-      this.isPlanDay = true
     }
 
     // 圧縮
