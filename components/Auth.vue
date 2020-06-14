@@ -69,7 +69,7 @@ export default {
       })
       this.$store.dispatch('user/stateChanged', user)
       if (user) {
-        this.$router.push('/todolist')
+        this.$router.push('/today')
       }
     }
     this.isMounted = true
@@ -83,7 +83,7 @@ export default {
           console.log(user)
           this.$store.dispatch('user/stateChanged', user)
           if (user) {
-            this.$router.push('/todolist')
+            this.$router.push('/today')
           }
         })
       }
