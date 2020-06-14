@@ -12,6 +12,7 @@ export class Todo {
     this.orderIndex = params.orderIndex || 0
     this.listId = params.listId || ''
     this.userId = params.userId || ''
+    this.lastActivityDate = params.lastActivityDate || null // habitの前回実施日
     this.stateChangeDate = params.stateChangeDate || null // 更新日: フィルター用
     this.createdAt = params.createdAt || null // 管理用
     this.updatedAt = params.updatedAt || null // 管理用
@@ -34,6 +35,7 @@ export class Todo {
       orderIndex: this.orderIndex,
       listId: this.listId,
       userId: this.userId,
+      lastActivityDate: this.lastActivityDate,
       stateChangeDate: this.stateChangeDate,
       createdAt: this.createdAt,
       updatedAt: this.updatedAt

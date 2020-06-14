@@ -5,6 +5,7 @@ import { TaskState } from '@/util/TaskState'
 
 const todosRef = firestore.collection('todos')
 const todolistsRef = firestore.collection('lists')
+const habitsRef = firestore.collection('habits')
 
 export class TodoDao extends TodoDaoBase {
   async getTodos (listId) {
@@ -178,6 +179,37 @@ export class TodoDao extends TodoDaoBase {
         stateChangeDate: todo.stateChangeDate,
         orderIndex: todo.orderIndex,
         updatedAt: getServerTimestamp()
+      })
+      return true
+    } catch (error) {
+      console.error(error)
+      return false
+    }
+  }
+
+  async updateHabit (todo, habitRootId, habitCounter, lastActivityDate) {
+    // habitsRef
+    const habitDocRef = habitsRef.doc(habitRootId).collection('habits').doc(todo.listId)
+    const todoDocRef = todosRef.doc(todo.id)
+
+    try {
+      await firestore.runTransaction((transaction) => {
+        return transaction.get(habitDocRef).then((habitDoc) => {
+          if (!habitDoc.exists) {
+            throw Object.assingn(new Error('habit does not exist.'))
+          }
+
+          const newTotalActivityCount = habitDoc.data().totalActivityCount + habitCounter
+          const newDuration = habitDoc.data().duration + habitCounter
+          transaction.update(habitDocRef, {
+            lastActivityDate, // 最終実行日
+            totalActivityCount: newTotalActivityCount,
+            duration: newDuration,
+            updatedAt: getServerTimestamp()
+          })
+
+          transaction.set(todoDocRef, todo.getData())
+        })
       })
       return true
     } catch (error) {

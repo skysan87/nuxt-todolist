@@ -44,10 +44,10 @@
           </div>
           <nuxt-link to="/todolist">
             <div
-              class="py-1 flex justify-between items-center hover:bg-blue-700 hover:opacity-75"
-              :class="{'bg-blue-700' : (selectedType === viewType.Todo && currentListId == todolist.id)}"
               v-for="todolist in todolists"
               :key="todolist.id"
+              class="py-1 flex justify-between items-center hover:bg-blue-700 hover:opacity-75"
+              :class="{'bg-blue-700' : (selectedType === viewType.Todo && currentListId == todolist.id)}"
               @mouseover="activeItemId = todolist.id"
               @mouseout="activeItemId = ''"
             >
@@ -101,13 +101,14 @@ const DialogController = Vue.extend(NewListDialog)
 
 export default {
   data () {
+    const viewType = { Todo: 0, Habit: 1, Today: 2 }
     return {
       userName: this.$store.getters['user/displayName'],
       isMenuExpanded: false,
       habitFilters: Object.values(HabitFilter),
       todayFilters: Object.values(TodayFilter),
-      viewType: { Todo: 0, Habit: 1, Today: 2 },
-      selectedType: 0,
+      viewType,
+      selectedType: viewType.Today,
       selectedTodayFilter: TodayFilter.Remain.value,
       activeItemId: '',
       dialog: null
