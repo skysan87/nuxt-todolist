@@ -1,21 +1,9 @@
-/* eslint-disable */
-import { Habit } from '@/model/Habit'
-
 export const HabitFilter = {
   Today: {
     value: 0,
     label: '今日',
-    filter: (habit, weekday) => {
-      if (!habit.isActive) {
-        return false
-      }
-      if (habit.frequency === Habit.FREQ_DAILY) {
-        return true
-      } else if (habit.frequency === Habit.FREQ_WEEKLY) {
-        return habit.weekdays.includes(weekday.toString())
-      } else {
-        return false
-      }
+    filter: (habit) => {
+      return habit.isActive && habit.isPlanDay
     }
   },
   OnlyActive: {

@@ -18,6 +18,10 @@ export default {
       return orderBy(state.lists, 'orderIndex')
     },
 
+    getFistListId: (state) => {
+      return state.lists[0].id
+    },
+
     getListName: state => (id) => {
       const index = state.lists.findIndex(v => v.id === id)
       return index >= 0 ? state.lists[index].title : ''
@@ -64,15 +68,16 @@ export default {
 
       if (lists.length > 0) {
         commit('init', lists)
-        dispatch('todo/init', lists[0].id, { root: true })
+        // dispatch('todo/init', lists[0].id, { root: true })
       } else {
         // Add First List
         const result = await dao.add('inbox', 1, userId)
         if (result.isSuccess) {
           commit('init', [result.value])
-          dispatch('todo/init', result.value.id, { root: true })
+          // dispatch('todo/init', result.value.id, { root: true })
         }
       }
+      console.log('todolist init')
     },
 
     async add ({ commit, dispatch, state, rootGetters }, title) {

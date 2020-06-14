@@ -25,7 +25,7 @@
         </div>
 
         <div class="modal-body">
-          <label class="input-label">頻度</label>
+          <label class="input-label">繰り返し設定</label>
           <div>
             <label>
               <input v-model="habit.frequency" name="frequency" type="radio" :value="FREQ_DAILY">
@@ -52,15 +52,22 @@
           <input v-model="habit.isActive" type="checkbox">
         </div>
 
+        <div class="modal-body">
+          <label class="input-label">実績</label>
+          <div>
+            <span class="pr-4">継続期間 {{ habit.duration }}</span>
+            <span class="pr-4">最大継続期間 {{ habit.maxduration }}</span>
+            <span class="pr-4">通算 {{ habit.totalActivityCount }}</span>
+            <span class="pr-4">実行率 {{ activityRate }}％</span>
+          </div>
+        </div>
+
         <div class="flex flex-row-reverse">
           <button class="btn btn-regular ml-2" @click="update">
             OK
           </button>
           <button class="btn btn-outline ml-2" @click="cancel">
             Cancel
-          </button>
-          <button v-if="!isCreateMode" class="btn btn-red-outline ml-2" @click="deleteHabit">
-            Delete
           </button>
           <span v-if="!isCreateMode" class="text-xs text-gray-600 flex-1">
             変更や削除は明日以降のタスクに反映されます。
@@ -105,6 +112,11 @@ export default {
       FREQ_WEEKLY: Habit.FREQ_WEEKLY
     }
   },
+  computed: {
+    activityRate () {
+      return Math.floor(this.habit.totalActivityCount / this.habit.totalCount * 100)
+    }
+  },
   mounted () {
     this.parent.appendChild(this.$el)
     this.$nextTick(() => {
@@ -144,10 +156,6 @@ export default {
       if (ev.target !== null && ev.target.className === 'dummy') {
         this.$refs.refTitle.focus()
       }
-    },
-    deleteHabit () {
-      this.$emit('delete', this.habit)
-      this.$destroy()
     },
     validate () {
       let valid = true

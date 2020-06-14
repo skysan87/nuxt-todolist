@@ -15,7 +15,7 @@
           </div>
         </div>
 
-        <div class="modal-body" v-if="todo.type === 'todo'">
+        <div v-if="todo.type === 'todo'" class="modal-body">
           <label class="input-label">プロジェクト</label>
           <span class="output-text">{{ todo.listName }}</span>
         </div>
