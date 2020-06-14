@@ -1,5 +1,4 @@
 import orderBy from 'lodash/orderBy'
-import moment from 'moment'
 import { CreateHabitDao } from '@/dao'
 import { HabitFilter } from '@/util/HabitFilter'
 
@@ -19,7 +18,7 @@ export default {
     getList: (state) => {
       let fileteredArray = []
       if (state.filterId === HabitFilter.Today.value) {
-        fileteredArray = state.habits.filter(h => HabitFilter.Today.filter(h, moment().weekday()))
+        fileteredArray = state.habits.filter(h => HabitFilter.Today.filter(h))
       } else if (state.filterId === HabitFilter.OnlyActive.value) {
         fileteredArray = state.habits.filter(h => HabitFilter.OnlyActive.filter(h))
       } else {
@@ -30,7 +29,7 @@ export default {
 
     getTodayList: (state) => {
       return orderBy(
-        state.habits.filter(h => HabitFilter.Today.filter(h, moment().weekday()))
+        state.habits.filter(h => HabitFilter.Today.filter(h))
         , 'orderIndex')
     },
 
