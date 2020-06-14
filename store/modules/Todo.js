@@ -257,25 +257,38 @@ export default {
       }
     },
 
-    async changeState ({ commit, state }, id) {
+    async changeState ({ commit, state, rootGetters }, id) {
       const index = state.todos.findIndex(v => v.id === id)
-      const item = state.todos[index]
-      if (item == null) { return }
+      if (index < 0) {
+        return
+      }
 
+      const item = state.todos[index]
+      let habitCounter = 0
       switch (item.state) {
         case TaskState.Todo.value:
           item.state = TaskState.InProgress.value
           break
         case TaskState.InProgress.value:
+          habitCounter += 1
           item.state = TaskState.Done.value
           break
         case TaskState.Done.value:
+          habitCounter -= 1
           item.state = TaskState.Todo.value
           break
       }
       item.stateChangeDate = getDateNumber()
-      if (await dao.update(item)) {
-        commit('update', item)
+
+      if (item.type === 'habit' && habitCounter !== 0) {
+        const habitRootId = rootGetters['habit/getRootId']
+        if (await dao.updateHabit(item, habitRootId, habitCounter)) {
+          commit('update', item)
+        }
+      } else {
+        if (await dao.update(item)) {
+          commit('update', item)
+        }
       }
     }
   }

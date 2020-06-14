@@ -30,6 +30,7 @@ export class Habit {
     } else {
       this.plan = params.plan
     }
+    this.isPlanDay = false
     this.createdAt = params.createdAt || null
     this.updatedAt = params.updatedAt || null
     this.lastActivityDate_bk = this.lastActivityDate // 元に戻す時のバックアップ
@@ -121,6 +122,14 @@ export class Habit {
       })
     }
 
+    // 今日が実施日か
+    const _y = today.getFullYear()
+    const _m = today.getMonth()
+    const _d = today.getDate()
+    if (unzipPlan[_y][_m][_d] === '1') {
+      this.isPlanDay = true
+    }
+
     // 圧縮
     // 実施予定日: 実績更新日から本日までの期間の実施予定日を更新
     for (let y = firstYear; y <= today.getFullYear(); y++) {
@@ -141,6 +150,11 @@ export class Habit {
     }
   }
 
+  /**
+   * 非圧縮
+   * @param {String} monthPlanHex 月間実行予定(16進数)
+   * @returns {String[]} 月間の実施予定リスト(2進数)
+   */
   unzip (monthPlanHex) {
     if (monthPlanHex !== '0') {
       // 16進数 -> 2進数の配列
@@ -152,6 +166,11 @@ export class Habit {
     }
   }
 
+  /**
+   * 圧縮
+   * @param {String[]} monthPlanBinaryArray 月間の実施予定リスト(2進数)
+   * @returns {String} 16進数に変換した文字列
+   */
   zip (monthPlanBinaryArray) {
     // 2進数の配列 -> 16進数
     return parseInt(monthPlanBinaryArray.join(''), 2).toString(16)
