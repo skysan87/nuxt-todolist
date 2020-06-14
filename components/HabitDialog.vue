@@ -69,9 +69,6 @@
           <button class="btn btn-outline ml-2" @click="cancel">
             Cancel
           </button>
-          <button v-if="!isCreateMode" class="btn btn-red-outline ml-2" @click="deleteHabit">
-            Delete
-          </button>
           <span v-if="!isCreateMode" class="text-xs text-gray-600 flex-1">
             変更や削除は明日以降のタスクに反映されます。
           </span>
@@ -159,10 +156,6 @@ export default {
       if (ev.target !== null && ev.target.className === 'dummy') {
         this.$refs.refTitle.focus()
       }
-    },
-    deleteHabit () {
-      this.$emit('delete', this.habit)
-      this.$destroy()
     },
     validate () {
       let valid = true
