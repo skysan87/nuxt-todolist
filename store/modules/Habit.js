@@ -106,6 +106,7 @@ export default {
           })
         }
       }
+      console.log('habit init')
     },
 
     async add ({ commit, rootGetters }, params) {

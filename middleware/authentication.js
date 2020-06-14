@@ -3,6 +3,6 @@ export default function ({ store, redirect, route }) {
     redirect('/login')
   }
   if (store.getters['user/isLogin'] && route.name === 'login') {
-    redirect('/todolist')
+    redirect('/today')
   }
 }

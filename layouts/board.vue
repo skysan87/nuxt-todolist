@@ -101,13 +101,14 @@ const DialogController = Vue.extend(NewListDialog)
 
 export default {
   data () {
+    const viewType = { Todo: 0, Habit: 1, Today: 2 }
     return {
       userName: this.$store.getters['user/displayName'],
       isMenuExpanded: false,
       habitFilters: Object.values(HabitFilter),
       todayFilters: Object.values(TodayFilter),
-      viewType: { Todo: 0, Habit: 1, Today: 2 },
-      selectedType: 0,
+      viewType,
+      selectedType: viewType.Today,
       selectedTodayFilter: TodayFilter.Remain.value,
       activeItemId: '',
       dialog: null
