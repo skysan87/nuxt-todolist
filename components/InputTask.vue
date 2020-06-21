@@ -67,7 +67,12 @@ export default {
       }
       this.todo.startdate = this.todo.enddate = this.checkDeadline()
       this.$store.dispatch('todo/add', this.todo.getData())
-      this.todo.title = ''
+        .catch((error) => {
+          this.$toast.error(error.message)
+        })
+        .finally(() => {
+          this.todo.title = ''
+        })
     },
     addDetail () {
       this.todo.startdate = this.todo.enddate = this.checkDeadline()
@@ -84,7 +89,12 @@ export default {
       })
       this.dialog.$on('add', (todo) => {
         this.$store.dispatch('todo/add', todo.getData())
-        this.todo.title = ''
+          .catch((error) => {
+            this.$toast.error(error.message)
+          })
+          .finally(() => {
+            this.todo.title = ''
+          })
       })
       this.dialog.$mount()
     },

@@ -7,6 +7,8 @@ import { Todo } from '@/model/Todo'
 
 const dao = CreateTodoDao()
 
+const MAX_SIZE = process.env.MAX_SIZE_TODO || 50
+
 function getFilteredArray (array, option, isAllSelected) {
   if (isAllSelected === false) {
     return array.filter((el) => {
@@ -67,6 +69,10 @@ export default {
 
     getCurrentListId: (state) => {
       return state.listId
+    },
+
+    size: (state) => {
+      return state.todos.length
     }
   },
 
@@ -232,13 +238,24 @@ export default {
       commit('switchEdit')
     },
 
-    async add ({ commit, state, rootGetters }, params) {
-      const userId = rootGetters['user/userId']
-      params.stateChangeDate = getDateNumber()
-      const result = await dao.add(state.listId, params, userId)
-      if (result.isSuccess) {
-        commit('add', result.value)
-      }
+    add ({ commit, state, rootGetters, getters }, params) {
+      return new Promise((resolve, reject) => {
+        if (getters.size + 1 > MAX_SIZE) {
+          reject(new Error('これ以上登録できません'))
+          return
+        }
+        const userId = rootGetters['user/userId']
+        params.stateChangeDate = getDateNumber()
+        dao.add(state.listId, params, userId)
+          .then((result) => {
+            if (result.isSuccess) {
+              commit('add', result.value)
+              resolve()
+            } else {
+              reject(new Error('登録に失敗しました'))
+            }
+          })
+      })
     },
 
     async delete ({ commit }, id) {

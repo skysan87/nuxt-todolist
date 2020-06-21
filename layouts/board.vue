@@ -183,9 +183,15 @@ export default {
     },
     addList (title) {
       this.$store.dispatch('todolist/add', title)
-      // 新規作成画面に遷移
-      this.selectedType = this.viewType.Todo
-      this.$router.push('/todolist')
+        .then(() => {
+          this.$toast.success('新しいプロジェクトを登録しました')
+          // 新規作成画面に遷移
+          this.selectedType = this.viewType.Todo
+          this.$router.push('/todolist')
+        })
+        .catch((error) => {
+          this.$toast.error(error.message)
+        })
     },
     logout () {
       this.$store
