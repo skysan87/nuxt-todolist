@@ -8,13 +8,14 @@ export default {
     return {
       id: '',
       email: '',
-      displayName: ''
+      displayName: '',
+      isGuest: true
     }
   },
 
   getters: {
     isLogin: (state) => {
-      return !!state.email
+      return !!state.id
     },
 
     displayName: (state) => {
@@ -28,12 +29,16 @@ export default {
 
   mutations: {
     setUser (state, user) {
+      if (user.isAnonymous !== undefined) {
+        state.isGuest = user.isAnonymous
+      }
       state.id = user.uid
       state.email = user.email
       state.displayName = user.displayName
     },
 
     resetUser (state) {
+      state.isGuest = true
       state.id = ''
       state.email = ''
       state.displayName = ''
@@ -52,7 +57,7 @@ export default {
     },
 
     async login () {
-      await dao.login()
+      return await dao.login()
     },
 
     async logout ({ commit }) {

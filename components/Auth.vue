@@ -21,7 +21,8 @@
                 type="button"
                 @click.once="doLogin"
               >
-                <fa :icon="['fab', 'google']" size="2x" class="mr-2 text-red-500" />Google
+                <!-- <fa :icon="['fab', 'google']" size="2x" class="mr-2 text-red-500" />Google -->
+                Guest User
               </button>
             </div>
           </div>
@@ -77,17 +78,16 @@ export default {
   methods: {
     doLogin () {
       this.isClicked = true
-      if (isDebug) {
-        // 少し時間を置いてからログイン
-        authMock.onAuthStateChanged((user) => {
-          console.log(user)
+      this.$store.dispatch('user/login')
+        .then((user) => {
           this.$store.dispatch('user/stateChanged', user)
           if (user) {
             this.$router.push('/today')
           }
         })
-      }
-      this.$store.dispatch('user/login')
+        .catch(() => {
+          this.$toast.error('ログインに失敗しました')
+        })
     }
   }
 }

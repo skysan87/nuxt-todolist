@@ -9,24 +9,27 @@ class AuthObserver {
 
   async login () {
     const user = {
-      id: 'dummyId',
+      uid: 'dummyId',
       email: 'dummy@mail.com',
-      displayName: 'dummy user'
+      displayName: 'dummy user',
+      isGuest: false
     }
+    await this.sleep(800)
     if (this.callback !== null) {
-      await this.sleep(800)
       this.callback(user)
     }
+    return user
   }
 
   async logout () {
     const user = {
-      id: '',
+      uid: '',
       email: '',
-      displayName: ''
+      displayName: '',
+      isGuest: true
     }
+    await this.sleep(800)
     if (this.callback !== null) {
-      await this.sleep(800)
       this.callback(user)
     }
   }
