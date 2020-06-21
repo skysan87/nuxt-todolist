@@ -3,6 +3,8 @@ import { CreateTodolistDao } from '@/dao'
 
 const dao = CreateTodolistDao()
 
+const MAX_SIZE = process.env.MAX_SIZE_TODOLIST || 5
+
 export default {
   namespaced: true,
   listId: null,
@@ -30,6 +32,10 @@ export default {
     getListById: state => (id) => {
       const index = state.lists.findIndex(v => v.id === id)
       return state.lists[index]
+    },
+
+    size: (state) => {
+      return state.lists.length
     }
   },
 
@@ -80,13 +86,23 @@ export default {
       console.log('todolist init')
     },
 
-    async add ({ commit, dispatch, state, rootGetters }, title) {
-      const userId = rootGetters['user/userId']
-      const result = await dao.add(title, state.maxIndex + 1, userId)
-      if (result.isSuccess) {
-        commit('add', result.value)
-        dispatch('todo/initNewList', result.value.id, { root: true })
-      }
+    add ({ commit, dispatch, state, rootGetters, getters }, title) {
+      return new Promise((resolve, reject) => {
+        if (getters.size + 1 > MAX_SIZE) {
+          reject(new Error('これ以上登録できません'))
+          return
+        }
+        const userId = rootGetters['user/userId']
+        dao.add(title, state.maxIndex + 1, userId).then((result) => {
+          if (result.isSuccess) {
+            commit('add', result.value)
+            dispatch('todo/initNewList', result.value.id, { root: true })
+            resolve()
+          } else {
+            reject(new Error('登録に失敗しました'))
+          }
+        })
+      })
     },
 
     async update ({ commit }, payload) {
