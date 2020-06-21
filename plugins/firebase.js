@@ -16,6 +16,9 @@ const firebaseApp = firebase.initializeApp(config)
 
 export const firestore = firebaseApp.firestore()
 
+// 認証状態の永続性: タブが表示している間のみログイン情報を保持
+firebaseApp.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION)
+
 export const auth = firebaseApp.auth()
 
 export const authProvider = new firebase.auth.GoogleAuthProvider()

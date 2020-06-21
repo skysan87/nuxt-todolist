@@ -2,8 +2,7 @@ import { authMock } from '@/plugins/mock'
 
 export class UserDaoBase {
   async login () {
-    await authMock.login()
-    return true
+    return await authMock.login()
   }
 
   async logout () {
