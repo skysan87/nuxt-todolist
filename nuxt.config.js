@@ -51,7 +51,8 @@ export default {
     '@nuxtjs/axios',
     '@nuxtjs/pwa',
     // Doc: https://github.com/nuxt-community/dotenv-module
-    '@nuxtjs/dotenv'
+    '@nuxtjs/dotenv',
+    '@nuxtjs/toast'
   ],
   router: {
     // middleware: 全てのページで有効になる
@@ -73,5 +74,9 @@ export default {
     */
     extend (config, ctx) {
     }
+  },
+  toast: {
+    position: 'top-right',
+    duration: 3000
   }
 }

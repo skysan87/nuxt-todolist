@@ -4,6 +4,8 @@ import { HabitFilter } from '@/util/HabitFilter'
 
 const dao = CreateHabitDao()
 
+const MAX_SIZE = process.env.MAX_SIZE_HABIT || 7
+
 export default {
   namespaced: true,
   state () {
@@ -48,6 +50,10 @@ export default {
 
     getRootId: (state) => {
       return state.rootId
+    },
+
+    size: (state) => {
+      return state.habits.length
     }
   },
 
@@ -109,12 +115,22 @@ export default {
       console.log('habit init')
     },
 
-    async add ({ commit, rootGetters }, params) {
-      const userId = rootGetters['user/userId']
-      const result = await dao.add(params, userId)
-      if (result.isSuccess) {
-        commit('add', result.value)
-      }
+    add ({ commit, getters, rootGetters }, params) {
+      return new Promise((resolve, reject) => {
+        if (getters.size + 1 > MAX_SIZE) {
+          reject(new Error('これ以上登録できません'))
+          return
+        }
+        const userId = rootGetters['user/userId']
+        dao.add(params, userId).then((result) => {
+          if (result.isSuccess) {
+            commit('add', result.value)
+            resolve()
+          } else {
+            reject(new Error('登録に失敗しました'))
+          }
+        })
+      })
     },
 
     async update ({ commit }, habit) {
