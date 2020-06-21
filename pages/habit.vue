@@ -104,6 +104,10 @@ export default {
       })
       this.dialog.$on('add', (habit) => {
         this.$store.dispatch('habit/add', habit)
+          .then(() => this.$toast.success('登録しました'))
+          .catch((error) => {
+            this.$toast.error(error.message)
+          })
       })
       this.dialog.$mount()
     },
