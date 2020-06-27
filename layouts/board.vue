@@ -98,17 +98,16 @@ import { HabitFilter } from '@/util/HabitFilter'
 import { TodayFilter } from '@/util/TodayFilter'
 
 const DialogController = Vue.extend(NewListDialog)
+const viewType = { Todo: 0, Habit: 1, Today: 2 }
 
 export default {
   data () {
-    const viewType = { Todo: 0, Habit: 1, Today: 2 }
     return {
       userName: this.$store.getters['user/displayName'],
       isMenuExpanded: false,
       habitFilters: Object.values(HabitFilter),
       todayFilters: Object.values(TodayFilter),
       viewType,
-      selectedType: viewType.Today,
       selectedTodayFilter: TodayFilter.Remain.value,
       activeItemId: '',
       dialog: null
@@ -133,6 +132,18 @@ export default {
       get () {
         return this.$store.getters['habit/getCurrentFilter']
       }
+    },
+    selectedType: {
+      get () {
+        switch (this.$route.name) {
+          case 'todolist':
+            return viewType.Todo
+          case 'habit':
+            return viewType.Habit
+          default:
+            return viewType.Today
+        }
+      }
     }
   },
   mounted () {
@@ -144,16 +155,13 @@ export default {
       this.$store.dispatch('habit/init')
     },
     onSelectToday (filter) {
-      this.selectedType = this.viewType.Today
       this.selectedTodayFilter = filter
       this.$store.dispatch('todo/initTodaylist', filter)
     },
     onSelectList (id) {
-      this.selectedType = this.viewType.Todo
       this.$store.dispatch('todo/init', id)
     },
     onSelectHabit (filter) {
-      this.selectedType = this.viewType.Habit
       this.$store.dispatch('habit/changeFilter', filter)
     },
     openListDialog () {
@@ -186,7 +194,6 @@ export default {
         .then(() => {
           this.$toast.success('新しいプロジェクトを登録しました')
           // 新規作成画面に遷移
-          this.selectedType = this.viewType.Todo
           this.$router.push('/todolist')
         })
         .catch((error) => {
