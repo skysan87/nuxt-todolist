@@ -117,7 +117,7 @@ export default {
       viewType,
       selectedTodayFilter: TodayFilter.Remain.value,
       activeItemId: '',
-      globalMessage: 'このアプリはデモサイトです',
+      globalMessage: 'このアプリはデモサイトです。ログアウト後は再ログインできません。',
       dialog: null
     }
   },
