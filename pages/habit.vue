@@ -1,5 +1,5 @@
 <template>
-  <div class="flex-1 flex flex-col bg-white">
+  <div class="flex flex-col bg-white overflow-hidden">
     <header class="border-b flex-none relative">
       <div class="px-6 py-2 flex flex-row">
         <div class="inline-block flex-1 m-auto">
@@ -14,27 +14,25 @@
         </button>
       </div>
     </header>
-    <main class="flex-1 pt-2 overflow-y-scroll">
-      <div class="h-full flex flex-col ml-6">
-        <div v-if="habits.length > 0" class="flex-grow overflow-x-hidden">
-          <div class="list-group">
-            <draggable
-              v-model="habits"
-              handle=".move-icon"
-              @end="onDragEnd"
-            >
-              <habit-item
-                v-for="item in habits"
-                :key="item.id"
-                :habit="item"
-                class="list-group-item list-style"
-                @edit="editHabit"
-              />
-            </draggable>
-          </div>
+    <main class="pt-2 pb-4 flex-1 overflow-y-scroll">
+      <div v-if="habits.length > 0" class="ml-2 flex-grow overflow-x-hidden">
+        <div class="list-group">
+          <draggable
+            v-model="habits"
+            handle=".move-icon"
+            @end="onDragEnd"
+          >
+            <habit-item
+              v-for="item in habits"
+              :key="item.id"
+              :habit="item"
+              class="list-group-item list-style"
+              @edit="editHabit"
+            />
+          </draggable>
         </div>
-        <no-data v-else />
       </div>
+      <no-data v-else />
     </main>
   </div>
 </template>

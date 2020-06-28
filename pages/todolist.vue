@@ -1,31 +1,29 @@
 <template>
-  <div class="flex-1 flex flex-col bg-white">
+  <div class="flex flex-col bg-white overflow-hidden">
     <header class="border-b flex-none">
       <header-view />
     </header>
-    <main class="flex-1 pt-2 overflow-y-scroll">
-      <div class="h-full flex flex-col ml-6">
-        <div v-if="filteredTodos.length > 0" class="flex-grow overflow-x-hidden">
-          <div class="list-group">
-            <draggable
-              v-model="filteredTodos"
-              handle=".move-icon"
-              @end="onDragEnd"
-            >
-              <todo-item
-                v-for="item in filteredTodos"
-                :key="item.id"
-                :todo="item"
-                class="list-group-item list-style"
-                @edit="editTodo"
-              />
-            </draggable>
-          </div>
+    <main class="pt-2 pb-4 flex-1 overflow-y-scroll">
+      <div v-if="filteredTodos.length > 0" class="ml-2 flex-grow overflow-x-hidden">
+        <div class="list-group">
+          <draggable
+            v-model="filteredTodos"
+            handle=".move-icon"
+            @end="onDragEnd"
+          >
+            <todo-item
+              v-for="item in filteredTodos"
+              :key="item.id"
+              :todo="item"
+              class="list-group-item list-style"
+              @edit="editTodo"
+            />
+          </draggable>
         </div>
-        <no-data v-else />
       </div>
+      <no-data v-else />
     </main>
-    <footer class="px-2 py-2 flex-none bg-gray-500">
+    <footer class="px-2 py-2 bg-gray-500 flex-none">
       <input-task />
     </footer>
   </div>
@@ -133,10 +131,6 @@ export default {
 </script>
 
 <style scoped>
-.container {
-  @apply min-h-screen mx-auto;
-}
-
 .list-style {
   padding: 0.25rem 0.5rem;
   background-color: #faf9f9;
