@@ -52,7 +52,7 @@
           <input v-model="habit.isActive" type="checkbox">
         </div>
 
-        <div class="modal-body">
+        <div v-if="!isCreateMode" class="modal-body">
           <label class="input-label">実績</label>
           <div>
             <span class="pr-4">継続期間 {{ habit.duration }}</span>
