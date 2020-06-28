@@ -1,5 +1,5 @@
 <template>
-  <div class="flex-1 flex flex-col bg-white">
+  <div class="flex flex-col bg-white overflow-hidden">
     <header class="border-b flex-none">
       <div class="px-6 py-2 flex flex-row">
         <div class="inline-block flex-1">
@@ -8,22 +8,20 @@
       </div>
     </header>
 
-    <main class="flex-1 pt-2 overflow-y-scroll">
-      <div class="h-full flex flex-col ml-6">
-        <div v-if="filteredTodos.length > 0" class="flex-grow overflow-x-hidden">
-          <div class="list-group">
-            <todo-item
-              v-for="item in filteredTodos"
-              :key="item.id"
-              :todo="item"
-              :option="{showPointer: false, showEdit: false}"
-              class="list-group-item list-style"
-              @edit="editTodo"
-            />
-          </div>
+    <main class="pt-2 pb-4 flex-1 overflow-y-scroll">
+      <div v-if="filteredTodos.length > 0" class="ml-2 flex-grow overflow-x-hidden">
+        <div class="list-group">
+          <todo-item
+            v-for="item in filteredTodos"
+            :key="item.id"
+            :todo="item"
+            :option="{showPointer: false, showEdit: false}"
+            class="list-group-item list-style"
+            @edit="editTodo"
+          />
         </div>
-        <no-data v-else />
       </div>
+      <no-data v-else />
     </main>
   </div>
 </template>
@@ -102,10 +100,6 @@ export default {
 </script>
 
 <style scoped>
-.container {
-  @apply min-h-screen mx-auto;
-}
-
 .list-style {
   padding: 0.25rem 0.5rem;
   background-color: #faf9f9;
