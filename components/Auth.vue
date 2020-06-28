@@ -24,6 +24,9 @@
                 <!-- <fa :icon="['fab', 'google']" size="2x" class="mr-2 text-red-500" />Google -->
                 Guest User
               </button>
+              <div class="text-center pt-4 text-sm">
+                ※同じユーザで再ログイン出来ません。
+              </div>
             </div>
           </div>
         </div>
