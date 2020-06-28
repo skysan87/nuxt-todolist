@@ -25,7 +25,7 @@
                 Guest User
               </button>
               <div class="text-center pt-4 text-sm">
-                ※同じユーザで再ログイン出来ません。
+                ※タブを閉じるとで再ログイン出来ません。
               </div>
             </div>
           </div>
