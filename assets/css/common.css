@@ -15,26 +15,6 @@
   -moz-border-radius: 50%;
 }
 
-.badge-light {
-  color: #212529;
-  background-color: #fff;
-}
-
-.badge-warning {
-  color: #212529;
-  background-color: #ffc107;
-}
-
-.badge-success {
-  color: #fff;
-  background-color: #28a745;
-}
-
-.badge-info {
-  color: #fff;
-  background-color: #17a2b8;
-}
-
 .modal-mask {
   position: fixed;
   z-index: 10;

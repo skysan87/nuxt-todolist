@@ -6,7 +6,7 @@ import { faPlusSquare, faCalendar } from '@fortawesome/free-regular-svg-icons'
 import { faGoogle } from '@fortawesome/free-brands-svg-icons'
 
 // nuxt.config.jsでCSSファイルを追加
-config.autoAddCss = false
+config.autoAddCss = true
 
 // 利用するアイコンを配列に追加
 const solidIcons = [faEllipsisV, faEdit, faCircleNotch, faCaretDown, faPlus, faCalendarDay]
@@ -20,3 +20,5 @@ bransIcons.forEach(icon => library.add(icon))
 
 // グローバルコンポーネントに登録
 Vue.component('fa', FontAwesomeIcon)
+
+Vue.config.productionTip = false
