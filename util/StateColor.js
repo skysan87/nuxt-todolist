@@ -3,12 +3,25 @@ import { TaskState } from './TaskState'
 export function getStateColor (state) {
   switch (state) {
     case TaskState.Todo.value:
-      return 'badge-light circle-button-border'
+      return {
+        color: '#212529',
+        backgroundColor: '#fff',
+        border: '1px solid #000000'
+      }
     case TaskState.InProgress.value:
-      return 'badge-warning'
+      return {
+        color: '#212529',
+        backgroundColor: '#ffc107'
+      }
     case TaskState.Done.value:
-      return 'badge-success'
+      return {
+        color: '#fff',
+        backgroundColor: '#28a745'
+      }
     default:
-      return 'badge-info'
+      return {
+        color: '#fff',
+        backgroundColor: '#17a2b8'
+      }
   }
 }
