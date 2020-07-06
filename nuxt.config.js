@@ -5,7 +5,7 @@ export default {
   ** Headers of the page
   */
   head: {
-    title: process.env.npm_package_name || '',
+    title: 'What to do Today',
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
@@ -24,14 +24,13 @@ export default {
   */
   css: [
     '@/assets/css/tailwind.css',
-    '@fortawesome/fontawesome-svg-core/styles.css',
-    '@assets/css/common.css'
+    '@/assets/css/common.css'
   ],
   /*
   ** Plugins to load before mounting the App
   */
   plugins: [
-    '@/plugins/fontawesome',
+    { src: '@/plugins/fontawesome', ssr: false },
     { src: '@/plugins/v-calendar', ssr: false }
   ],
   /*
