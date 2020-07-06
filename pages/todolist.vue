@@ -37,8 +37,6 @@ import TodoItem from '@/components/TodoItem.vue'
 import ModalDialog from '@/components/ModalDialog.vue'
 import InputTask from '@/components/InputTask.vue'
 import NoData from '@/components/NoData.vue'
-import { getStateColor } from '@/util/StateColor'
-import { TaskState } from '@/util/TaskState'
 
 const DialogController = Vue.extend(ModalDialog)
 
@@ -113,18 +111,6 @@ export default {
         newIndex: ev.newIndex
       }
       this.$store.dispatch('todo/changeOrder', params)
-    },
-    /**
-     * 各ステータスのタスク数
-     */
-    todoCounts (state) {
-      return this.$store.getters['todo/getTaskCount'](state)
-    },
-    /**
-     * ステータスの色
-     */
-    badgeColor (state) {
-      return getStateColor(state)
     }
   }
 }

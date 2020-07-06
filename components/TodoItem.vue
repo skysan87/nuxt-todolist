@@ -6,7 +6,7 @@
       </div>
       <div class="p-1" @click="changeEventHandler">
         <span
-          :class="badgeColor(todo.state)"
+          :style="badgeColor(todo.state)"
           class="circle-button cursor-pointer"
         />
       </div>
