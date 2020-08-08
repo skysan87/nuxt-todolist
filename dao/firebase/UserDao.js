@@ -7,7 +7,8 @@ export class UserDao extends UserDaoBase {
   login () {
     return new Promise((resolve, reject) => {
       if (activeGoogleAuth) {
-        auth.signInWithPopup(authProvider)
+        // リダイレクト
+        auth.signInWithRedirect(authProvider)
           .then((result) => {
             resolve(result.user)
           })
