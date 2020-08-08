@@ -16,8 +16,10 @@ const firebaseApp = firebase.initializeApp(config)
 
 export const firestore = firebaseApp.firestore()
 
-// 認証状態の永続性: タブが表示している間のみログイン情報を保持
-firebaseApp.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION)
+// 認証状態の永続性
+// SESSION: タブが表示している間のみログイン情報を保持
+// LOCAL: ログアウトしない限りログイン状態
+firebaseApp.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
 
 export const auth = firebaseApp.auth()
 
