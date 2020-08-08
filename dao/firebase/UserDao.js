@@ -1,18 +1,29 @@
-// import { auth, authProvider } from '@/plugins/firebase'
-import { auth } from '@/plugins/firebase'
+import { auth, authProvider } from '@/plugins/firebase'
 import { UserDaoBase } from '@/dao/base/UserDaoBase'
+
+const activeGoogleAuth = process.env.GOOGLE_AUTH === '1'
 
 export class UserDao extends UserDaoBase {
   login () {
     return new Promise((resolve, reject) => {
-      auth.signInAnonymously()
-      // auth.signInWithPopup(authProvider)
-        .then((result) => {
-          resolve(result.user)
-        })
-        .catch((error) => {
-          reject(error)
-        })
+      if (activeGoogleAuth) {
+        // リダイレクト
+        auth.signInWithRedirect(authProvider)
+          .then((result) => {
+            resolve(result.user)
+          })
+          .catch((error) => {
+            reject(error)
+          })
+      } else {
+        auth.signInAnonymously()
+          .then((result) => {
+            resolve(result.user)
+          })
+          .catch((error) => {
+            reject(error)
+          })
+      }
     })
   }
 
