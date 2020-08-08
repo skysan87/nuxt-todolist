@@ -106,9 +106,11 @@ import { TodayFilter } from '@/util/TodayFilter'
 
 const DialogController = Vue.extend(NewListDialog)
 const viewType = { Todo: 0, Habit: 1, Today: 2 }
+const activeGoogleAuth = process.env.GOOGLE_AUTH === '1'
 
 export default {
   data () {
+    const defaultMsg = !activeGoogleAuth ? 'このアプリはデモサイトです。タブを閉じるとは再ログインできません。' : ''
     return {
       userName: this.$store.getters['user/displayName'],
       isMenuExpanded: false,
@@ -117,7 +119,7 @@ export default {
       viewType,
       selectedTodayFilter: TodayFilter.Remain.value,
       activeItemId: '',
-      globalMessage: 'このアプリはデモサイトです。タブを閉じるとは再ログインできません。',
+      globalMessage: defaultMsg,
       dialog: null
     }
   },
