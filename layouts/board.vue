@@ -58,7 +58,7 @@
                 >
                   <div
                     class="px-5 flex-1 cursor-pointer"
-                    @click.left="onSelectList(todolist.id)"
+                    @click.left.prevent="onSelectList(todolist.id)"
                   >
                     # {{ todolist.title }}
                   </div>
