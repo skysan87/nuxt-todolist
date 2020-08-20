@@ -47,30 +47,30 @@
                 </div>
                 <fa :icon="['far', 'plus-square']" class="cursor-pointer" @click.left="openListDialog" />
               </div>
-              <nuxt-link to="/todolist">
+              <!-- <nuxt-link to="/todolist"> -->
+              <div
+                v-for="todolist in todolists"
+                :key="todolist.id"
+                class="py-1 flex justify-between items-center hover:bg-blue-700 hover:opacity-75"
+                :class="{'bg-blue-700' : (selectedType === viewType.Todo && currentListId == todolist.id)}"
+                @mouseover="activeItemId = todolist.id"
+                @mouseout="activeItemId = ''"
+              >
                 <div
-                  v-for="todolist in todolists"
-                  :key="todolist.id"
-                  class="py-1 flex justify-between items-center hover:bg-blue-700 hover:opacity-75"
-                  :class="{'bg-blue-700' : (selectedType === viewType.Todo && currentListId == todolist.id)}"
-                  @mouseover="activeItemId = todolist.id"
-                  @mouseout="activeItemId = ''"
+                  class="px-5 flex-1 cursor-pointer"
+                  @click.left="onSelectList(todolist.id)"
                 >
-                  <div
-                    class="px-5 flex-1 cursor-pointer"
-                    @click.left.prevent="onSelectList(todolist.id)"
-                  >
-                    # {{ todolist.title }}
-                  </div>
-                  <div
-                    class="flex-none m-0 pr-4 opacity-0"
-                    :class="{'opacity-100': activeItemId === todolist.id}"
-                    @click.left.prevent="editTodolist(todolist.id)"
-                  >
-                    <fa :icon="['fas', 'edit']" size="xs" class="cursor-pointer" />
-                  </div>
+                  # {{ todolist.title }}
                 </div>
-              </nuxt-link>
+                <div
+                  class="flex-none m-0 pr-4 opacity-0"
+                  :class="{'opacity-100': activeItemId === todolist.id}"
+                  @click.left.prevent="editTodolist(todolist.id)"
+                >
+                  <fa :icon="['fas', 'edit']" size="xs" class="cursor-pointer" />
+                </div>
+              </div>
+              <!-- </nuxt-link> -->
               <div class="mt-5 px-4 flex justify-between items-center">
                 <div class="font-bold text-lg">
                   習慣
@@ -169,7 +169,9 @@ export default {
       this.$store.dispatch('todo/initTodaylist', filter)
     },
     onSelectList (id) {
+      // TODO: _idページを作成する
       this.$store.dispatch('todo/init', id)
+      this.$router.push('/todolist')
     },
     onSelectHabit (filter) {
       this.$store.dispatch('habit/changeFilter', filter)
