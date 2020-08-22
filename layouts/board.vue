@@ -30,24 +30,21 @@
                   今日の予定
                 </div>
               </div>
-              <nuxt-link to="/today">
-                <div
-                  v-for="filter in todayFilters"
-                  :key="filter.value"
-                  class="py-1 px-5 cursor-pointer hover:bg-blue-700 hover:opacity-75"
-                  :class="{'bg-blue-700' : (selectedType === viewType.Today && selectedTodayFilter === filter.value)}"
-                  @click.left="onSelectToday(filter.value)"
-                >
-                  # {{ filter.label }}
-                </div>
-              </nuxt-link>
+              <div
+                v-for="filter in todayFilters"
+                :key="filter.value"
+                class="py-1 px-5 cursor-pointer hover:bg-blue-700 hover:opacity-75"
+                :class="{'bg-blue-700' : (selectedType === viewType.Today && selectedTodayFilter === filter.value)}"
+                @click.left="onSelectToday(filter.value)"
+              >
+                # {{ filter.label }}
+              </div>
               <div class="mt-5 px-4 flex justify-between items-center">
                 <div class="font-bold text-lg">
                   プロジェクト
                 </div>
                 <fa :icon="['far', 'plus-square']" class="cursor-pointer" @click.left="openListDialog" />
               </div>
-              <!-- <nuxt-link to="/todolist"> -->
               <div
                 v-for="todolist in todolists"
                 :key="todolist.id"
@@ -70,7 +67,6 @@
                   <fa :icon="['fas', 'edit']" size="xs" class="cursor-pointer" />
                 </div>
               </div>
-              <!-- </nuxt-link> -->
               <div class="mt-5 px-4 flex justify-between items-center">
                 <div class="font-bold text-lg">
                   習慣
@@ -161,7 +157,7 @@ export default {
     },
     onSelectToday (filter) {
       this.selectedTodayFilter = filter
-      this.$store.dispatch('todo/initTodaylist', filter)
+      this.$router.push(`/today/${filter}`)
     },
     onSelectList (id) {
       this.currentListId = id
