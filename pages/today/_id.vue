@@ -52,9 +52,12 @@ export default {
   computed: {
     filteredTodos: {
       get () {
-        return this.$store.getters['todo/getFilteredTodos']
+        return this.$store.getters['todo/getOrderdTodos']
       }
     }
+  },
+  mounted () {
+    this.$store.dispatch('todo/initTodaylist', this.$route.params.id || 0)
   },
   methods: {
     /**
