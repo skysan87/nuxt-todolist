@@ -120,7 +120,8 @@ export default {
       selectedTodayFilter: TodayFilter.Remain.value,
       activeItemId: '',
       globalMessage: defaultMsg,
-      dialog: null
+      dialog: null,
+      currentListId: ''
     }
   },
   computed: {
@@ -133,11 +134,6 @@ export default {
         // vuedraggable用
       }
     },
-    currentListId: {
-      get () {
-        return this.$store.getters['todo/getCurrentListId']
-      }
-    },
     currentFilter: {
       get () {
         return this.$store.getters['habit/getCurrentFilter']
@@ -145,13 +141,12 @@ export default {
     },
     selectedType: {
       get () {
-        switch (this.$route.name) {
-          case 'todolist':
-            return viewType.Todo
-          case 'habit':
-            return viewType.Habit
-          default:
-            return viewType.Today
+        if (this.$route.name.startsWith('todolist')) {
+          return viewType.Todo
+        } else if (this.$route.name.startsWith('habit')) {
+          return viewType.Habit
+        } else {
+          return viewType.Today
         }
       }
     }
@@ -169,9 +164,8 @@ export default {
       this.$store.dispatch('todo/initTodaylist', filter)
     },
     onSelectList (id) {
-      // TODO: _idページを作成する
-      this.$store.dispatch('todo/init', id)
-      this.$router.push('/todolist')
+      this.currentListId = id
+      this.$router.push(`/todolist/${id}`)
     },
     onSelectHabit (filter) {
       this.$store.dispatch('habit/changeFilter', filter)
