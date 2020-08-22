@@ -121,6 +121,8 @@ export default {
   // データの加工、非同期処理
   actions: {
     async init ({ commit }, listId) {
+      // 描画初期化
+      commit('init', { data: [], listId })
       commit('init', { data: await dao.getTodos(listId), listId })
     },
 
