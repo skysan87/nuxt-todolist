@@ -85,7 +85,6 @@ export default {
     },
 
     initToday (state, payload) {
-      state.selectedState = payload.selectedState
       state.listId = ''
       state.todos = payload.data
     },
@@ -131,6 +130,9 @@ export default {
     },
 
     async initTodaylist ({ commit, rootGetters }, todayFilterValue) {
+      // 描画初期化
+      commit('initToday', { data: [] })
+      const filterValue = Number(todayFilterValue)
       const userId = rootGetters['user/userId']
       const today = getDateNumber() // YYYYMMDD
       // 1. 今日の習慣をメモリgettersで取得
@@ -161,28 +163,25 @@ export default {
         habitTodo.push(...newhabitToDo)
       }
 
-      const selectedState = []
-      const todos = [...habitTodo]
-      switch (todayFilterValue) {
+      const todos = []
+      todos.push(...getFilteredArray(habitTodo, [filterValue], false))
+      switch (filterValue) {
         case TodayFilter.Remain.value:
           // 今日の残タスク
-          selectedState.push(TaskState.Todo.value)
           todos.push(...await dao.getTodaysToDo(userId, today))
           break
         case TodayFilter.InProgress.value:
           // 作業中
-          selectedState.push(TaskState.InProgress.value)
           todos.push(...await dao.getTodaysInProgress(userId, today))
           break
         case TodayFilter.Done.value:
           // 今日完了したタスク
-          selectedState.push(TaskState.Done.value)
           todos.push(...await dao.getTodaysDone(userId, today))
           break
         default:
           break
       }
-      commit('initToday', { data: todos, selectedState })
+      commit('initToday', { data: todos })
     },
 
     async changeOrder ({ commit, getters }, params) {
