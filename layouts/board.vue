@@ -196,7 +196,9 @@ export default {
         .then(() => {
           this.$toast.success('新しいプロジェクトを登録しました')
           // 新規作成画面に遷移
-          this.$router.push('/todolist')
+          const listId = this.$store.getters['todo/getCurrentListId']
+          this.currentListId = listId
+          this.$router.push(`/todolist/${listId}`)
         })
         .catch((error) => {
           this.$toast.error(error.message)
