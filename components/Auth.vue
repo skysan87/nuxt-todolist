@@ -21,10 +21,15 @@
                 type="button"
                 @click.once="doLogin"
               >
-                <!-- <fa :icon="['fab', 'google']" size="2x" class="mr-2 text-red-500" />Google -->
-                Guest User
+                <div v-if="googleAuth" class="flex">
+                  <fa :icon="['fab', 'google']" size="2x" class="mr-2 text-red-500" />
+                  <span class="mt-1">Google</span>
+                </div>
+                <div v-else>
+                  Guest User
+                </div>
               </button>
-              <div class="text-center pt-4 text-sm">
+              <div v-if="!googleAuth" class="text-center pt-4 text-sm">
                 ※タブを閉じるとで再ログイン出来ません。
               </div>
             </div>
@@ -46,12 +51,14 @@ import { auth } from '@/plugins/firebase'
 import { authMock } from '@/plugins/mock'
 
 const isDebug = process.env.DATABASE_MODE === 'local'
+const activeGoogleAuth = process.env.GOOGLE_AUTH === '1'
 
 export default {
   data () {
     return {
       isMounted: false,
-      isClicked: false
+      isClicked: false,
+      googleAuth: activeGoogleAuth
     }
   },
   computed: {

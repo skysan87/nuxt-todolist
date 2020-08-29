@@ -39,13 +39,20 @@ export default {
   data () {
     return {
       options: Object.values(TaskState),
-      filterOption: this.$store.getters['todo/getSelectedState'],
       isAllSelected: false
     }
   },
   computed: {
     canRemove () {
       return this.$store.getters['todo/canRemove']
+    },
+    filterOption: {
+      get () {
+        return this.$store.getters['todo/getSelectedState']
+      },
+      set (value) {
+        this.$store.dispatch('todo/changeFilter', value)
+      }
     }
   },
   methods: {
@@ -67,16 +74,13 @@ export default {
     selectAll () {
       // イベント発生時,値は更新されていない
       if (this.isAllSelected === false) {
-        this.filterOption = []
-        this.options.forEach(op => this.filterOption.push(op.value))
+        this.filterOption = this.options.map(op => op.value)
       } else {
         this.filterOption = []
       }
-      this.$store.dispatch('todo/changeFilter', this.filterOption)
     },
     filterChanged () {
       this.isAllSelected = this.options.length === this.filterOption.length
-      this.$store.dispatch('todo/changeFilter', this.filterOption)
     },
     /**
      * 完了済みのタスクを削除
