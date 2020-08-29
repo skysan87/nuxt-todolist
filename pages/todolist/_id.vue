@@ -67,11 +67,7 @@ export default {
     }
   },
   mounted () {
-    let listId = this.$store.getters['todo/getCurrentListId']
-    if (listId === '') {
-      listId = this.$store.getters['todolist/getFistListId']
-      this.$store.dispatch('todo/init', listId)
-    }
+    this.$store.dispatch('todo/init', this.$route.params.id)
   },
   methods: {
     /**

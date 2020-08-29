@@ -30,47 +30,43 @@
                   今日の予定
                 </div>
               </div>
-              <nuxt-link to="/today">
-                <div
-                  v-for="filter in todayFilters"
-                  :key="filter.value"
-                  class="py-1 px-5 cursor-pointer hover:bg-blue-700 hover:opacity-75"
-                  :class="{'bg-blue-700' : (selectedType === viewType.Today && selectedTodayFilter === filter.value)}"
-                  @click.left="onSelectToday(filter.value)"
-                >
-                  # {{ filter.label }}
-                </div>
-              </nuxt-link>
+              <div
+                v-for="filter in todayFilters"
+                :key="filter.value"
+                class="py-1 px-5 cursor-pointer hover:bg-blue-700 hover:opacity-75"
+                :class="{'bg-blue-700' : (selectedType === viewType.Today && selectedTodayFilter === filter.value)}"
+                @click.left="onSelectToday(filter.value)"
+              >
+                # {{ filter.label }}
+              </div>
               <div class="mt-5 px-4 flex justify-between items-center">
                 <div class="font-bold text-lg">
                   プロジェクト
                 </div>
                 <fa :icon="['far', 'plus-square']" class="cursor-pointer" @click.left="openListDialog" />
               </div>
-              <nuxt-link to="/todolist">
+              <div
+                v-for="todolist in todolists"
+                :key="todolist.id"
+                class="py-1 flex justify-between items-center hover:bg-blue-700 hover:opacity-75"
+                :class="{'bg-blue-700' : (selectedType === viewType.Todo && currentListId == todolist.id)}"
+                @mouseover="activeItemId = todolist.id"
+                @mouseout="activeItemId = ''"
+              >
                 <div
-                  v-for="todolist in todolists"
-                  :key="todolist.id"
-                  class="py-1 flex justify-between items-center hover:bg-blue-700 hover:opacity-75"
-                  :class="{'bg-blue-700' : (selectedType === viewType.Todo && currentListId == todolist.id)}"
-                  @mouseover="activeItemId = todolist.id"
-                  @mouseout="activeItemId = ''"
+                  class="px-5 flex-1 cursor-pointer"
+                  @click.left="onSelectList(todolist.id)"
                 >
-                  <div
-                    class="px-5 flex-1 cursor-pointer"
-                    @click.left="onSelectList(todolist.id)"
-                  >
-                    # {{ todolist.title }}
-                  </div>
-                  <div
-                    class="flex-none m-0 pr-4 opacity-0"
-                    :class="{'opacity-100': activeItemId === todolist.id}"
-                    @click.left.prevent="editTodolist(todolist.id)"
-                  >
-                    <fa :icon="['fas', 'edit']" size="xs" class="cursor-pointer" />
-                  </div>
+                  # {{ todolist.title }}
                 </div>
-              </nuxt-link>
+                <div
+                  class="flex-none m-0 pr-4 opacity-0"
+                  :class="{'opacity-100': activeItemId === todolist.id}"
+                  @click.left.prevent="editTodolist(todolist.id)"
+                >
+                  <fa :icon="['fas', 'edit']" size="xs" class="cursor-pointer" />
+                </div>
+              </div>
               <div class="mt-5 px-4 flex justify-between items-center">
                 <div class="font-bold text-lg">
                   習慣
@@ -106,9 +102,11 @@ import { TodayFilter } from '@/util/TodayFilter'
 
 const DialogController = Vue.extend(NewListDialog)
 const viewType = { Todo: 0, Habit: 1, Today: 2 }
+const activeGoogleAuth = process.env.GOOGLE_AUTH === '1'
 
 export default {
   data () {
+    const defaultMsg = !activeGoogleAuth ? 'このアプリはデモサイトです。タブを閉じるとは再ログインできません。' : ''
     return {
       userName: this.$store.getters['user/displayName'],
       isMenuExpanded: false,
@@ -117,8 +115,9 @@ export default {
       viewType,
       selectedTodayFilter: TodayFilter.Remain.value,
       activeItemId: '',
-      globalMessage: 'このアプリはデモサイトです。タブを閉じるとは再ログインできません。',
-      dialog: null
+      globalMessage: defaultMsg,
+      dialog: null,
+      currentListId: ''
     }
   },
   computed: {
@@ -131,11 +130,6 @@ export default {
         // vuedraggable用
       }
     },
-    currentListId: {
-      get () {
-        return this.$store.getters['todo/getCurrentListId']
-      }
-    },
     currentFilter: {
       get () {
         return this.$store.getters['habit/getCurrentFilter']
@@ -143,13 +137,12 @@ export default {
     },
     selectedType: {
       get () {
-        switch (this.$route.name) {
-          case 'todolist':
-            return viewType.Todo
-          case 'habit':
-            return viewType.Habit
-          default:
-            return viewType.Today
+        if (this.$route.name.startsWith('todolist')) {
+          return viewType.Todo
+        } else if (this.$route.name.startsWith('habit')) {
+          return viewType.Habit
+        } else {
+          return viewType.Today
         }
       }
     }
@@ -164,10 +157,11 @@ export default {
     },
     onSelectToday (filter) {
       this.selectedTodayFilter = filter
-      this.$store.dispatch('todo/initTodaylist', filter)
+      this.$router.push(`/today/${filter}`)
     },
     onSelectList (id) {
-      this.$store.dispatch('todo/init', id)
+      this.currentListId = id
+      this.$router.push(`/todolist/${id}`)
     },
     onSelectHabit (filter) {
       this.$store.dispatch('habit/changeFilter', filter)
@@ -202,7 +196,9 @@ export default {
         .then(() => {
           this.$toast.success('新しいプロジェクトを登録しました')
           // 新規作成画面に遷移
-          this.$router.push('/todolist')
+          const listId = this.$store.getters['todo/getCurrentListId']
+          this.currentListId = listId
+          this.$router.push(`/todolist/${listId}`)
         })
         .catch((error) => {
           this.$toast.error(error.message)
