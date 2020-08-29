@@ -17,9 +17,9 @@
               <fa :icon="['fas', 'caret-down']" :class="{'fa-rotate-180': isMenuExpanded}" />
             </div>
             <div v-show="isMenuExpanded" class="flex-none mt-2">
-              <a class="block px-6 text-sm hover:bg-blue-800 hover:opacity-75 cursor-pointer" @click.left="logout">
-                ログアウト
-              </a>
+              <!-- <a class="block px-6 text-sm hover:bg-blue-800 hover:opacity-75 cursor-pointer">
+                Command
+              </a> -->
             </div>
             <div class="flex-none px-4">
               {{ userName }}
@@ -102,11 +102,10 @@ import { TodayFilter } from '@/util/TodayFilter'
 
 const DialogController = Vue.extend(NewListDialog)
 const viewType = { Todo: 0, Habit: 1, Today: 2 }
-const activeGoogleAuth = process.env.GOOGLE_AUTH === '1'
 
 export default {
   data () {
-    const defaultMsg = !activeGoogleAuth ? 'このアプリはデモサイトです。タブを閉じるとは再ログインできません。' : ''
+    const defaultMsg = ''
     return {
       userName: this.$store.getters['user/displayName'],
       isMenuExpanded: false,
@@ -203,15 +202,6 @@ export default {
         .catch((error) => {
           this.$toast.error(error.message)
         })
-    },
-    logout () {
-      this.$store
-        .dispatch('user/logout')
-        .then(() => {
-          console.log('logout')
-          this.$router.push('/login')
-        })
-        .catch(err => console.error(err))
     }
   }
 }

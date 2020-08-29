@@ -3,7 +3,7 @@
     <div>
       <h1>What to do today</h1>
       <h2>-- This is index page. --</h2>
-      <nuxt-link to="/todolist">
+      <nuxt-link to="/today">
         TodoList
       </nuxt-link>
     </div>

@@ -1,15 +1,9 @@
 What to do Today
 ===
-タスク管理ツール
+タスク管理ツール(indexedDB版)
+機能はmasterブランチから独立
 
 ![](./doc/img/demo.gif)
-
-
-
-## App URL
-
-https://what-to-do-today-b80b0.web.app
-
 
 
 ## 機能
@@ -39,9 +33,8 @@ https://what-to-do-today-b80b0.web.app
 * Vue.js
 * JavaScript
 * Firebase
-  * Firestore
   * Hosting
-  * Authentication
+* IndexedDB
 * PWA
 * ライブラリ
   * Font Awesome
@@ -59,13 +52,6 @@ https://what-to-do-today-b80b0.web.app
 
 * タスクを複数登録しやすいように、登録フォームを設計
 * タスクの並び順を変更できる機能
-
- 
-
-## 今後実装予定
-
-* スマホ対応
-* electron化
 
 
 

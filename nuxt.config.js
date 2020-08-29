@@ -55,7 +55,6 @@ export default {
   ],
   router: {
     // middleware: 全てのページで有効になる
-    middleware: ['authentication']
   },
   /*
   ** Axios module configuration

@@ -3,7 +3,6 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import todo from '@/store/modules/Todo'
 import todolist from '@/store/modules/Todolist'
-import user from '@/store/modules/User'
 import habit from '@/store/modules/Habit'
 
 Vue.use(Vuex)
@@ -13,7 +12,6 @@ export default() => new Vuex.Store({
   modules: {
     todo,
     todolist,
-    user,
     habit
   }
 })
