@@ -1,15 +1,15 @@
-import { TodoDaoBase as TodoBase } from '@/dao/base/TodoDaoBase'
-import { TodolistDaoBase as TodolistBase } from '@/dao/base/TodolistDaoBase'
-import { HabitDaoBase as HabitBase } from '@/dao/base/HabitDaoBase'
+import { TodoDao } from '@/dao/indexeddb/TodoDao'
+import { TodolistDao } from '@/dao/indexeddb/TodolistDao'
+import { HabitDao } from '@/dao/indexeddb/HabitDao'
 
 export function CreateTodoDao () {
-  return new TodoBase()
+  return new TodoDao()
 }
 
 export function CreateTodolistDao () {
-  return new TodolistBase()
+  return new TodolistDao()
 }
 
 export function CreateHabitDao () {
-  return new HabitBase()
+  return new HabitDao()
 }

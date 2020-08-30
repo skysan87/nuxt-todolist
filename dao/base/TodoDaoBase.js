@@ -33,7 +33,7 @@ export class TodoDaoBase {
   /**
    * 今日の残タスクを取得する
    */
-  async getTodaysToDo(userId, date) {
+  async getTodaysToDo (userId, date) {
     return this.createDummyTodo(userId, TaskState.Todo)
   }
 

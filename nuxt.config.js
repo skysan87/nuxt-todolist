@@ -31,7 +31,8 @@ export default {
   */
   plugins: [
     { src: '@/plugins/fontawesome', ssr: false },
-    { src: '@/plugins/v-calendar', ssr: false }
+    { src: '@/plugins/v-calendar', ssr: false },
+    { src: '@/plugins/DB', ssr: false }
   ],
   /*
   ** Nuxt.js dev-modules

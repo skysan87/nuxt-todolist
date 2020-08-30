@@ -25,6 +25,7 @@ export class Todo {
 
   getData () {
     const params = {
+      id: this.id,
       title: this.title,
       type: this.type,
       state: this.state,

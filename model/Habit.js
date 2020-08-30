@@ -50,6 +50,7 @@ export class Habit {
 
   getData () {
     const params = {
+      id: this.id,
       title: this.title,
       rootId: this.rootId,
       detail: this.detail,

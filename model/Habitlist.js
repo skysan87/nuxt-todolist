@@ -9,6 +9,7 @@ export class Habitlist {
 
   getData () {
     const params = {
+      id: this.id,
       userId: this.userId,
       maxIndex: this.maxIndex,
       createdAt: this.createdAt,
