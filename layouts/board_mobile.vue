@@ -69,13 +69,6 @@
                   >
                     # {{ todolist.title }}
                   </div>
-                  <div
-                    class="flex-none m-0 pr-4 opacity-0"
-                    :class="{'opacity-100': activeItemId === todolist.id}"
-                    @click.left.prevent="editTodolist(todolist.id)"
-                  >
-                    <fa :icon="['fas', 'edit']" size="xs" class="" />
-                  </div>
                 </div>
                 <div class="mt-5 px-4 flex justify-between items-center">
                   <div class="font-bold text-lg">
