@@ -15,6 +15,7 @@
               v-for="item in filteredTodos"
               :key="item.id"
               :todo="item"
+              :option="{showPointer: editMode, showEdit: editMode}"
               class="list-group-item list-style"
               @edit="editTodo"
             />
@@ -64,6 +65,11 @@ export default {
       set(value) {
         // vuedraggable用
       }
+    },
+    editMode: {
+      get () {
+        return this.$store.getters['todo/canRemove']
+      }
     }
   },
   mounted () {
@@ -98,6 +104,9 @@ export default {
      * ドラッグ終了時
      */
     onDragEnd (ev) {
+      if (!this.editMode) {
+        return
+      }
       // filteredTodosはすでに並び替えられている
       if (ev.oldIndex === ev.newIndex) {
         return
