@@ -87,7 +87,7 @@
           </div>
         </div>
         <div class="app-workspace__view">
-          <nuxt class="app-workspace__view_contents" />
+          <nuxt />
         </div>
       </div>
     </div>
@@ -275,14 +275,5 @@ export default {
 
 .app-workspace__view {
   grid-area: app-workspace__view;
-  display: grid;
-  grid-template-rows: auto;
-  grid-template-columns: auto;
-  grid-template-areas: "app-workspace__view_contents";
 }
-
-.app-workspace__view_contents {
-  grid-area: app-workspace__view_contents;
-}
-
 </style>

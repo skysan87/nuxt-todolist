@@ -1,6 +1,6 @@
 <template>
-  <div class="flex flex-col bg-white overflow-hidden">
-    <header class="border-b flex-none relative">
+  <div class="flex flex-col bg-white h-full">
+    <header class="border-b flex-none">
       <div class="px-6 py-2 flex flex-row">
         <div class="inline-block flex-1 m-auto">
           <span>フィルター：{{ currentFilterName }} ( {{ habitsCount }} )</span>
@@ -15,21 +15,15 @@
       </div>
     </header>
     <main class="pt-2 pb-4 flex-1 overflow-y-scroll">
-      <div v-if="habits.length > 0" class="ml-2 flex-grow overflow-x-hidden">
+      <div v-if="habits.length > 0" class="mx-2 overflow-x-hidden">
         <div class="list-group">
-          <draggable
-            v-model="habits"
-            handle=".move-icon"
-            @end="onDragEnd"
-          >
-            <habit-item
-              v-for="item in habits"
-              :key="item.id"
-              :habit="item"
-              class="list-group-item list-style"
-              @edit="editHabit"
-            />
-          </draggable>
+          <habit-item
+            v-for="item in habits"
+            :key="item.id"
+            :habit="item"
+            class="list-group-item list-style"
+            @edit="editHabit"
+          />
         </div>
       </div>
       <no-data v-else />
@@ -39,7 +33,6 @@
 
 <script>
 import Vue from 'vue'
-import draggable from 'vuedraggable'
 import HabitDialog from '@/components/HabitDialog.vue'
 import HabitItem from '@/components/HabitItem.vue'
 import NoData from '@/components/NoData.vue'
@@ -49,9 +42,8 @@ import { HabitFilter } from '@/util/HabitFilter'
 const DialogController = Vue.extend(HabitDialog)
 
 export default {
-  layout: 'board',
+  layout: ctx => ctx.isMobile ? 'board_mobile' : 'board',
   components: {
-    draggable,
     HabitItem,
     NoData
   },
@@ -64,10 +56,6 @@ export default {
     habits: {
       get () {
         return this.$store.getters['habit/getList']
-      },
-      // eslint-disable-next-line
-      set (value) {
-        // vuedraggable用
       }
     },
     currentFilterId: {
@@ -122,16 +110,6 @@ export default {
         this.$store.dispatch('habit/update', habit)
       })
       this.dialog.$mount()
-    },
-    onDragEnd (ev) {
-      if (ev.oldIndex === ev.newIndex) {
-        return
-      }
-      const params = {
-        oldIndex: ev.oldIndex,
-        newIndex: ev.newIndex
-      }
-      this.$store.dispatch('habit/changeOrder', params)
     }
   }
 }
