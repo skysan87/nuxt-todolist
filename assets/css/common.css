@@ -32,12 +32,13 @@
 
 .modal-wrapper {
   display: block;
-  margin: 48px 0 80px;
+  margin: 5vh 0 10vh;
   overflow: hidden;
 }
 
 .modal-container {
-  width: 768px;
+  width: 90vw;
+  max-width: 768px;
   margin: 0 auto;
   overflow: hidden;
   padding: 10px 20px;

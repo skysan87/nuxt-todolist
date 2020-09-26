@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full flex items-center justify-center h-10">
+  <div class="w-full flex items-center justify-center flex-wrap py-1">
     <label>
       <input v-model="isAllSelected" type="checkbox" @click="selectAll">
       <span class="p-1 align-middle">All</span>
@@ -16,6 +16,7 @@
     </label>
     <button
       class="btn btn-outline btn-clear-done ml-2"
+      ontouchend=""
       @click="deleteDone"
     >
       Clear Done
@@ -23,6 +24,7 @@
     <button
       class="btn btn-outline btn-switch-edit ml-2"
       :class="{'switch-on': canRemove}"
+      ontouchend=""
       @click="switchRemoveButton"
     >
       Edit
@@ -119,7 +121,7 @@ export default {
   @apply text-green-500 border border-green-500 outline-none;
 }
 
-.btn-switch-edit:hover {
+.btn-switch-edit:active {
   @apply bg-green-500 text-white border-transparent;
 }
 
@@ -131,7 +133,7 @@ export default {
   @apply text-red-500 border border-red-500 outline-none;
 }
 
-.btn-clear-done:hover {
+.btn-clear-done:active {
   @apply bg-red-500 text-white border-transparent;
 }
 </style>
