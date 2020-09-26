@@ -52,7 +52,8 @@ export default {
     '@nuxtjs/pwa',
     // Doc: https://github.com/nuxt-community/dotenv-module
     '@nuxtjs/dotenv',
-    '@nuxtjs/toast'
+    '@nuxtjs/toast',
+    '@nuxtjs/device'
   ],
   router: {
     // middleware: 全てのページで有効になる

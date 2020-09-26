@@ -4,8 +4,14 @@ import { Todolist } from '@/model/Todolist'
 export class TodolistDaoBase {
 
   async getLists(userId) {
+    const lists = []
     const list = new Todolist('defaultId', { title: 'dummy' })
-    return [ list ]
+    lists.push(list)
+    for (let index = 0; index < 5; index++) {
+      const list = new Todolist(`list_id${index}`, { title: `dummy${index}` })
+      lists.push(list)
+    }
+    return lists
   }
 
   async add(title, orderIndex, userId) {
