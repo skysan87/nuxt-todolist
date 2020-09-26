@@ -1,10 +1,10 @@
 <template>
-  <div class="flex flex-col bg-white overflow-hidden">
+  <div class="flex flex-col bg-white h-full">
     <header class="border-b flex-none">
       <header-view />
     </header>
     <main class="pt-2 pb-4 flex-1 overflow-y-scroll">
-      <div v-if="filteredTodos.length > 0" class="ml-2 flex-grow overflow-x-hidden">
+      <div v-if="filteredTodos.length > 0" class="mx-2 overflow-x-hidden flex-grow">
         <div class="list-group">
           <draggable
             v-model="filteredTodos"
@@ -41,7 +41,7 @@ import NoData from '@/components/NoData.vue'
 const DialogController = Vue.extend(ModalDialog)
 
 export default {
-  layout: 'board',
+  layout: ctx => ctx.isMobile ? 'board_mobile' : 'board',
   name: 'TodoList',
   components: {
     draggable,
