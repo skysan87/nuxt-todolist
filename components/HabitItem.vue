@@ -1,9 +1,6 @@
 <template>
   <div>
     <div class="flex w-full">
-      <div class="move-icon p-1">
-        <fa :icon="['fas', 'ellipsis-v']" />
-      </div>
       <div :title="habit.title" class="flex-1 no-wrap text-left p-1">
         {{ habit.title }}
       </div>
