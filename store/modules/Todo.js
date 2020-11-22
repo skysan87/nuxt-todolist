@@ -100,6 +100,13 @@ export default {
 
     update (state, payload) {
       const index = state.todos.findIndex(v => v.id === payload.id)
+
+      // プロジェクトの変更
+      if (state.listId !== '' && state.listId !== payload.listId) {
+        state.todos.splice(index, 1)
+        return
+      }
+
       Object.assign(state.todos[index], payload)
     },
 
