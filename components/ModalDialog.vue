@@ -17,7 +17,11 @@
 
         <div v-if="todo.type === 'todo'" class="modal-body">
           <label class="input-label">プロジェクト</label>
-          <span class="output-text">{{ todo.listName }}</span>
+          <select class="input-text" v-model="todo.listId">
+            <option v-for="list in projectList" :key="list.id" :value="list.id">
+              {{ list.title }}
+            </option>
+          </select>
         </div>
         <div v-else>
           <span class="output-text text-xs text-gray-600">このタスクは習慣から生成されました。</span>
@@ -127,6 +131,10 @@ export default {
     isCreateMode: {
       type: Boolean,
       require: true
+    },
+    projectList: {
+      type: Array,
+      require: false
     }
   },
   data () {
@@ -165,6 +173,8 @@ export default {
         start: this.todo.startdate !== null ? moment(this.todo.startdate.toString()).toDate() : null,
         end: this.todo.enddate !== null ? moment(this.todo.enddate.toString()).toDate() : null
       }
+
+      // TODO: プロジェクトリストの読み込み
 
       // 編集の禁止
       if (this.todo.type === 'habit') {
