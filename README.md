@@ -5,13 +5,6 @@ What to do Today
 ![](./doc/img/demo.gif)
 
 
-
-## App URL
-
-https://what-to-do-today-b80b0.web.app
-
-
-
 ## 機能
 
 ### 1. プロジェクト単位でのタスク管理
