@@ -42,11 +42,11 @@ import { HabitFilter } from '@/util/HabitFilter'
 const DialogController = Vue.extend(HabitDialog)
 
 export default {
-  layout: ctx => ctx.isMobile ? 'board_mobile' : 'board',
   components: {
     HabitItem,
     NoData
   },
+  layout: ctx => ctx.isMobile ? 'board_mobile' : 'board',
   data () {
     return {
       dialog: null
