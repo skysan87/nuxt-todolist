@@ -83,13 +83,14 @@ export default {
       delete this.dialog
 
       const todo = this.$store.getters['todo/getTodoById'](id)
-      todo.listName = this.$store.getters['todolist/getListName'](todo.listId)
+      const list = this.$store.getters['todolist/getLists']
 
       this.dialog = new DialogController({
         propsData: {
           parent: this.$root.$el,
           target: todo,
-          isCreateMode: false
+          isCreateMode: false,
+          projectList: list
         }
       })
       this.dialog.$on('update', (todo) => {
