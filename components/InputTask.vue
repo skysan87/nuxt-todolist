@@ -76,15 +76,16 @@ export default {
     },
     addDetail () {
       this.todo.startdate = this.todo.enddate = this.checkDeadline()
-      const listId = this.$store.getters['todo/getCurrentListId']
-      this.todo.listName = this.$store.getters['todolist/getListName'](listId)
+      this.todo.listId = this.$store.getters['todo/getCurrentListId']
+      const list = this.$store.getters['todolist/getLists']
 
       delete this.dialog
       this.dialog = new DialogController({
         propsData: {
           parent: this.$root.$el,
           target: this.todo,
-          isCreateMode: true
+          isCreateMode: true,
+          projectList: list
         }
       })
       this.dialog.$on('add', (todo) => {
