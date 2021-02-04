@@ -42,7 +42,6 @@ import NoData from '@/components/NoData.vue'
 const DialogController = Vue.extend(ModalDialog)
 
 export default {
-  layout: ctx => ctx.isMobile ? 'board_mobile' : 'board',
   name: 'TodoList',
   components: {
     draggable,
@@ -51,6 +50,7 @@ export default {
     InputTask,
     NoData
   },
+  layout: ctx => ctx.isMobile ? 'board_mobile' : 'board',
   data () {
     return {
       dialog: null
