@@ -17,7 +17,7 @@
 
         <div v-if="todo.type === 'todo'" class="modal-body">
           <label class="input-label">プロジェクト</label>
-          <select class="input-text" v-model="todo.listId">
+          <select v-model="todo.listId" class="input-text">
             <option v-for="list in projectList" :key="list.id" :value="list.id">
               {{ list.title }}
             </option>

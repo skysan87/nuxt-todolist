@@ -25,7 +25,7 @@ export class Habit {
     // 実施予定日
     if (!params.plan) {
       this.plan = {}
-      this.plan[`${new Date().getFullYear()}`] = Array.from({ length: 12 }, () => '0')
+      this.plan[`${new Date().getFullYear()}`] = this.initYearPlan()
     } else {
       this.plan = params.plan
     }
@@ -113,9 +113,12 @@ export class Habit {
 
     // 非圧縮
     for (let y = firstYear; y <= today.getFullYear(); y++) {
-      unzipPlan[y] = []
-      this.plan[y].forEach((monthPlan) => {
-        unzipPlan[y].push(this.unzip(monthPlan))
+      // 年を跨いだ時
+      if (!this.plan[y]) {
+        this.plan[y] = this.initYearPlan()
+      }
+      unzipPlan[y] = this.plan[y].map((monthPlan) => {
+        return this.unzip(monthPlan)
       })
     }
 
@@ -211,5 +214,9 @@ export class Habit {
       }
     }
     return false
+  }
+
+  initYearPlan () {
+    return Array.from({ length: 12 }, () => '0')
   }
 }
