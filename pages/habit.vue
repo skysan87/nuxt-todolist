@@ -46,7 +46,7 @@ export default {
     HabitItem,
     NoData
   },
-  layout: ctx => ctx.isMobile ? 'board_mobile' : 'board',
+  layout: ctx => ctx.$device.isMobile ? 'board_mobile' : 'board',
   data () {
     return {
       dialog: null

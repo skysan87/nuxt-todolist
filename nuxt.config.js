@@ -41,7 +41,8 @@ export default {
     // Doc: https://github.com/nuxt-community/eslint-module
     '@nuxtjs/eslint-module',
     // Doc: https://github.com/nuxt-community/nuxt-tailwindcss
-    '@nuxtjs/tailwindcss'
+    '@nuxtjs/tailwindcss',
+    '@nuxtjs/device'
   ],
   /*
   ** Nuxt.js modules
@@ -52,8 +53,7 @@ export default {
     '@nuxtjs/pwa',
     // Doc: https://github.com/nuxt-community/dotenv-module
     '@nuxtjs/dotenv',
-    '@nuxtjs/toast',
-    '@nuxtjs/device'
+    '@nuxtjs/toast'
   ],
   router: {
     // middleware: 全てのページで有効になる
