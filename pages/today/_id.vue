@@ -36,12 +36,12 @@ import NoData from '@/components/NoData.vue'
 const DialogController = Vue.extend(ModalDialog)
 
 export default {
-  layout: ctx => ctx.isMobile ? 'board_mobile' : 'board',
   name: 'TodoList',
   components: {
     TodoItem,
     NoData
   },
+  layout: ctx => ctx.isMobile ? 'board_mobile' : 'board',
   data () {
     moment.locale('ja')
     return {

@@ -19,6 +19,6 @@ regularIcons.forEach(icon => library.add(icon))
 bransIcons.forEach(icon => library.add(icon))
 
 // グローバルコンポーネントに登録
-Vue.component('fa', FontAwesomeIcon)
+Vue.component('Fa', FontAwesomeIcon)
 
 Vue.config.productionTip = false
