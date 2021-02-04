@@ -41,7 +41,7 @@ export default {
     TodoItem,
     NoData
   },
-  layout: ctx => ctx.isMobile ? 'board_mobile' : 'board',
+  layout: ctx => ctx.$device.isMobile ? 'board_mobile' : 'board',
   data () {
     moment.locale('ja')
     return {
