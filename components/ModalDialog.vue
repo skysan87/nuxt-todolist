@@ -66,6 +66,7 @@
                   <input
                     :value="inputValue.start"
                     :disabled="forbid.range"
+                    :class="{'btn-disabled': forbid.range}"
                     class="input-text"
                     v-on="inputEvents.start"
                   >
@@ -85,6 +86,7 @@
                   <input
                     :value="inputValue.end"
                     :disabled="forbid.range"
+                    :class="{'btn-disabled': forbid.range}"
                     class="input-text"
                     v-on="inputEvents.end"
                   >
