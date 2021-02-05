@@ -3,5 +3,9 @@ import Vcalendar from 'v-calendar'
 
 Vue.use(Vcalendar, {
   datePickerTintColor: '#F00',
-  datePickerShowDayPopover: false
+  datePickerShowDayPopover: false,
+  masks: {
+    input: ['YYYY/MM/DD', 'L'],
+    title: 'YYYY MMMM'
+  }
 })

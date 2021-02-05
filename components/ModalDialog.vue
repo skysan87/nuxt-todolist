@@ -57,19 +57,39 @@
           <div class="flex">
             <v-date-picker
               v-model="range"
-              mode="range"
+              is-range
               class="flex-1"
-              :popover="{ placement: 'top', visibility: 'click' }"
               :disabled="forbid.range"
             >
-              <input
-                slot-scope="{ inputProps, inputEvents }"
-                class="input-text"
-                v-bind="inputProps"
-                :class="{'btn-disabled': forbid.range}"
-                :disabled="forbid.range"
-                v-on="inputEvents"
-              >
+              <template #default="{ inputValue, inputEvents }">
+                <div class="flex justify-center items-center">
+                  <input
+                    :value="inputValue.start"
+                    :disabled="forbid.range"
+                    class="input-text"
+                    v-on="inputEvents.start"
+                  >
+                  <svg
+                    class="w-10 h-8 mx-2"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="3"
+                      d="M14 5l7 7m0 0l-7 7m7-7H3"
+                    />
+                  </svg>
+                  <input
+                    :value="inputValue.end"
+                    :disabled="forbid.range"
+                    class="input-text"
+                    v-on="inputEvents.end"
+                  >
+                </div>
+              </template>
             </v-date-picker>
             <button
               type="button"
@@ -77,7 +97,7 @@
               tabindex="-1"
               :disabled="forbid.range"
               :class="{'btn-disabled': forbid.range}"
-              @click="range = null"
+              @click="initRange"
             >
               Clear
             </button>
@@ -218,6 +238,9 @@ export default {
     deleteTodo () {
       this.$emit('delete', this.todo.id)
       this.$destroy()
+    },
+    initRange () {
+      this.range = { start: null, end: null }
     }
   }
 }
