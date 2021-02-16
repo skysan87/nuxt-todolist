@@ -182,12 +182,25 @@ export default {
       this.dialog = new DialogController({
         propsData: {
           parent: this.$root.$el,
-          title: todolist.title
+          title: todolist.title,
+          isCreateMode: false
         }
       })
       this.dialog.$on('add', (title) => {
         todolist.title = title
         this.$store.dispatch('todolist/update', todolist)
+      })
+      this.dialog.$on('deleteList', () => {
+        this.$store.dispatch('todolist/delete', listId)
+          .then(() => {
+            // 先頭のリストに遷移
+            const firstListId = this.$store.getters['todolist/getFistListId']
+            this.currentListId = firstListId
+            this.$router.push(`/todolist/${firstListId}`)
+          })
+          .catch((error) => {
+            this.$toast.error(error.message)
+          })
       })
       this.dialog.$mount()
     },
