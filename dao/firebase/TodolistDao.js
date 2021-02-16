@@ -2,13 +2,13 @@ import { firestore, getServerTimestamp } from '@/plugins/firebase'
 import { Todolist } from '@/model/Todolist'
 import { TodolistDaoBase } from '@/dao/base/TodolistDaoBase'
 
+const todosRef = firestore.collection('todos')
 const todolistsRef = firestore.collection('lists')
 
 export class TodolistDao extends TodolistDaoBase {
   async getLists (userId) {
     try {
       const querySnapshot = await todolistsRef
-        .where('deleteFlag', '==', false)
         .where('userId', '==', userId)
         .get()
       const lists = querySnapshot.docs.map((doc) => {
@@ -60,10 +60,18 @@ export class TodolistDao extends TodolistDaoBase {
 
   async delete (id) {
     try {
-      await todolistsRef.doc(id).update({
-        deleteFlag: true,
-        updatedAt: getServerTimestamp()
+      await todolistsRef.doc(id).delete()
+
+      const querySnapshot = await todosRef.where('listId', '==', id).get()
+      const todoIds = querySnapshot.docs.map(doc => doc.id)
+
+      const batch = firestore.batch()
+      todoIds.forEach((id) => {
+        const docRef = todosRef.doc(id)
+        batch.delete(docRef)
       })
+      await batch.commit()
+
       return true
     } catch (error) {
       console.error(error)

@@ -6,7 +6,7 @@
         <div tabindex="0" class="dummy" />
 
         <div class="mx-2 mb-6">
-          <label class="input-label">List Name</label>
+          <label class="input-label">Project Name</label>
           <input
             ref="inputField"
             v-model="inputText"
@@ -27,6 +27,13 @@
           <button class="btn btn-outline mx-1" @click="cancel">
             Cancel
           </button>
+          <button
+            v-if="!isCreateMode"
+            class="btn btn-red-outline mx-1"
+            @click="deleteList"
+          >
+            Delete
+          </button>
         </div>
 
         <!-- フォーカスアウト防止 -->
@@ -46,7 +53,13 @@ export default {
     },
     title: {
       type: String,
-      required: false
+      required: false,
+      default: ''
+    },
+    isCreateMode: {
+      type: Boolean,
+      required: false,
+      default: true
     }
   },
   data () {
@@ -79,6 +92,12 @@ export default {
     },
     cancel () {
       this.$destroy()
+    },
+    deleteList () {
+      if (confirm(`プロジェクト: ${this.title} を削除しますか？`)) {
+        this.$emit('deleteList')
+        this.$destroy()
+      }
     },
     checkFocus (ev) {
       if (ev.target !== null && ev.target.className === 'dummy') {
