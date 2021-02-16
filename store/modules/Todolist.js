@@ -61,8 +61,8 @@ export default {
       state.lists[index] = payload
     },
 
-    delete (state, payload) {
-      const index = state.lists.findIndex(v => v.id === payload.id)
+    delete (state, id) {
+      const index = state.lists.findIndex(v => v.id === id)
       state.lists.splice(index, 1)
     }
   },
@@ -112,16 +112,20 @@ export default {
       }
     },
 
-    async delete ({ commit, dispatch, state }, id) {
-      if (state.lists.length <= 1) {
-        console.warn('At least one List must be left.')
-        return
-      }
+    delete ({ commit, state }, id) {
+      return new Promise((resolve, reject) => {
+        if (state.lists.length <= 1) {
+          reject(new Error('これ以上削除できません'))
+          return
+        }
 
-      if (await dao.delete(id)) {
-        commit('delete', id)
-        dispatch('todo/init', state.lists[0].id, { root: true })
-      }
+        if (dao.delete(id)) {
+          commit('delete', id)
+          resolve()
+        } else {
+          reject(new Error('削除できませんでした'))
+        }
+      })
     }
   }
 }
