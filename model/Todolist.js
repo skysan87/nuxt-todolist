@@ -12,7 +12,6 @@ export class Todolist {
 
   getData () {
     const params = {
-      id: this.id,
       title: this.title,
       detail: this.detail,
       deleteFlag: false,
