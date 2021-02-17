@@ -14,11 +14,10 @@ export class TodolistDaoBase {
     return lists
   }
 
-  async add(title, orderIndex, userId) {
-    const list = new Todolist('', {})
+  async add(params, orderIndex, userId) {
+    const list = new Todolist('', params)
     list.id = Date.now().toString()
     list.orderIndex = orderIndex
-    list.title = title
     list.userId = userId
 
     return {

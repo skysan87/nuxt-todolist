@@ -2,6 +2,7 @@ export class Todolist {
   constructor (id, params) {
     this.id = id
     this.title = params.title || ''
+    this.detail = params.detail || ''
     this.userId = params.userId || ''
     this.maxIndex = params.maxIndex || 0
     this.orderIndex = params.orderIndex || 0
@@ -11,8 +12,8 @@ export class Todolist {
 
   getData () {
     const params = {
-      id: this.id,
       title: this.title,
+      detail: this.detail,
       deleteFlag: false,
       orderIndex: this.orderIndex,
       userId: this.userId,

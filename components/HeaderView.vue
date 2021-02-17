@@ -29,12 +29,23 @@
     >
       Edit
     </button>
+    <button
+      class="btn btn-regular ml-2"
+      ontouchend=""
+      @click="openListDialog"
+    >
+      詳細
+    </button>
   </div>
 </template>
 
 <script>
+import Vue from 'vue'
+import NewListDialog from '@/components/NewListDialog'
 import { TaskState } from '@/util/TaskState'
 import { getStateColor } from '@/util/StateColor'
+
+const DialogController = Vue.extend(NewListDialog)
 
 export default {
   name: 'HeaderView',
@@ -92,6 +103,23 @@ export default {
     },
     switchRemoveButton () {
       this.$store.dispatch('todo/switchEdit')
+    },
+    openListDialog () {
+      const listId = this.$store.getters['todo/getCurrentListId']
+      const todolist = this.$store.getters['todolist/getListById'](listId)
+
+      delete this.dialog
+      this.dialog = new DialogController({
+        propsData: {
+          parent: this.$root.$el,
+          target: todolist,
+          isCreateMode: true // 削除ボタンを表示しない
+        }
+      })
+      this.dialog.$on('add', (todolist) => {
+        this.$store.dispatch('todolist/update', todolist)
+      })
+      this.dialog.$mount()
     }
   }
 }
