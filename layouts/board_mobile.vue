@@ -185,24 +185,10 @@ export default {
       this.dialog.$on('add', this.addList)
       this.dialog.$mount()
     },
-    editTodolist (listId) {
-      delete this.dialog
-      const todolist = this.$store.getters['todolist/getListById'](listId)
-      this.dialog = new DialogController({
-        propsData: {
-          parent: this.$root.$el,
-          title: todolist.title
-        }
-      })
-      this.dialog.$on('add', (title) => {
-        todolist.title = title
-        this.$store.dispatch('todolist/update', todolist)
-      })
-      this.dialog.$mount()
-    },
-    addList (title) {
-      this.$store.dispatch('todolist/add', title)
+    addList (todolist) {
+      this.$store.dispatch('todolist/add', todolist.getData())
         .then(() => {
+          this.isMenuExpanded = false
           this.$toast.success('新しいプロジェクトを登録しました')
           // 新規作成画面に遷移
           const listId = this.$store.getters['todo/getCurrentListId']
