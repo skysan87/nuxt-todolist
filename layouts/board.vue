@@ -170,7 +170,8 @@ export default {
       delete this.dialog
       this.dialog = new DialogController({
         propsData: {
-          parent: this.$root.$el
+          parent: this.$root.$el,
+          isCreateMode: true
         }
       })
       this.dialog.$on('add', this.addList)
@@ -187,7 +188,7 @@ export default {
         }
       })
       this.dialog.$on('add', (todolist) => {
-        this.$store.dispatch('todolist/update', todolist.getData())
+        this.$store.dispatch('todolist/update', todolist)
       })
       this.dialog.$on('deleteList', () => {
         this.$store.dispatch('todolist/delete', listId)
