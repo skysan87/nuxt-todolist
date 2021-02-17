@@ -170,7 +170,8 @@ export default {
       delete this.dialog
       this.dialog = new DialogController({
         propsData: {
-          parent: this.$root.$el
+          parent: this.$root.$el,
+          isCreateMode: true
         }
       })
       this.dialog.$on('add', this.addList)
@@ -182,12 +183,11 @@ export default {
       this.dialog = new DialogController({
         propsData: {
           parent: this.$root.$el,
-          title: todolist.title,
+          target: todolist,
           isCreateMode: false
         }
       })
-      this.dialog.$on('add', (title) => {
-        todolist.title = title
+      this.dialog.$on('add', (todolist) => {
         this.$store.dispatch('todolist/update', todolist)
       })
       this.dialog.$on('deleteList', () => {
@@ -204,8 +204,8 @@ export default {
       })
       this.dialog.$mount()
     },
-    addList (title) {
-      this.$store.dispatch('todolist/add', title)
+    addList (todolist) {
+      this.$store.dispatch('todolist/add', todolist.getData())
         .then(() => {
           this.$toast.success('新しいプロジェクトを登録しました')
           // 新規作成画面に遷移

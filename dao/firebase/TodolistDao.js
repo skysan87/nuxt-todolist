@@ -21,9 +21,8 @@ export class TodolistDao extends TodolistDaoBase {
     }
   }
 
-  async add (title, orderIndex, userId) {
-    const list = new Todolist('', {})
-    list.title = title
+  async add (params, orderIndex, userId) {
+    const list = new Todolist('', params)
     list.userId = userId
     list.orderIndex = orderIndex
     list.createdAt = getServerTimestamp()
@@ -49,6 +48,7 @@ export class TodolistDao extends TodolistDaoBase {
     try {
       await todolistsRef.doc(list.id).update({
         title: list.title,
+        detail: list.detail,
         updatedAt: getServerTimestamp()
       })
       return true
