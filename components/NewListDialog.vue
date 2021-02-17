@@ -6,10 +6,10 @@
         <div tabindex="0" class="dummy" />
 
         <div class="mx-2 mb-6">
-          <label class="input-label">Project Name</label>
+          <label class="input-label">プロジェクト名</label>
           <input
             ref="inputField"
-            v-model="inputText"
+            v-model="todolist.title"
             class="input-text"
             :class="{'border border-red-500': errorMsg !== ''}"
             type="text"
@@ -18,6 +18,16 @@
           <p v-show="(errorMsg !== '')" class="text-red-500 text-xs italic">
             {{ errorMsg }}
           </p>
+        </div>
+
+        <div class="mx-2 mb-6">
+          <label class="input-label">説明</label>
+          <textarea
+            v-model="todolist.detail"
+            class="input-textarea resize-none"
+            maxlength="2000"
+            rows="6"
+          />
         </div>
 
         <div class="flex flex-row-reverse mx-2">
@@ -44,6 +54,8 @@
 </template>
 
 <script>
+import { Todolist } from '@/model/Todolist'
+
 export default {
   name: 'NewListDialog',
   props: {
@@ -51,10 +63,9 @@ export default {
       type: Element,
       require: true
     },
-    title: {
-      type: String,
-      required: false,
-      default: ''
+    target: {
+      type: Object,
+      require: true
     },
     isCreateMode: {
       type: Boolean,
@@ -64,7 +75,7 @@ export default {
   },
   data () {
     return {
-      inputText: this.title || '',
+      todolist: new Todolist('', {}),
       errorMsg: ''
     }
   },
@@ -72,7 +83,7 @@ export default {
     this.parent.appendChild(this.$el)
     this.$nextTick(() => {
       this.$el.focus()
-      this.$refs.inputField.focus()
+      this.init()
       document.addEventListener('focusin', this.checkFocus, false)
     })
   },
@@ -81,10 +92,17 @@ export default {
     this.$el.remove()
   },
   methods: {
+    init () {
+      if (this.target !== null) {
+        Object.assign(this.todolist, this.target)
+      }
+
+      this.$refs.inputField.focus()
+    },
     update () {
-      if (this.inputText !== '') {
+      if (this.todolist.title !== '') {
         this.errorMsg = ''
-        this.$emit('add', this.inputText)
+        this.$emit('add', this.todolist)
         this.$destroy()
       } else {
         this.errorMsg = '必須項目です'
@@ -94,7 +112,7 @@ export default {
       this.$destroy()
     },
     deleteList () {
-      if (confirm(`プロジェクト: ${this.title} を削除しますか？`)) {
+      if (confirm(`プロジェクト: ${this.todolist.title} を削除しますか？`)) {
         this.$emit('deleteList')
         this.$destroy()
       }

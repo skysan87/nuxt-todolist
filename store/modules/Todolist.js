@@ -1,5 +1,6 @@
 import orderBy from 'lodash/orderBy'
 import { CreateTodolistDao } from '@/dao'
+import { Todolist } from '@/model/Todolist'
 
 const dao = CreateTodolistDao()
 
@@ -58,7 +59,7 @@ export default {
 
     update (state, payload) {
       const index = state.lists.findIndex(v => v.id === payload.id)
-      state.lists[index] = payload
+      Object.assign(state.lists[index], payload)
     },
 
     delete (state, id) {
@@ -77,7 +78,8 @@ export default {
         // dispatch('todo/init', lists[0].id, { root: true })
       } else {
         // Add First List
-        const result = await dao.add('inbox', 1, userId)
+        const list = new Todolist('', { title: 'inbox' })
+        const result = await dao.add(list.getData(), 1, userId)
         if (result.isSuccess) {
           commit('init', [result.value])
           // dispatch('todo/init', result.value.id, { root: true })
@@ -86,14 +88,15 @@ export default {
       console.log('todolist init')
     },
 
-    add ({ commit, dispatch, state, rootGetters, getters }, title) {
+    add ({ commit, dispatch, state, rootGetters, getters }, params) {
       return new Promise((resolve, reject) => {
         if (getters.size + 1 > MAX_SIZE) {
           reject(new Error('これ以上登録できません'))
           return
         }
         const userId = rootGetters['user/userId']
-        dao.add(title, state.maxIndex + 1, userId).then((result) => {
+
+        dao.add(params, state.maxIndex + 1, userId).then((result) => {
           if (result.isSuccess) {
             commit('add', result.value)
             dispatch('todo/initNewList', result.value.id, { root: true })
@@ -105,10 +108,10 @@ export default {
       })
     },
 
-    async update ({ commit }, payload) {
-      const isSuccess = await dao.update(payload)
+    async update ({ commit }, list) {
+      const isSuccess = await dao.update(list)
       if (isSuccess) {
-        commit('update', payload)
+        commit('update', list)
       }
     },
 
