@@ -65,7 +65,7 @@ export default {
     },
     target: {
       type: Object,
-      require: true
+      require: false
     },
     isCreateMode: {
       type: Boolean,
