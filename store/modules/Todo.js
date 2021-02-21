@@ -4,6 +4,7 @@ import { TodayFilter } from '@/util/TodayFilter'
 import { CreateTodoDao } from '@/dao'
 import { getDateNumber } from '@/util/MomentEx'
 import { Todo } from '@/model/Todo'
+import { Habit } from '@/model/Habit'
 
 const dao = CreateTodoDao()
 
@@ -18,6 +19,40 @@ function getFilteredArray (array, option, isAllSelected) {
     // new array
     return array.concat()
   }
+}
+
+/**
+ * 習慣タスクの実績計算
+ * @description 完了した場合は実績を更新、完了でなくなった場合は実績を戻す
+ * @param {Habit} habit
+ * @param {Todo} oldTodo
+ * @param {Todo} newTodo
+ * @return {{Habit, Number}} {habit, habitCounter}
+ */
+function calcHabitSummary (habit, oldTodo, newTodo) {
+  let habitCounter = 0
+  let lastActivityDate = oldTodo.lastActivityDate
+
+  if (oldTodo.state === newTodo.state) {
+    return { habit, habitCounter }
+  }
+
+  if (newTodo.state === TaskState.Done.value) {
+    habitCounter = 1
+    lastActivityDate = getDateNumber()
+  } else if (oldTodo.state === TaskState.Done.value) {
+    // Doneから変更された場合はリセット
+    habitCounter = -1
+    lastActivityDate = oldTodo.lastActivityDate
+  }
+
+  habit.updateResult(newTodo.state === TaskState.Done.value)
+
+  habit.totalActivityCount += habitCounter
+  habit.duration += habitCounter
+  habit.lastActivityDate = lastActivityDate
+
+  return { habit, habitCounter }
 }
 
 export default {
@@ -272,68 +307,76 @@ export default {
       }
     },
 
-    async update ({ commit, getters, rootGetters }, payload) {
-      const lastTodo = getters.getTodoById(payload.id)
-      const stateChanged = lastTodo.state !== payload.state
+    /**
+     * タスクの更新
+     * @param {*} context
+     * @param {Todo} newTodo
+     */
+    async update ({ commit, getters, rootGetters }, newTodo) {
+      const oldTodo = getters.getTodoById(newTodo.id)
+      const stateChanged = oldTodo.state !== newTodo.state
       if (stateChanged) {
-        payload.stateChangeDate = getDateNumber()
+        newTodo.stateChangeDate = getDateNumber()
       }
 
-      if (payload.type === 'habit' && stateChanged) {
-        let habitCounter = 0
-        let lastActivityDate = null
-        if (payload.state === TaskState.Done.value) {
-          habitCounter = 1
-          lastActivityDate = getDateNumber()
-        } else {
-          habitCounter = -1
-          lastActivityDate = payload.lastActivityDate
+      if (newTodo.type === 'habit') {
+        if (!stateChanged) {
+          // ステータス以外は変更できないため、更新しない
+          return
         }
-        const habitRootId = rootGetters['habit/getRootId']
-        if (await dao.updateHabit(payload, habitRootId, habitCounter, lastActivityDate)) {
-          commit('update', payload)
+        const habit = rootGetters['habit/getById'](newTodo.listId)
+        const { habit: updatedHabit, habitCounter } = calcHabitSummary(habit, oldTodo, newTodo)
+
+        if (await dao.updateHabit(newTodo, updatedHabit, habitCounter)) {
+          commit('update', newTodo)
+          commit('habit/update', updatedHabit, { root: true })
         }
       } else {
-        if (await dao.update(payload)) {
-          commit('update', payload)
+        if (await dao.update(newTodo)) {
+          commit('update', newTodo)
         }
       }
     },
 
+    /**
+     * タスクのステータス更新
+     * @param {*} context
+     * @param {String} id Todo.id
+     */
     async changeState ({ commit, state, rootGetters }, id) {
       const index = state.todos.findIndex(v => v.id === id)
       if (index < 0) {
         return
       }
 
-      const item = state.todos[index]
-      let habitCounter = 0
-      let lastActivityDate = null
-      switch (item.state) {
+      const oldTodo = state.todos[index]
+      const newTodo = new Todo('', {})
+      Object.assign(newTodo, oldTodo)
+
+      switch (oldTodo.state) {
         case TaskState.Todo.value:
-          item.state = TaskState.InProgress.value
+          newTodo.state = TaskState.InProgress.value
           break
         case TaskState.InProgress.value:
-          habitCounter = 1
-          lastActivityDate = getDateNumber()
-          item.state = TaskState.Done.value
+          newTodo.state = TaskState.Done.value
           break
         case TaskState.Done.value:
-          habitCounter = -1
-          lastActivityDate = item.lastActivityDate
-          item.state = TaskState.Todo.value
+          newTodo.state = TaskState.Todo.value
           break
       }
-      item.stateChangeDate = getDateNumber()
+      newTodo.stateChangeDate = getDateNumber()
 
-      if (item.type === 'habit' && habitCounter !== 0) {
-        const habitRootId = rootGetters['habit/getRootId']
-        if (await dao.updateHabit(item, habitRootId, habitCounter, lastActivityDate)) {
-          commit('update', item)
+      if (newTodo.type === 'habit') {
+        const habit = rootGetters['habit/getById'](newTodo.listId)
+        const { habit: updatedHabit, habitCounter } = calcHabitSummary(habit, oldTodo, newTodo)
+
+        if (await dao.updateHabit(newTodo, updatedHabit, habitCounter)) {
+          commit('update', newTodo)
+          commit('habit/update', updatedHabit, { root: true })
         }
       } else {
-        if (await dao.update(item)) {
-          commit('update', item)
+        if (await dao.update(newTodo)) {
+          commit('update', newTodo)
         }
       }
     }
