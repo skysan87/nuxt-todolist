@@ -14,6 +14,7 @@ module.exports = {
   // add your custom rules here
   rules: {
     'no-lonely-if': 'off',
-    'no-unused-vars': 'off'
+    'no-unused-vars': 'off',
+    'dot-notation': 'off'
   }
 }
