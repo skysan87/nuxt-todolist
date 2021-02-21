@@ -1,6 +1,7 @@
 import { firestore, getServerTimestamp } from '@/plugins/firebase'
 import { TodoDaoBase } from '@/dao/base/TodoDaoBase'
 import { Todo } from '@/model/Todo'
+import { Habit } from '@/model/Habit'
 import { TaskState } from '@/util/TaskState'
 
 const todosRef = firestore.collection('todos')
@@ -188,9 +189,9 @@ export class TodoDao extends TodoDaoBase {
     }
   }
 
-  async updateHabit (todo, habitRootId, habitCounter, lastActivityDate) {
+  async updateHabit (todo, habit, habitCounter) {
     // habitsRef
-    const habitDocRef = habitsRef.doc(habitRootId).collection('habits').doc(todo.listId)
+    const habitDocRef = habitsRef.doc(habit.rootId).collection('habits').doc(todo.listId)
     const todoDocRef = todosRef.doc(todo.id)
 
     try {
@@ -200,12 +201,16 @@ export class TodoDao extends TodoDaoBase {
             throw Object.assingn(new Error('habit does not exist.'))
           }
 
-          const newTotalActivityCount = habitDoc.data().totalActivityCount + habitCounter
-          const newDuration = habitDoc.data().duration + habitCounter
+          // 最新の物を反映
+          const latestHabit = habitDoc.data()
+          habit.totalActivityCount = latestHabit.totalActivityCount + habitCounter
+          habit.duration = latestHabit.duration + habitCounter
+
           transaction.update(habitDocRef, {
-            lastActivityDate, // 最終実行日
-            totalActivityCount: newTotalActivityCount,
-            duration: newDuration,
+            result: habit.result, // 実績
+            lastActivityDate: habit.lastActivityDate, // 最終実行日
+            totalActivityCount: habit.totalActivityCount,
+            duration: habit.duration,
             updatedAt: getServerTimestamp()
           })
 
