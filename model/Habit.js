@@ -22,12 +22,19 @@ export class Habit {
     this.duration = params.duration || 0 // 継続期間
     this.maxduration = params.maxduration || 0 // 最長継続期間
     this.summaryUpdatedAt = params.summaryUpdatedAt || null // 実績更新日
+    const today = new Date()
     // 実施予定日
     if (!params.plan) {
       this.plan = {}
-      this.plan[`${new Date().getFullYear()}`] = this.initYearPlan()
+      this.plan[`${today.getFullYear()}`] = this.initYearPlan()
     } else {
       this.plan = params.plan
+    }
+    if (!params.result) {
+      this.result = {}
+      this.result[`${today.getFullYear()}`] = this.initYearPlan()
+    } else {
+      this.result = params.result
     }
     this.createdAt = params.createdAt || null
     this.updatedAt = params.updatedAt || null
@@ -65,6 +72,7 @@ export class Habit {
       totalActivityCount: this.totalActivityCount,
       summaryUpdatedAt: this.summaryUpdatedAt,
       plan: this.plan,
+      result: this.result,
       createdAt: this.createdAt,
       updatedAt: this.updatedAt
     }
@@ -214,6 +222,67 @@ export class Habit {
       }
     }
     return false
+  }
+
+  /**
+   * 実績の更新
+   * @description タスクが完了したら、実績にフラグを立てる
+   * @param isDone タスクが完了したか
+   */
+  updateResult (isDone) {
+    const today = new Date()
+    const year = today.getFullYear()
+    const month = today.getMonth()
+    const day = today.getDate()
+    const unzipResult = this.unzip(this.result[year][month])
+
+    unzipResult[day] = isDone ? '1' : '0'
+    this.result[year][month] = this.zip(unzipResult)
+  }
+
+  /**
+   * 対象月の実施予定日を取得
+   * @param {Number} year 年(西暦)
+   * @param {Number} month 月(0-11)
+   * @return {String[]} 日付
+   */
+  getPlanDaysOfMonth (year, month) {
+    return this.getTargetDays(this.plan, year, month)
+  }
+
+  /**
+   * 対象月の実績日を取得
+   * @param {Number} year 年(西暦)
+   * @param {Number} month 月(0-11)
+   * @return {String[]} 日付
+   */
+  getResultDaysOfMonth (year, month) {
+    return this.getTargetDays(this.result, year, month)
+  }
+
+  /**
+   * 実施予定/実績から対象月の予定を取得
+   * @param {Array[]} zipedArray plan/result
+   * @param {Number} year 年(西暦)
+   * @param {Number} month 月(0-11)
+   * @return {String[]} 日付
+   */
+  getTargetDays (zipedArray, year, month) {
+    if (!zipedArray[year]) {
+      return []
+    }
+
+    const lastDay = new Date(year, month + 1, 0).getDate()
+    const unzipedDays = this.unzip(zipedArray[year][month])
+    const targetDays = []
+    const actualMonth = month + 1
+
+    for (let i = 1; i <= lastDay; i++) {
+      if (unzipedDays[i] === '1') {
+        targetDays.push(`${year}-${actualMonth}-${i}`)
+      }
+    }
+    return targetDays
   }
 
   initYearPlan () {

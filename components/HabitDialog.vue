@@ -55,6 +55,9 @@
         <div v-if="!isCreateMode" class="modal-body">
           <label class="input-label">実績</label>
           <div>
+            <v-calendar is-expanded :attributes="calenderAttributes" @update:from-page="updateCalendar" />
+          </div>
+          <div>
             <span class="pr-4">継続期間 {{ habit.duration }}</span>
             <span class="pr-4">最大継続期間 {{ habit.maxduration }}</span>
             <span class="pr-4">通算 {{ habit.totalActivityCount }}</span>
@@ -109,7 +112,8 @@ export default {
       errorMsg: { title: '', frequency: '' },
       weekdays: Habit.WEEKDAYS,
       FREQ_DAILY: Habit.FREQ_DAILY,
-      FREQ_WEEKLY: Habit.FREQ_WEEKLY
+      FREQ_WEEKLY: Habit.FREQ_WEEKLY,
+      calenderAttributes: []
     }
   },
   computed: {
@@ -134,6 +138,7 @@ export default {
     init () {
       Object.assign(this.habit, this.target)
       this.errorMsg = { title: '', frequency: '' }
+      this.initCalendar()
     },
     update () {
       if (this.habit.frequency === Habit.FREQ_DAILY) {
@@ -171,6 +176,32 @@ export default {
         this.errorMsg.frequency = '1つ以上選択してください'
       }
       return valid
+    },
+    initCalendar () {
+      const today = new Date()
+      this.setCalendar(today.getFullYear(), today.getMonth())
+    },
+    updateCalendar (page) {
+      this.setCalendar(page.year, page.month - 1)
+    },
+    /**
+     * カレンダーの表示情報を設定
+     * @param {Number} year 年(西暦)
+     * @param {Number} month 月(0-11)
+     */
+    setCalendar (year, month) {
+      this.calenderAttributes = [
+        {
+          key: 'plan', // 実施予定
+          dot: 'blue',
+          dates: this.habit.getPlanDaysOfMonth(year, month)
+        },
+        {
+          key: 'result', // 実績
+          highlight: { color: 'blue', fillMode: 'light' },
+          dates: this.habit.getResultDaysOfMonth(year, month)
+        }
+      ]
     }
   }
 }
