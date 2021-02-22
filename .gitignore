@@ -93,3 +93,4 @@ schedule.gantt
 .vscode/
 .firebase/
 .firebaserc
+config/
