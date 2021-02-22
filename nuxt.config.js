@@ -52,7 +52,13 @@ export default {
     '@nuxtjs/axios',
     '@nuxtjs/pwa',
     // Doc: https://github.com/nuxt-community/dotenv-module
-    '@nuxtjs/dotenv',
+    ['@nuxtjs/dotenv',
+      {
+        filename: process.env.NODE_ENV === 'production'
+          ? './config/.env.production'
+          : './config/.env.develop'
+      }
+    ],
     '@nuxtjs/toast'
   ],
   router: {
