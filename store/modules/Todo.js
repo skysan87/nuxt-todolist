@@ -171,13 +171,15 @@ export default {
       commit('init', { data: [], listId })
     },
 
-    async initTodaylist ({ commit, rootGetters }, todayFilterValue) {
+    async initTodaylist ({ commit, dispatch, rootGetters }, todayFilterValue) {
       // 描画初期化
       commit('initToday', { data: [] })
       const filterValue = Number(todayFilterValue)
       const userId = rootGetters['user/userId']
       const today = getDateNumber() // YYYYMMDD
-      // 1. 今日の習慣をメモリgettersで取得
+      // 1. 今日の習慣を取得
+      // NOTE: /todayは初期ページ
+      await dispatch('habit/init', null, { root: true })
       const todaysHabits = rootGetters['habit/getTodayList']
       // 2. 習慣のToDoをサーバーから取得
       const habitTodo = await dao.getHabits(userId, today)
@@ -224,6 +226,8 @@ export default {
           break
       }
       commit('initToday', { data: todos })
+
+      console.log('todaylist init')
     },
 
     async changeOrder ({ commit, getters }, params) {
