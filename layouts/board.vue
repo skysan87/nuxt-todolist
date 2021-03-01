@@ -17,6 +17,9 @@
               <fa :icon="['fas', 'caret-down']" :class="{'fa-rotate-180': isMenuExpanded}" />
             </div>
             <div v-show="isMenuExpanded" class="flex-none mt-2">
+              <a class="block px-6 text-sm hover:bg-blue-800 hover:opacity-75 cursor-pointer" @click.left="updateHeaderText">
+                メッセージを更新
+              </a>
               <a class="block px-6 text-sm hover:bg-blue-800 hover:opacity-75 cursor-pointer" @click.left="logout">
                 ログアウト
               </a>
@@ -97,16 +100,16 @@
 <script>
 import Vue from 'vue'
 import NewListDialog from '@/components/NewListDialog'
+import InputDialog from '@/components/InputDialog'
 import { HabitFilter } from '@/util/HabitFilter'
 import { TodayFilter } from '@/util/TodayFilter'
 
 const DialogController = Vue.extend(NewListDialog)
+const InputDialogController = Vue.extend(InputDialog)
 const viewType = { Todo: 0, Habit: 1, Today: 2 }
-const activeGoogleAuth = process.env.GOOGLE_AUTH === '1'
 
 export default {
   data () {
-    const defaultMsg = !activeGoogleAuth ? 'このアプリはデモサイトです。タブを閉じるとは再ログインできません。' : ''
     return {
       userName: this.$store.getters['user/displayName'],
       isMenuExpanded: false,
@@ -115,8 +118,8 @@ export default {
       viewType,
       selectedTodayFilter: TodayFilter.Remain.value,
       activeItemId: '',
-      globalMessage: defaultMsg,
       dialog: null,
+      inputDialog: null,
       currentListId: ''
     }
   },
@@ -133,6 +136,12 @@ export default {
     currentFilter: {
       get () {
         return this.$store.getters['habit/getCurrentFilter']
+      }
+    },
+    globalMessage: {
+      get () {
+        const config = this.$store.getters['config/getConfig']
+        return config !== null ? config.globalMessage : ''
       }
     },
     selectedType: {
@@ -153,6 +162,7 @@ export default {
   methods: {
     init () {
       this.$store.dispatch('todolist/init')
+      this.$store.dispatch('config/init')
     },
     onSelectToday (filter) {
       this.selectedTodayFilter = filter
@@ -215,6 +225,20 @@ export default {
         .catch((error) => {
           this.$toast.error(error.message)
         })
+    },
+    updateHeaderText () {
+      delete this.inputDialog
+      this.inputDialog = new InputDialogController({
+        propsData: {
+          parent: this.$root.$el,
+          title: 'ヘッダーメッセージを変更',
+          message: this.globalMessage
+        }
+      })
+      this.inputDialog.$on('update', (message) => {
+        this.$store.dispatch('config/updateMessage', message)
+      })
+      this.inputDialog.$mount()
     },
     logout () {
       this.$store
