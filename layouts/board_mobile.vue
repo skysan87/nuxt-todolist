@@ -178,6 +178,7 @@ export default {
   methods: {
     init () {
       this.$store.dispatch('todolist/init')
+      this.$store.dispatch('config/init')
     },
     onSelectToday (filter) {
       this.isMenuExpanded = false
