@@ -30,9 +30,13 @@ export default {
   actions: {
     async init ({ commit, rootGetters }) {
       const userId = rootGetters['user/userId']
-      let config = await dao.getByUserId(userId)
+      const configList = await dao.getByUserId(userId)
 
-      if (config === null || config.id === '') {
+      let config
+
+      if (configList.length > 0) {
+        config = configList[0]
+      } else {
         const result = await dao.add(userId)
         if (result.isSuccess) {
           config = result.value

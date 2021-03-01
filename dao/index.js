@@ -7,6 +7,7 @@ import { TodoDao as TodoFB } from '@/dao/firebase/TodoDao'
 import { TodolistDao as TodolistFB } from '@/dao/firebase/TodolistDao'
 import { UserDao as UserFB } from '@/dao/firebase/UserDao'
 import { HabitDao as HabitFB } from '@/dao/firebase/HabitDao'
+import { ConfigDao as ConfigFB } from '@/dao/firebase/ConfigDao'
 
 const DB_MODE = process.env.DATABASE_MODE
 
@@ -27,7 +28,5 @@ export function CreateHabitDao () {
 }
 
 export function CreateConfigDao () {
-  return new ConfigBase()
-  // TODO: firebase
-  // return DB_MODE === 'local' ? new ConfigBase() : new ConfigBase()
+  return DB_MODE === 'local' ? new ConfigBase() : new ConfigFB()
 }
