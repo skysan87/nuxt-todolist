@@ -10,6 +10,7 @@ import Auth from '@/components/Auth'
 export default {
   components: {
     Auth
-  }
+  },
+  layout: 'default'
 }
 </script>
