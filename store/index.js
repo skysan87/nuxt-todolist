@@ -5,6 +5,7 @@ import todo from '@/store/modules/Todo'
 import todolist from '@/store/modules/Todolist'
 import user from '@/store/modules/User'
 import habit from '@/store/modules/Habit'
+import config from '@/store/modules/Config'
 
 Vue.use(Vuex)
 
@@ -14,6 +15,7 @@ export default() => new Vuex.Store({
     todo,
     todolist,
     user,
-    habit
+    habit,
+    config
   }
 })

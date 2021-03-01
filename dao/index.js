@@ -2,6 +2,7 @@ import { TodoDaoBase as TodoBase } from '@/dao/base/TodoDaoBase'
 import { TodolistDaoBase as TodolistBase } from '@/dao/base/TodolistDaoBase'
 import { UserDaoBase as UserBase } from '@/dao/base/UserDaoBase'
 import { HabitDaoBase as HabitBase } from '@/dao/base/HabitDaoBase'
+import { ConfigDaoBase as ConfigBase } from '@/dao/base/ConfigDaoBase'
 import { TodoDao as TodoFB } from '@/dao/firebase/TodoDao'
 import { TodolistDao as TodolistFB } from '@/dao/firebase/TodolistDao'
 import { UserDao as UserFB } from '@/dao/firebase/UserDao'
@@ -23,4 +24,10 @@ export function CreateUserDao () {
 
 export function CreateHabitDao () {
   return DB_MODE === 'local' ? new HabitBase() : new HabitFB()
+}
+
+export function CreateConfigDao () {
+  return new ConfigBase()
+  // TODO: firebase
+  // return DB_MODE === 'local' ? new ConfigBase() : new ConfigBase()
 }
