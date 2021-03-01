@@ -1,7 +1,7 @@
 <template>
   <transition name="layout" mode="out-in">
     <div class="app-container">
-      <div class="app-top_nav bg-red-300 text-center">
+      <div class="app-top_nav bg-green-400 text-center">
         {{ globalMessage }}
       </div>
       <div class="app-workspace-layout">
