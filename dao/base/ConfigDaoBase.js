@@ -11,7 +11,7 @@ export class ConfigDaoBase {
     config.id = Date.now().toString()
     config.userId = userId
     config.globalMessage = 'this is demo message.'
-    return config
+    return [ config ]
   }
 
   async add (userId) {
