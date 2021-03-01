@@ -86,6 +86,17 @@
                     # {{ habitfilter.label }}
                   </div>
                 </nuxt-link>
+                <div class="mt-5 px-4 flex justify-between items-center">
+                  <div class="font-bold text-lg">
+                    設定
+                  </div>
+                </div>
+                <div
+                  class="py-1 px-5 text-sm"
+                  @click.left="updateHeaderText"
+                >
+                  ヘッダーメッセージ
+                </div>
               </div>
             </div>
           </div>
@@ -94,6 +105,9 @@
 
       <!-- contents -->
       <div class="container mx-auto pt-16 h-screen overflow-hidden">
+        <div class="top_nav bg-green-400 text-center">
+          {{ globalMessage }}
+        </div>
         <nuxt />
       </div>
     </div>
@@ -103,16 +117,16 @@
 <script>
 import Vue from 'vue'
 import NewListDialog from '@/components/NewListDialog'
+import InputDialog from '@/components/InputDialog'
 import { HabitFilter } from '@/util/HabitFilter'
 import { TodayFilter } from '@/util/TodayFilter'
 
 const DialogController = Vue.extend(NewListDialog)
+const InputDialogController = Vue.extend(InputDialog)
 const viewType = { Todo: 0, Habit: 1, Today: 2 }
-const activeGoogleAuth = process.env.GOOGLE_AUTH === '1'
 
 export default {
   data () {
-    const defaultMsg = !activeGoogleAuth ? 'このアプリはデモサイトです。タブを閉じるとは再ログインできません。' : ''
     return {
       userName: this.$store.getters['user/displayName'],
       isMenuExpanded: false,
@@ -121,7 +135,6 @@ export default {
       viewType,
       selectedTodayFilter: TodayFilter.Remain.value,
       activeItemId: '',
-      globalMessage: defaultMsg,
       dialog: null,
       currentListId: ''
     }
@@ -139,6 +152,12 @@ export default {
     currentFilter: {
       get () {
         return this.$store.getters['habit/getCurrentFilter']
+      }
+    },
+    globalMessage: {
+      get () {
+        const config = this.$store.getters['config/getConfig']
+        return config !== null ? config.globalMessage : ''
       }
     },
     selectedType: {
@@ -197,6 +216,20 @@ export default {
         .catch((error) => {
           this.$toast.error(error.message)
         })
+    },
+    updateHeaderText () {
+      delete this.inputDialog
+      this.inputDialog = new InputDialogController({
+        propsData: {
+          parent: this.$root.$el,
+          title: 'ヘッダーメッセージを変更',
+          message: this.globalMessage
+        }
+      })
+      this.inputDialog.$on('update', (message) => {
+        this.$store.dispatch('config/updateMessage', message)
+      })
+      this.inputDialog.$mount()
     },
     logout () {
       this.$store
