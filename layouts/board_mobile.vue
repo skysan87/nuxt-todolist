@@ -5,11 +5,14 @@
       <div class="bg-gray-800 z-30">
         <header class="container mx-auto text-white">
           <div
-            class="flex justify-between items-center fixed w-full left-0 bg-gray-800 px-2 h-16"
+            class="flex justify-between items-center fixed w-full left-0 bg-gray-800 px-2 h-10"
           >
-            <h1 class="font-semibold text-xl leading-tight">
-              To-Do List
-            </h1>
+            <a @click.left="(showGlobalMessage = !showGlobalMessage)">
+              <h1 class="font-semibold text-xl leading-tight">
+                To-Do List
+                <fa :icon="['fas', 'caret-down']" :class="{'fa-rotate-180': showGlobalMessage}" />
+              </h1>
+            </a>
             <button class="outline-none" @click.left="(isMenuExpanded = !isMenuExpanded)">
               <svg class="h-6 w-6 fill-current" viewBox="0 0 24 24">
                 <path
@@ -24,7 +27,11 @@
             </button>
           </div>
 
-          <div v-show="isMenuExpanded" class="fixed left-0 mt-16 w-full bg-gray-800 h-full overflow-y-scroll">
+          <div v-show="showGlobalMessage" class="fixed left-0 mt-10 w-full bg-green-400 text-center">
+            {{ globalMessage }}
+          </div>
+
+          <div v-show="isMenuExpanded" class="fixed left-0 mt-10 w-full bg-gray-800 h-full overflow-y-scroll">
             <div class="pb-24">
               <div class="flex-none px-4">
                 {{ userName }}
@@ -104,10 +111,7 @@
       </div>
 
       <!-- contents -->
-      <div class="container mx-auto pt-16 h-screen overflow-hidden">
-        <div class="top_nav bg-green-400 text-center">
-          {{ globalMessage }}
-        </div>
+      <div class="container mx-auto pt-10 h-screen overflow-hidden">
         <nuxt />
       </div>
     </div>
@@ -136,7 +140,8 @@ export default {
       selectedTodayFilter: TodayFilter.List.value,
       activeItemId: '',
       dialog: null,
-      currentListId: ''
+      currentListId: '',
+      showGlobalMessage: false
     }
   },
   computed: {
@@ -256,6 +261,10 @@ export default {
 .scrollable-container::-webkit-scrollbar {
   /* Chrome, Safari */
   display: none;
+}
+
+.top_nav {
+  height: min-content;
 }
 
 </style>
