@@ -124,7 +124,7 @@ export default {
       habitFilters: Object.values(HabitFilter),
       todayFilters: Object.values(TodayFilter),
       viewType,
-      selectedTodayFilter: TodayFilter.Remain.value,
+      selectedTodayFilter: TodayFilter.List.value,
       activeItemId: '',
       dialog: null,
       inputDialog: null,

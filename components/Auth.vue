@@ -80,7 +80,7 @@ export default {
       })
       this.$store.dispatch('user/stateChanged', user)
       if (user) {
-        this.$router.push('/today')
+        this.$router.push(process.env.ROOT_PATH)
       }
     }
     this.isMounted = true
@@ -92,7 +92,7 @@ export default {
         .then((user) => {
           this.$store.dispatch('user/stateChanged', user)
           if (user) {
-            this.$router.push('/today')
+            this.$router.push(process.env.ROOT_PATH)
           }
         })
         .catch(() => {
