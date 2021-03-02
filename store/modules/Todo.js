@@ -1,6 +1,5 @@
 import orderBy from 'lodash/orderBy'
 import { TaskState } from '@/util/TaskState'
-import { TodayFilter } from '@/util/TodayFilter'
 import { CreateTodoDao } from '@/dao'
 import { getDateNumber } from '@/util/MomentEx'
 import { Todo } from '@/model/Todo'
@@ -171,10 +170,10 @@ export default {
       commit('init', { data: [], listId })
     },
 
-    async initTodaylist ({ commit, dispatch, rootGetters }, todayFilterValue) {
+    async initTodaylist ({ commit, dispatch, rootGetters }) {
       // 描画初期化
       commit('initToday', { data: [] })
-      const filterValue = Number(todayFilterValue)
+
       const userId = rootGetters['user/userId']
       const today = getDateNumber() // YYYYMMDD
       // 1. 今日の習慣を取得
@@ -182,11 +181,11 @@ export default {
       await dispatch('habit/init', null, { root: true })
       const todaysHabits = rootGetters['habit/getTodayList']
       // 2. 習慣のToDoをサーバーから取得
-      const habitTodo = await dao.getHabits(userId, today)
+      const habitTodos = await dao.getHabits(userId, today)
       // 3. 1と2を比較して、2が存在しないものは、追加する
       const missinglist = todaysHabits.reduce((pre, _habit) => {
         // Habit.id === Todo.listId
-        if (habitTodo.findIndex(v => v.listId === _habit.id) < 0) {
+        if (habitTodos.findIndex(v => v.listId === _habit.id) < 0) {
           const todo = new Todo('', {})
           todo.type = 'habit'
           todo.listId = _habit.id // habitsのサブコレクションのId
@@ -203,28 +202,17 @@ export default {
       }, [])
       // 4. 追加
       if (missinglist.length > 0) {
-        const newhabitToDo = await dao.addHabits(missinglist)
-        habitTodo.push(...newhabitToDo)
+        const newhabitToDos = await dao.addHabits(missinglist)
+        habitTodos.push(...newhabitToDos)
       }
 
       const todos = []
-      todos.push(...getFilteredArray(habitTodo, [filterValue], false))
-      switch (filterValue) {
-        case TodayFilter.Remain.value:
-          // 今日の残タスク
-          todos.push(...await dao.getTodaysToDo(userId, today))
-          break
-        case TodayFilter.InProgress.value:
-          // 作業中
-          todos.push(...await dao.getTodaysInProgress(userId, today))
-          break
-        case TodayFilter.Done.value:
-          // 今日完了したタスク
-          todos.push(...await dao.getTodaysDone(userId, today))
-          break
-        default:
-          break
-      }
+      // 習慣タスク
+      todos.push(...habitTodos)
+      // 今日の残タスク
+      todos.push(...await dao.getTodaysTask(userId, today))
+      // 今日完了したタスク
+      todos.push(...await dao.getTodaysDone(userId, today))
       commit('initToday', { data: todos })
 
       console.log('todaylist init')

@@ -15,6 +15,7 @@
       </span>
     </label>
     <button
+      v-if="showMenu"
       class="btn btn-outline btn-clear-done ml-2"
       ontouchend=""
       @click="deleteDone"
@@ -22,6 +23,7 @@
       Clear Done
     </button>
     <button
+      v-if="showMenu"
       class="btn btn-outline btn-switch-edit ml-2"
       :class="{'switch-on': canRemove}"
       ontouchend=""
@@ -30,6 +32,7 @@
       Edit
     </button>
     <button
+      v-if="showMenu"
       class="btn btn-regular ml-2"
       ontouchend=""
       @click="openListDialog"
@@ -49,6 +52,13 @@ const DialogController = Vue.extend(NewListDialog)
 
 export default {
   name: 'HeaderView',
+  props: {
+    showMenu: {
+      type: Boolean,
+      required: false,
+      default: true
+    }
+  },
   data () {
     return {
       options: Object.values(TaskState),

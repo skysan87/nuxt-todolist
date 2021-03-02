@@ -1,7 +1,6 @@
 import { firestore, getServerTimestamp } from '@/plugins/firebase'
 import { TodoDaoBase } from '@/dao/base/TodoDaoBase'
 import { Todo } from '@/model/Todo'
-import { Habit } from '@/model/Habit'
 import { TaskState } from '@/util/TaskState'
 
 const todosRef = firestore.collection('todos')
@@ -26,37 +25,28 @@ export class TodoDao extends TodoDaoBase {
    * 今日が期間に入っている未実施のタスクを取得
    * @param {Number} date 今日の日付(YYYYMMDD)
    */
-  async getTodaysToDo (userId, date) {
+  async getTodaysTask (userId, date) {
     try {
-      const querySnapshot = await todosRef.where('type', '==', 'todo')
+      const todos = []
+
+      const querySnapshotTodo = await todosRef.where('type', '==', 'todo')
         .where('userId', '==', userId)
         .where('state', '==', TaskState.Todo.value)
         .where('startdate', '<=', date)
         .get()
-      const todos = querySnapshot.docs.map((doc) => {
+      todos.push(...querySnapshotTodo.docs.map((doc) => {
         return new Todo(doc.id, doc.data())
-      })
-      return todos
-    } catch (error) {
-      console.error(error)
-      throw error
-    }
-  }
+      }))
 
-  /**
-   * 今日が期間内の作業中のタスクを取得
-   * @param {Number} date 今日の日付(YYYYMMDD)
-   */
-  async getTodaysInProgress (userId, date) {
-    try {
-      const querySnapshot = await todosRef.where('type', '==', 'todo')
+      const querySnapshotInProgress = await todosRef.where('type', '==', 'todo')
         .where('userId', '==', userId)
         .where('state', '==', TaskState.InProgress.value)
         .where('startdate', '<=', date)
         .get()
-      const todos = querySnapshot.docs.map((doc) => {
+      todos.push(...querySnapshotInProgress.docs.map((doc) => {
         return new Todo(doc.id, doc.data())
-      })
+      }))
+
       return todos
     } catch (error) {
       console.error(error)
