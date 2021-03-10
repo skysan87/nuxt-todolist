@@ -293,7 +293,7 @@ export default {
   grid-area: app-container__workspace;
   display: grid;
   overflow: hidden;
-  grid-template-columns: 230px auto;
+  grid-template-columns: 230px calc(100% - 230px);
   grid-template-rows: 100%;
   grid-template-areas:
     "app-workspace__sidebar app-workspace__view";
