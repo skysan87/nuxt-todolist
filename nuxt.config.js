@@ -59,7 +59,8 @@ export default {
           : './config/.env.develop'
       }
     ],
-    '@nuxtjs/toast'
+    '@nuxtjs/toast',
+    '@nuxtjs/style-resources'
   ],
   router: {
     // middleware: 全てのページで有効になる
