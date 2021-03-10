@@ -10,7 +10,7 @@
           class="circle-button cursor-pointer"
         />
       </div>
-      <div :title="todo.title" class="flex-1 no-wrap text-left p-1">
+      <div class="flex-1 no-wrap text-left p-1">
         {{ todo.title }}
       </div>
       <div v-show="option.showEdit == false" class="p-1" @click.stop="editEventHandler">
