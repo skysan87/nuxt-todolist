@@ -5,11 +5,14 @@
       <div class="bg-gray-800 z-30">
         <header class="container mx-auto text-white">
           <div
-            class="flex justify-between items-center fixed w-full left-0 bg-gray-800 px-2 h-16"
+            class="flex justify-between items-center fixed w-full left-0 bg-gray-800 px-2 h-10"
           >
-            <h1 class="font-semibold text-xl leading-tight">
-              To-Do List
-            </h1>
+            <a @click.left="(showGlobalMessage = !showGlobalMessage)">
+              <h1 class="font-semibold text-xl leading-tight">
+                To-Do List
+                <fa :icon="['fas', 'caret-down']" :class="{'fa-rotate-180': showGlobalMessage}" />
+              </h1>
+            </a>
             <button class="outline-none" @click.left="(isMenuExpanded = !isMenuExpanded)">
               <svg class="h-6 w-6 fill-current" viewBox="0 0 24 24">
                 <path
@@ -24,14 +27,22 @@
             </button>
           </div>
 
-          <div v-show="isMenuExpanded" class="fixed left-0 mt-16 w-full bg-gray-800 h-full overflow-y-scroll">
+          <div v-show="showGlobalMessage" class="fixed left-0 mt-10 w-full bg-green-400 text-center">
+            {{ globalMessage }}
+          </div>
+
+          <div v-show="isMenuExpanded" class="fixed left-0 mt-10 w-full bg-gray-800 h-full overflow-y-scroll">
             <div class="pb-24">
+              <div class="flex-none px-4">
+                v{{ appVersion }}
+              </div>
               <div class="flex-none px-4">
                 {{ userName }}
               </div>
               <div class="flex-none mt-2">
                 <a class="block px-4 text-sm" @click.left="logout">
-                  ログアウト
+                  <fa :icon="['fas', 'sign-out-alt']" size="lg" />
+                  <span class="pl-1">ログアウト</span>
                 </a>
               </div>
               <div class="flex-1 py-4">
@@ -86,6 +97,17 @@
                     # {{ habitfilter.label }}
                   </div>
                 </nuxt-link>
+                <div class="mt-5 px-4 flex justify-between items-center">
+                  <div class="font-bold text-lg">
+                    設定
+                  </div>
+                </div>
+                <div
+                  class="py-1 px-5 text-sm"
+                  @click.left="updateHeaderText"
+                >
+                  ヘッダーメッセージ
+                </div>
               </div>
             </div>
           </div>
@@ -93,7 +115,7 @@
       </div>
 
       <!-- contents -->
-      <div class="container mx-auto pt-16 h-screen overflow-hidden">
+      <div class="container mx-auto pt-10 h-screen overflow-hidden">
         <nuxt />
       </div>
     </div>
@@ -103,27 +125,28 @@
 <script>
 import Vue from 'vue'
 import NewListDialog from '@/components/NewListDialog'
+import InputDialog from '@/components/InputDialog'
 import { HabitFilter } from '@/util/HabitFilter'
 import { TodayFilter } from '@/util/TodayFilter'
 
 const DialogController = Vue.extend(NewListDialog)
+const InputDialogController = Vue.extend(InputDialog)
 const viewType = { Todo: 0, Habit: 1, Today: 2 }
-const activeGoogleAuth = process.env.GOOGLE_AUTH === '1'
 
 export default {
   data () {
-    const defaultMsg = !activeGoogleAuth ? 'このアプリはデモサイトです。タブを閉じるとは再ログインできません。' : ''
     return {
       userName: this.$store.getters['user/displayName'],
       isMenuExpanded: false,
       habitFilters: Object.values(HabitFilter),
       todayFilters: Object.values(TodayFilter),
       viewType,
-      selectedTodayFilter: TodayFilter.Remain.value,
+      selectedTodayFilter: TodayFilter.List.value,
       activeItemId: '',
-      globalMessage: defaultMsg,
       dialog: null,
-      currentListId: ''
+      currentListId: '',
+      showGlobalMessage: false,
+      appVersion: process.env.app_version
     }
   },
   computed: {
@@ -139,6 +162,12 @@ export default {
     currentFilter: {
       get () {
         return this.$store.getters['habit/getCurrentFilter']
+      }
+    },
+    globalMessage: {
+      get () {
+        const config = this.$store.getters['config/getConfig']
+        return config !== null ? config.globalMessage : ''
       }
     },
     selectedType: {
@@ -159,6 +188,7 @@ export default {
   methods: {
     init () {
       this.$store.dispatch('todolist/init')
+      this.$store.dispatch('config/init')
     },
     onSelectToday (filter) {
       this.isMenuExpanded = false
@@ -198,6 +228,20 @@ export default {
           this.$toast.error(error.message)
         })
     },
+    updateHeaderText () {
+      delete this.inputDialog
+      this.inputDialog = new InputDialogController({
+        propsData: {
+          parent: this.$root.$el,
+          title: 'ヘッダーメッセージを変更',
+          message: this.globalMessage
+        }
+      })
+      this.inputDialog.$on('update', (message) => {
+        this.$store.dispatch('config/updateMessage', message)
+      })
+      this.inputDialog.$mount()
+    },
     logout () {
       this.$store
         .dispatch('user/logout')
@@ -222,6 +266,10 @@ export default {
 .scrollable-container::-webkit-scrollbar {
   /* Chrome, Safari */
   display: none;
+}
+
+.top_nav {
+  height: min-content;
 }
 
 </style>

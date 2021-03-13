@@ -16,6 +16,7 @@ export class TodoDaoBase {
   async getTodos(listId) {
     const todos = []
     for (let i = 1; i <= 10; i++) {
+      const today = moment()
       const todo = new Todo('', {})
       todo.id = 'dummy' + i
       todo.type ='todo'
@@ -24,6 +25,8 @@ export class TodoDaoBase {
       todo.title = `${listId}_${i}`
       todo.orderIndex = i * 1000,
       todo.detail = 'dummy_detail' + i
+      todo.startdate = getDateNumber()
+      todo.enddate = getDateNumber(today.add(i, 'days'))
       todos.push(todo)
       this[maxIndex] = i
     }
@@ -33,12 +36,11 @@ export class TodoDaoBase {
   /**
    * 今日の残タスクを取得する
    */
-  async getTodaysToDo(userId, date) {
-    return this.createDummyTodo(userId, TaskState.Todo)
-  }
-
-  async getTodaysInProgress(userId, date) {
-    return this.createDummyTodo(userId, TaskState.InProgress)
+  async getTodaysTask (userId, date) {
+    const todos = []
+    todos.push(...this.createDummyTodo(userId, TaskState.Todo))
+    todos.push(...this.createDummyTodo(userId, TaskState.InProgress))
+    return todos
   }
 
   async getTodaysDone(userId, date) {
@@ -50,7 +52,7 @@ export class TodoDaoBase {
     for (let i = 1; i <= 10; i++) {
       const today = moment()
       const todo = new Todo('', {})
-      todo.id = 'dummy' + i
+      todo.id = `dummy_${state.label}_${i}`
       todo.type ='todo'
       todo.listId = 'list' + (i % 3)
       todo.userId = userId

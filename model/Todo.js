@@ -7,8 +7,8 @@ export class Todo {
     this.title = params.title || null
     this.state = params.state || TaskState.Todo.value
     this.detail = params.detail || null
-    this.startdate = params.startdate || null
-    this.enddate = params.enddate || null
+    this.startdate = params.startdate || null // YYYYMMDD
+    this.enddate = params.enddate || null // YYYYMMDD
     this.orderIndex = params.orderIndex || 0
     this.listId = params.listId || ''
     this.userId = params.userId || ''

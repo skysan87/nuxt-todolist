@@ -1,7 +1,11 @@
+import packageInfo from './package.json'
 
 export default {
   ssr: false,
   target: 'static',
+  env: {
+    app_version: packageInfo.version
+  },
   /*
   ** Headers of the page
   */
@@ -59,7 +63,8 @@ export default {
           : './config/.env.develop'
       }
     ],
-    '@nuxtjs/toast'
+    '@nuxtjs/toast',
+    '@nuxtjs/style-resources'
   ],
   router: {
     // middleware: 全てのページで有効になる
