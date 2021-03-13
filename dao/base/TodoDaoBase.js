@@ -16,6 +16,7 @@ export class TodoDaoBase {
   async getTodos(listId) {
     const todos = []
     for (let i = 1; i <= 10; i++) {
+      const today = moment()
       const todo = new Todo('', {})
       todo.id = 'dummy' + i
       todo.type ='todo'
@@ -24,6 +25,8 @@ export class TodoDaoBase {
       todo.title = `${listId}_${i}`
       todo.orderIndex = i * 1000,
       todo.detail = 'dummy_detail' + i
+      todo.startdate = getDateNumber()
+      todo.enddate = getDateNumber(today.add(i, 'days'))
       todos.push(todo)
       this[maxIndex] = i
     }

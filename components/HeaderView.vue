@@ -39,6 +39,9 @@
     >
       詳細
     </button>
+    <nuxt-link v-if="showMenu" to="calendar">
+      <fa :icon="['fas', 'calendar-day']" size="lg" class="cursor-pointer ml-2 text-gray-600" ontouchend="" />
+    </nuxt-link>
   </div>
 </template>
 
