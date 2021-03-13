@@ -1,7 +1,11 @@
+import packageInfo from './package.json'
 
 export default {
   ssr: false,
   target: 'static',
+  env: {
+    app_version: packageInfo.version
+  },
   /*
   ** Headers of the page
   */
