@@ -1,13 +1,8 @@
 <template>
   <div class="flex flex-col bg-white h-full">
     <header class="border-b flex-none">
-      <div class="px-6 py-2 flex flex-row">
-        <div class="inline-block flex-1">
-          <span>{{ dateString }}：表示中の件数 ( {{ filteredTodos.length }} )</span>
-        </div>
-      </div>
+      <header-view :show-menu="false" />
     </header>
-
     <main class="pt-2 pb-4 flex-1 overflow-y-scroll">
       <div v-if="filteredTodos.length > 0" class="mx-2 overflow-x-hidden">
         <div class="list-group">
@@ -28,7 +23,7 @@
 
 <script>
 import Vue from 'vue'
-import moment from 'moment'
+import HeaderView from '@/components/HeaderView.vue'
 import TodoItem from '@/components/TodoItem.vue'
 import ModalDialog from '@/components/ModalDialog.vue'
 import NoData from '@/components/NoData.vue'
@@ -39,25 +34,25 @@ export default {
   name: 'TodoList',
   components: {
     TodoItem,
+    HeaderView,
     NoData
   },
   layout: ctx => ctx.$device.isMobile ? 'board_mobile' : 'board',
   data () {
-    moment.locale('ja')
     return {
-      dialog: null,
-      dateString: moment().format('YYYY年M月D日(ddd)')
+      dialog: null
     }
   },
   computed: {
     filteredTodos: {
       get () {
-        return this.$store.getters['todo/getOrderdTodos']
+        return this.$store.getters['todo/getFilteredTodos']
       }
     }
   },
   mounted () {
-    this.$store.dispatch('todo/initTodaylist', this.$route.params.id || 0)
+    // 一括で取得する
+    this.$store.dispatch('todo/initTodaylist')
   },
   methods: {
     /**

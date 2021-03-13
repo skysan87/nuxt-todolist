@@ -15,6 +15,7 @@
       </span>
     </label>
     <button
+      v-if="showMenu"
       class="btn btn-outline btn-clear-done ml-2"
       ontouchend=""
       @click="deleteDone"
@@ -22,6 +23,7 @@
       Clear Done
     </button>
     <button
+      v-if="showMenu"
       class="btn btn-outline btn-switch-edit ml-2"
       :class="{'switch-on': canRemove}"
       ontouchend=""
@@ -30,12 +32,16 @@
       Edit
     </button>
     <button
+      v-if="showMenu"
       class="btn btn-regular ml-2"
       ontouchend=""
       @click="openListDialog"
     >
       詳細
     </button>
+    <nuxt-link v-if="showMenu" to="calendar">
+      <fa :icon="['fas', 'calendar-day']" size="lg" class="cursor-pointer ml-2 text-gray-600" ontouchend="" />
+    </nuxt-link>
   </div>
 </template>
 
@@ -49,6 +55,13 @@ const DialogController = Vue.extend(NewListDialog)
 
 export default {
   name: 'HeaderView',
+  props: {
+    showMenu: {
+      type: Boolean,
+      required: false,
+      default: true
+    }
+  },
   data () {
     return {
       options: Object.values(TaskState),

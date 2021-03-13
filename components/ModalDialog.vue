@@ -59,6 +59,7 @@
               v-model="range"
               is-range
               class="flex-1"
+              :attributes="calenderAttributes"
               :disabled="forbid.range"
             >
               <template #default="{ inputValue, inputEvents }">
@@ -171,7 +172,12 @@ export default {
         range: false,
         delete: false
       },
-      footerMsg: ''
+      footerMsg: '',
+      calenderAttributes: [{ // 今日に目印
+        key: 'today',
+        dot: 'blue',
+        dates: [new Date()]
+      }]
     }
   },
   mounted () {
