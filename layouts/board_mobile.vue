@@ -34,11 +34,15 @@
           <div v-show="isMenuExpanded" class="fixed left-0 mt-10 w-full bg-gray-800 h-full overflow-y-scroll">
             <div class="pb-24">
               <div class="flex-none px-4">
+                v{{ appVersion }}
+              </div>
+              <div class="flex-none px-4">
                 {{ userName }}
               </div>
               <div class="flex-none mt-2">
                 <a class="block px-4 text-sm" @click.left="logout">
-                  ログアウト
+                  <fa :icon="['fas', 'sign-out-alt']" size="lg" />
+                  <span class="pl-1">ログアウト</span>
                 </a>
               </div>
               <div class="flex-1 py-4">
@@ -141,7 +145,8 @@ export default {
       activeItemId: '',
       dialog: null,
       currentListId: '',
-      showGlobalMessage: false
+      showGlobalMessage: false,
+      appVersion: process.env.app_version
     }
   },
   computed: {

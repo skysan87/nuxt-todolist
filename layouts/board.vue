@@ -8,22 +8,26 @@
         <div class="app-workspace__sidebar">
           <div class="app-workspace__task_sidebar flex flex-col flex-none bg-gray-800 pt-3 text-gray-500">
             <div
-              class="flex justify-between items-center px-4 cursor-pointer"
+              class="flex justify-between items-center px-4 cursor-pointer pb-1"
               @click.left="(isMenuExpanded = !isMenuExpanded)"
             >
               <h1 class="font-semibold text-xl leading-tight">
-                To-Do List
+                <span>To-Do List</span>
+                <span class="pl-1 text-xs">v{{ appVersion }}</span>
               </h1>
               <fa :icon="['fas', 'caret-down']" :class="{'fa-rotate-180': isMenuExpanded}" />
             </div>
-            <div v-show="isMenuExpanded" class="flex-none mt-2">
-              <a class="block px-6 text-sm hover:bg-blue-800 hover:opacity-75 cursor-pointer" @click.left="logout">
-                ログアウト
+            <div v-show="isMenuExpanded" class="flex-none">
+              <span class="block px-6 pt-1">{{ userName }}</span>
+              <a class="block px-6 pt-1 hover:bg-blue-800 hover:opacity-75 cursor-pointer" @click.left="logout">
+                <fa :icon="['fas', 'sign-out-alt']" size="lg" class="text-gray-600" />
+                <span class="pl-1">ログアウト</span>
               </a>
             </div>
-            <div class="flex-none px-4">
-              {{ userName }}
-            </div>
+
+            <!-- border -->
+            <div class="border-b border-gray-600 pt-1" />
+
             <div class="flex-1 py-4 overflow-y-scroll scrollable-container">
               <div class="mt-5 px-4 flex items-center">
                 <div class="font-bold text-lg">
@@ -128,7 +132,8 @@ export default {
       activeItemId: '',
       dialog: null,
       inputDialog: null,
-      currentListId: ''
+      currentListId: '',
+      appVersion: process.env.app_version
     }
   },
   computed: {
