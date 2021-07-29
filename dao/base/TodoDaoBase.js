@@ -1,7 +1,6 @@
 /* eslint-disable */
-import moment from 'moment'
 import { Todo } from '@/model/Todo'
-import { getDateNumber } from '@/util/MomentEx'
+import { dateFactory } from '@/util/DateFactory'
 import { TaskState } from '@/util/TaskState'
 
 // private
@@ -16,7 +15,6 @@ export class TodoDaoBase {
   async getTodos(listId) {
     const todos = []
     for (let i = 1; i <= 10; i++) {
-      const today = moment()
       const todo = new Todo('', {})
       todo.id = 'dummy' + i
       todo.type ='todo'
@@ -25,8 +23,8 @@ export class TodoDaoBase {
       todo.title = `${listId}_${i}`
       todo.orderIndex = i * 1000,
       todo.detail = 'dummy_detail' + i
-      todo.startdate = getDateNumber()
-      todo.enddate = getDateNumber(today.add(i, 'days'))
+      todo.startdate = dateFactory().getDateNumber()
+      todo.enddate = dateFactory().addDay(1).getDateNumber()
       todos.push(todo)
       this[maxIndex] = i
     }
@@ -50,7 +48,6 @@ export class TodoDaoBase {
   createDummyTodo(userId, state) {
     const todos = []
     for (let i = 1; i <= 10; i++) {
-      const today = moment()
       const todo = new Todo('', {})
       todo.id = `dummy_${state.label}_${i}`
       todo.type ='todo'
@@ -59,8 +56,8 @@ export class TodoDaoBase {
       todo.title = `title_${i}_${state.label}`
       todo.detail = `detail_${i}_${state.label}`
       todo.state = state.value
-      todo.startdate = getDateNumber()
-      todo.enddate = getDateNumber(today.add(i, 'days'))
+      todo.startdate = dateFactory().getDateNumber()
+      todo.enddate = dateFactory().addDay(i).getDateNumber()
       todos.push(todo)
       todo.orderIndex = this[maxIndex] * 1000
       this[maxIndex] += 1
