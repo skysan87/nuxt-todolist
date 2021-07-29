@@ -85,7 +85,6 @@
 </template>
 
 <script>
-import moment from 'moment'
 import isEmpty from 'lodash/isEmpty'
 import { TaskState } from '@/util/TaskState'
 import { Habit } from '@/model/Habit'
