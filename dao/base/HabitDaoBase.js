@@ -1,7 +1,7 @@
 /* eslint-disable */
-import moment from 'moment'
 import { Habit } from '@/model/Habit'
 import { Habitlist } from '@/model/Habitlist'
+import { dateFactory } from '@/util/DateFactory'
 
 // private
 const maxIndex = Symbol('maxHabitIndex')
@@ -28,8 +28,8 @@ export class HabitDaoBase {
 
   async get(rootId, userId) {
     const habits = []
-    const lastUpdate = moment().subtract(1, 'years')
-    const lastUpdateNum = parseInt(lastUpdate.format('YYYYMMDD'))
+    const lastUpdate = dateFactory().subtract(1, 'year')
+    const lastUpdateNum = parseInt(lastUpdate.getDateNumber())
     for (let i = 1; i <= 15; i++) {
       const habit = new Habit('dummy' + i, {})
       habit.title = `${habit.id}_${i}`
@@ -45,7 +45,7 @@ export class HabitDaoBase {
       habit.rootId = rootId
       habit.userId = userId
       habit.orderIndex = i * 1000
-      habit.plan[`${lastUpdate.year()}`] = Array.from({ length: 12 }, () => '0')
+      habit.plan[`${lastUpdate.get('year')}`] = Array.from({ length: 12 }, () => '0')
       habit.totalActivityCount = i + 20
       habit.totalCount = i + 100
       habit.summaryUpdatedAt = lastUpdateNum

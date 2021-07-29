@@ -1,6 +1,6 @@
 {
   "name": "nuxt-todolist",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Nuxt.js To-Do list",
   "author": "skysan",
   "private": true,
@@ -25,8 +25,8 @@
     "@nuxtjs/dotenv": "^1.4.1",
     "@nuxtjs/pwa": "^3.3.5",
     "@nuxtjs/toast": "^3.3.1",
+    "dayjs": "^1.10.6",
     "firebase": "^8.2.5",
-    "moment": "^2.29.1",
     "nuxt": "^2.14.12",
     "v-calendar": "^2.2.3",
     "vuedraggable": "^2.24.3"
