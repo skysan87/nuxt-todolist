@@ -5,6 +5,13 @@ What to do Today
 ![](./doc/img/demo.gif)
 
 
+
+## App URL
+
+https://what-to-do-today-b80b0.web.app
+
+
+
 ## 機能
 
 ### 1. プロジェクト単位でのタスク管理
@@ -53,7 +60,7 @@ What to do Today
 * タスクを複数登録しやすいように、登録フォームを設計
 * タスクの並び順を変更できる機能
 
- 
+
 
 ## 今後実装予定
 
