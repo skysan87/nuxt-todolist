@@ -42,6 +42,7 @@
     <nuxt-link v-if="showMenu" to="calendar">
       <fa :icon="['fas', 'calendar-day']" size="lg" class="cursor-pointer ml-2 text-gray-600" ontouchend="" />
     </nuxt-link>
+    <fa v-if="showMenu" :icon="['fas', 'sync-alt']" class="cursor-pointer ml-2 text-gray-600" ontouchend="" @click.left="reload" />
   </div>
 </template>
 
@@ -133,6 +134,9 @@ export default {
         this.$store.dispatch('todolist/update', todolist)
       })
       this.dialog.$mount()
+    },
+    reload () {
+      this.$store.dispatch('todo/init', this.$route.params.id)
     }
   }
 }

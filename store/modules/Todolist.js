@@ -22,7 +22,7 @@ export default {
     },
 
     getFistListId: (state) => {
-      return state.lists[0].id
+      return orderBy(state.lists, 'orderIndex')[0].id
     },
 
     getListName: state => (id) => {
