@@ -40,6 +40,12 @@
                 {{ userName }}
               </div>
               <div class="flex-none mt-2">
+                <a class="block px-4 text-sm" @click.left="reload">
+                  <fa :icon="['fas', 'sync-alt']" size="lg" />
+                  <span class="pl-1">リロード</span>
+                </a>
+              </div>
+              <div class="flex-none mt-2">
                 <a class="block px-4 text-sm" @click.left="logout">
                   <fa :icon="['fas', 'sign-out-alt']" size="lg" />
                   <span class="pl-1">ログアウト</span>
@@ -250,6 +256,20 @@ export default {
           this.$router.push('/login')
         })
         .catch(err => console.error(err))
+    },
+    reload () {
+      this.init()
+      if (this.selectedType === viewType.Todo) {
+        const updatedLists = this.$store.getters['todolist/getLists']
+        if (updatedLists.some(v => v.id === this.currentListId)) {
+          this.goToFirstList()
+        }
+      }
+    },
+    goToFirstList () {
+      const firstListId = this.$store.getters['todolist/getFistListId']
+      this.currentListId = firstListId
+      this.$router.push(`/todolist/${firstListId}`)
     }
   }
 }

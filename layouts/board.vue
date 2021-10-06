@@ -19,6 +19,10 @@
             </div>
             <div v-show="isMenuExpanded" class="flex-none">
               <span class="block px-6 pt-1">{{ userName }}</span>
+              <a class="block px-6 pt-1 hover:bg-blue-800 hover:opacity-75 cursor-pointer" @click.left="reload">
+                <fa :icon="['fas', 'sync-alt']" size="lg" class="text-gray-600" />
+                <span class="pl-1">リロード</span>
+              </a>
               <a class="block px-6 pt-1 hover:bg-blue-800 hover:opacity-75 cursor-pointer" @click.left="logout">
                 <fa :icon="['fas', 'sign-out-alt']" size="lg" class="text-gray-600" />
                 <span class="pl-1">ログアウト</span>
@@ -216,9 +220,7 @@ export default {
         this.$store.dispatch('todolist/delete', listId)
           .then(() => {
             // 先頭のリストに遷移
-            const firstListId = this.$store.getters['todolist/getFistListId']
-            this.currentListId = firstListId
-            this.$router.push(`/todolist/${firstListId}`)
+            this.goToFirstList()
           })
           .catch((error) => {
             this.$toast.error(error.message)
@@ -261,6 +263,20 @@ export default {
           this.$router.push('/login')
         })
         .catch(err => console.error(err))
+    },
+    reload () {
+      this.init()
+      if (this.selectedType === viewType.Todo) {
+        const updatedLists = this.$store.getters['todolist/getLists']
+        if (updatedLists.some(v => v.id === this.currentListId)) {
+          this.goToFirstList()
+        }
+      }
+    },
+    goToFirstList () {
+      const firstListId = this.$store.getters['todolist/getFistListId']
+      this.currentListId = firstListId
+      this.$router.push(`/todolist/${firstListId}`)
     }
   }
 }
