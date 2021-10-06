@@ -308,7 +308,7 @@ export default {
       const oldTodo = getters.getTodoById(newTodo.id)
       const stateChanged = oldTodo.state !== newTodo.state
       if (stateChanged) {
-        newTodo.stateChangeDate = dateFactory().getDateNumber()()
+        newTodo.stateChangeDate = dateFactory().getDateNumber()
       }
 
       if (newTodo.type === 'habit') {
