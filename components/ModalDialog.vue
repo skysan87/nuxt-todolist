@@ -144,11 +144,13 @@ export default {
   props: {
     parent: {
       type: Element,
-      require: true
+      require: true,
+      default: null
     },
     target: {
       type: Todo,
-      require: true
+      require: true,
+      default: null
     },
     isCreateMode: {
       type: Boolean,
@@ -156,7 +158,8 @@ export default {
     },
     projectList: {
       type: Array,
-      require: false
+      require: false,
+      default: () => []
     }
   },
   data () {
