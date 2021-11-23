@@ -107,6 +107,20 @@
           </div>
         </div>
 
+        <!-- TODO: チェックリスト
+          一括削除
+          消化率の表示
+          折りたたみボタン
+        -->
+        <div class="modal-body">
+          <sub-task
+            v-for="(subtask, index) in todo.subTasks"
+            :key="index"
+            :inputdata="subtask"
+          />
+          <!-- TODO: アイテム追加ボタン -->
+        </div>
+
         <div class="flex flex-row-reverse">
           <button class="btn btn-regular ml-2" @click="update">
             OK
@@ -138,9 +152,13 @@ import isEmpty from 'lodash/isEmpty'
 import { TaskState } from '@/util/TaskState'
 import { Todo } from '@/model/Todo'
 import { dateFactory } from '@/util/DateFactory'
+import SubTask from '@/components/Subtask.vue'
 
 export default {
   name: 'ModalDialog',
+  components: {
+    SubTask
+  },
   props: {
     parent: {
       type: Element,

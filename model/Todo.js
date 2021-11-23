@@ -17,6 +17,7 @@ export class Todo {
     this.createdAt = params.createdAt || null // 管理用
     this.updatedAt = params.updatedAt || null // 管理用
     this.listName = '' // リスト名: 表示用
+    this.subTasks = params.subTasks || []
   }
 
   get isDone () {

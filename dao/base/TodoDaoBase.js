@@ -2,6 +2,7 @@
 import { Todo } from '@/model/Todo'
 import { dateFactory } from '@/util/DateFactory'
 import { TaskState } from '@/util/TaskState'
+import { SubTask } from '@/model/SubTask'
 
 // private
 const maxIndex = Symbol('maxIndex')
@@ -25,6 +26,8 @@ export class TodoDaoBase {
       todo.detail = 'dummy_detail' + i
       todo.startdate = dateFactory().getDateNumber()
       todo.enddate = dateFactory().addDay(1).getDateNumber()
+      todo.subTasks = Array.from({ length: 3 }
+          , (v,j) => new SubTask({title: `${listId}_${i}_subtask_${j}`}))
       todos.push(todo)
       this[maxIndex] = i
     }
