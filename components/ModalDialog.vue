@@ -113,12 +113,22 @@
           折りたたみボタン
         -->
         <div class="modal-body">
+          <!-- TODO: フォーカスアウト時にキャンセル -->
           <sub-task
-            v-for="(subtask, index) in todo.subTasks"
-            :key="index"
+            v-for="subtask in todo.subTasks"
+            :key="subtask.id"
             :inputdata="subtask"
+            @update="updateSubtask"
+            @delete="deleteSubtask"
           />
-          <!-- TODO: アイテム追加ボタン -->
+          <!-- アイテム追加ボタン -->
+          <button v-if="!isNewSubtask" class="btn btn-regular focus:outline-none" @click.stop="isNewSubtask = true">追加</button>
+          <sub-task
+            v-if="isNewSubtask"
+            :is-create-mode="true"
+            @cancel="isNewSubtask = false"
+            @add="addSubTask"
+          />
         </div>
 
         <div class="flex flex-row-reverse">
@@ -166,9 +176,11 @@ export default {
       default: null
     },
     target: {
-      type: Todo,
+      type: Object,
       require: true,
-      default: null
+      default () {
+        return new Todo('', {})
+      }
     },
     isCreateMode: {
       type: Boolean,
@@ -182,10 +194,11 @@ export default {
   },
   data () {
     return {
-      todo: new Todo('', {}),
+      todo: Todo.valueOf(this.target),
       range: { start: null, end: null },
       options: Object.values(TaskState),
       errorMsg: '',
+      isNewSubtask: false,
       forbid: {
         title: false,
         detail: false,
@@ -214,9 +227,6 @@ export default {
   },
   methods: {
     init () {
-      if (this.target !== null) {
-        Object.assign(this.todo, this.target)
-      }
       this.range = {
         start: this.todo.startdate !== null ? dateFactory(this.todo.startdate.toString()).toDate() : null,
         end: this.todo.enddate !== null ? dateFactory(this.todo.enddate.toString()).toDate() : null
@@ -267,6 +277,18 @@ export default {
     },
     initRange () {
       this.range = { start: null, end: null }
+    },
+    addSubTask (data) {
+      this.todo.subTasks.push(data)
+      this.isNewSubtask = false
+    },
+    deleteSubtask (data) {
+      const index = this.todo.subTasks.findIndex(v => v.id === data.id)
+      this.todo.subTasks.splice(index, 1)
+    },
+    updateSubtask (data) {
+      const index = this.todo.subTasks.findIndex(v => v.id === data.id)
+      Object.assign(this.todo.subTasks[index], data)
     }
   }
 }

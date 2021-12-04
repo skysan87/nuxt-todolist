@@ -7,13 +7,14 @@
           <span class="w-full no-wrap text-left px-1">{{ subTask.title }}</span>
         </label>
       </div>
-      <div class="px-1" @click.stop="onEditMode">
+      <div class="px-1" @click.left.stop="onEditMode">
         <fa :icon="['fas', 'edit']" size="xs" class="cursor-pointer" />
       </div>
-      <div class="todo-x-pointer px-1">
+      <div class="todo-x-pointer px-1" @click.left.stop="deleteData">
         <span class="cursor-pointer">×</span>
       </div>
     </div>
+
     <div v-if="editMode" class="flex items-center">
       <input type="checkbox" class="px-1" :checked="subTask.isDone" disabled>
       <div class="w-full px-1">
@@ -26,9 +27,14 @@
           >
         </form>
       </div>
-      <div>
-        <button class="btn btn-regular focus:outline-none" @click.left="update">
-          OK
+      <div class="px-1">
+        <button class="text-blue-500" @click.left.stop="update">
+          O
+        </button>
+      </div>
+      <div class="px-1">
+        <button class="text-pink-500" @click.left.stop="cancel">
+          X
         </button>
       </div>
     </div>
@@ -43,16 +49,21 @@ export default {
   props: {
     inputdata: {
       type: Object,
-      required: true,
+      required: false,
       default () {
         return new SubTask({})
       }
+    },
+    isCreateMode: {
+      type: Boolean,
+      required: false,
+      default: false
     }
   },
   data () {
     return {
       subTask: new SubTask(this.inputdata),
-      editMode: false
+      editMode: this.isCreateMode
     }
   },
   methods: {
@@ -61,23 +72,24 @@ export default {
     },
     cancel () {
       this.editMode = false
-      this.subTask = new SubTask(this.inpurdata)
+      this.subTask = new SubTask(this.inputdata)
+      this.$emit('cancel')
     },
     updateState () {
       this.subTask.isDone = !this.subTask.isDone
-      // TODO: $emit
+      this.$emit('update', this.subTask)
     },
     update () {
       this.editMode = false
-      // TODO: $emit
+      if (this.isCreateMode) {
+        this.$emit('add', this.subTask)
+      } else {
+        this.$emit('update', this.subTask)
+      }
     },
-    delete () {
-      // TODO: $emit
+    deleteData () {
+      this.$emit('delete', this.subTask)
     }
   }
 }
 </script>
-
-<style>
-
-</style>

@@ -1,4 +1,5 @@
 import { TaskState } from '@/util/TaskState'
+import { SubTask } from '@/model/SubTask'
 
 export class Todo {
   constructor (id, params) {
@@ -17,7 +18,13 @@ export class Todo {
     this.createdAt = params.createdAt || null // 管理用
     this.updatedAt = params.updatedAt || null // 管理用
     this.listName = '' // リスト名: 表示用
-    this.subTasks = params.subTasks || []
+    if (Array.isArray(params.subTasks)) {
+      this.subTasks = params.subTasks.map((v, index) => {
+        return new SubTask({ ...v, id: index })
+      })
+    } else {
+      this.subTasks = []
+    }
   }
 
   get isDone () {
@@ -42,5 +49,9 @@ export class Todo {
       updatedAt: this.updatedAt
     }
     return params
+  }
+
+  static valueOf (params) {
+    return new Todo(params.id || '', params)
   }
 }
