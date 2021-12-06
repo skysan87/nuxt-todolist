@@ -1,5 +1,5 @@
 <template>
-  <div class="py-1">
+  <div class="py-1" @focusout="handleFocusout" @focusin="handleFocusin">
     <div v-if="!editMode" class="flex items-center">
       <div class="flex-1">
         <label>
@@ -20,6 +20,7 @@
       <div class="w-full px-1">
         <form @submit.prevent="update">
           <input
+            ref="inputtext"
             v-model="subTask.title"
             type="text"
             class="input-text flex-1 apperance-none outline-none"
@@ -63,12 +64,20 @@ export default {
   data () {
     return {
       subTask: new SubTask(this.inputdata),
-      editMode: this.isCreateMode
+      editMode: this.isCreateMode,
+      focusTimerId: null
     }
+  },
+  destroyed () {
+    clearTimeout(this.focusTimerId)
   },
   methods: {
     onEditMode () {
       this.editMode = true
+
+      this.$nextTick(() => {
+        this.$refs.inputtext.focus()
+      })
     },
     cancel () {
       this.editMode = false
@@ -89,6 +98,20 @@ export default {
     },
     deleteData () {
       this.$emit('delete', this.subTask)
+    },
+    handleFocusout () {
+      if (!this.editMode) {
+        return
+      }
+      // コンポーネントからフォーカスアウト時にキャンセル
+      // NOTE: focusout/focusinのバブリングを利用
+      this.focusTimerId = setTimeout(() => this.cancel(), 100)
+    },
+    handleFocusin () {
+      if (!this.editMode) {
+        return
+      }
+      clearTimeout(this.focusTimerId)
     }
   }
 }

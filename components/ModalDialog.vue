@@ -113,7 +113,6 @@
           折りたたみボタン
         -->
         <div class="modal-body">
-          <!-- TODO: フォーカスアウト時にキャンセル -->
           <sub-task
             v-for="subtask in todo.subTasks"
             :key="subtask.id"
