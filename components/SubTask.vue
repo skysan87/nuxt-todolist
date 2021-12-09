@@ -1,5 +1,5 @@
 <template>
-  <div class="py-1" @focusout="handleFocusout" @focusin="handleFocusin">
+  <div class="mb-1 hover:bg-gray-200" @focusout="handleFocusout" @focusin="handleFocusin">
     <div v-if="!editMode" class="flex items-center">
       <div class="flex-1">
         <label>
@@ -52,7 +52,7 @@ export default {
       type: Object,
       required: false,
       default () {
-        return new SubTask({})
+        return new SubTask({ id: Date.now() })
       }
     },
     isCreateMode: {
@@ -62,6 +62,11 @@ export default {
     }
   },
   data () {
+    if (this.isCreateMode) {
+      this.$nextTick(() => {
+        this.$refs.inputtext.focus()
+      })
+    }
     return {
       subTask: new SubTask(this.inputdata),
       editMode: this.isCreateMode,

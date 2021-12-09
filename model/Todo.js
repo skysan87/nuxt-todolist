@@ -46,7 +46,8 @@ export class Todo {
       lastActivityDate: this.lastActivityDate,
       stateChangeDate: this.stateChangeDate,
       createdAt: this.createdAt,
-      updatedAt: this.updatedAt
+      updatedAt: this.updatedAt,
+      subTasks: this.subTasks.map(t => t.getData())
     }
     return params
   }

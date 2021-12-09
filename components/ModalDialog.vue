@@ -107,12 +107,8 @@
           </div>
         </div>
 
-        <!-- TODO: チェックリスト
-          一括削除
-          消化率の表示
-          折りたたみボタン
-        -->
         <div class="modal-body">
+          <label class="input-label">チェックリスト ({{ subtaskDoneCount }}/{{ todo.subTasks.length }})</label>
           <sub-task
             v-for="subtask in todo.subTasks"
             :key="subtask.id"
@@ -121,7 +117,16 @@
             @delete="deleteSubtask"
           />
           <!-- アイテム追加ボタン -->
-          <button v-if="!isNewSubtask" class="btn btn-regular focus:outline-none" @click.stop="isNewSubtask = true">追加</button>
+          <button
+            v-if="!isNewSubtask"
+            ref="addButton"
+            :disabled="forbid.addButton"
+            class="btn btn-regular"
+            :class="{'btn-disabled': forbid.addButton}"
+            @click.stop="isNewSubtask = true"
+          >
+            追加
+          </button>
           <sub-task
             v-if="isNewSubtask"
             :is-create-mode="true"
@@ -202,7 +207,8 @@ export default {
         title: false,
         detail: false,
         range: false,
-        delete: false
+        delete: false,
+        addButton: false
       },
       footerMsg: '',
       calenderAttributes: [{ // 今日に目印
@@ -210,6 +216,11 @@ export default {
         dot: 'blue',
         dates: [new Date()]
       }]
+    }
+  },
+  computed: {
+    subtaskDoneCount () {
+      return this.todo.subTasks.filter(t => t.isDone).length
     }
   },
   mounted () {
@@ -237,6 +248,7 @@ export default {
         this.forbid.detail = true
         this.forbid.range = true
         this.forbid.delete = true
+        this.forbid.addButton = true
         this.footerMsg = '習慣から生成されたタスクはステータスの変更のみ可能です。'
       }
 
@@ -280,6 +292,10 @@ export default {
     addSubTask (data) {
       this.todo.subTasks.push(data)
       this.isNewSubtask = false
+
+      this.$nextTick(() => {
+        this.$refs.addButton.focus()
+      })
     },
     deleteSubtask (data) {
       const index = this.todo.subTasks.findIndex(v => v.id === data.id)
