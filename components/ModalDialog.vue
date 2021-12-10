@@ -135,7 +135,7 @@
           />
         </div>
 
-        <div class="modal-body">
+        <div v-if="!isCreateMode" class="modal-body">
           <label class="input-label">詳細情報</label>
           <div class="flex flex-wrap">
             <div class="px-1 m-1 border">
