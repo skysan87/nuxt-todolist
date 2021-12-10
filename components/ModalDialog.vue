@@ -149,6 +149,15 @@
           </div>
         </div>
 
+        <div v-if="todo.type === 'todo'" class="modal-body">
+          <label class="input-label">アクション</label>
+          <div class="flex flex-wrap">
+            <button class="block px-1 m-1 btn btn-outline" @click="setTodayInRange">
+              今日の予定に設定
+            </button>
+          </div>
+        </div>
+
         <div class="flex flex-row-reverse">
           <button class="btn btn-regular ml-2" @click="update">
             OK
@@ -312,6 +321,9 @@ export default {
     },
     initRange () {
       this.range = { start: null, end: null }
+    },
+    setTodayInRange () {
+      this.range = { start: new Date(), end: new Date() }
     },
     addSubTask (data) {
       this.todo.subTasks.push(data)
