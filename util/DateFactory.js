@@ -23,6 +23,8 @@ class Wrapper {
       this.instance = dayjs()
     } else if (!format && typeof date === 'string' && /^[0-9]{8}$/.test(date)) {
       this.instance = dayjs(date, 'YYYYMMDD')
+    } else if (!format && date) {
+      this.instance = dayjs(date)
     } else {
       this.instance = dayjs(date, format)
     }
@@ -76,5 +78,9 @@ class Wrapper {
 
   toDate () {
     return this.instance.toDate()
+  }
+
+  format (template) {
+    return this.instance.format(template)
   }
 }

@@ -135,6 +135,20 @@
           />
         </div>
 
+        <div class="modal-body">
+          <label class="input-label">詳細情報</label>
+          <div class="flex flex-wrap">
+            <div class="px-1 m-1 border">
+              <span class="text-xs">登録日:</span>
+              <span class="text-xs ml-1">{{ todo.createdAt | dtFormat }}</span>
+            </div>
+            <div class="px-1 m-1 border">
+              <span class="text-xs">更新日:</span>
+              <span class="text-xs ml-1">{{ todo.updatedAt | dtFormat }}</span>
+            </div>
+          </div>
+        </div>
+
         <div class="flex flex-row-reverse">
           <button class="btn btn-regular ml-2" @click="update">
             OK
@@ -173,6 +187,16 @@ export default {
   components: {
     SubTask
   },
+
+  filters: {
+    dtFormat (value) {
+      if (!value) {
+        return ''
+      }
+      return dateFactory(value).format('YYYY/MM/DD')
+    }
+  },
+
   props: {
     parent: {
       type: Element,
@@ -308,3 +332,7 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+
+</style>

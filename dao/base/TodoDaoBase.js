@@ -26,6 +26,8 @@ export class TodoDaoBase {
       todo.detail = 'dummy_detail' + i
       todo.startdate = dateFactory().getDateNumber()
       todo.enddate = dateFactory().addDay(1).getDateNumber()
+      todo.createdAt = Date.now()
+      todo.updatedAt = Date.now()
       todo.subTasks = Array.from({ length: 3 }
           , (v,j) => new SubTask({title: `${listId}_${i}_subtask_${j}`}))
       todos.push(todo)
@@ -61,6 +63,8 @@ export class TodoDaoBase {
       todo.state = state.value
       todo.startdate = dateFactory().getDateNumber()
       todo.enddate = dateFactory().addDay(i).getDateNumber()
+      todo.createdAt = Date.now()
+      todo.updatedAt = Date.now()
       todos.push(todo)
       todo.orderIndex = this[maxIndex] * 1000
       this[maxIndex] += 1
@@ -88,6 +92,8 @@ export class TodoDaoBase {
     todo.id = tmpId.toString()
     todo.listId = listId
     todo.userId = userId
+    todo.createdAt = Date.now()
+    todo.updatedAt = Date.now()
     this[maxIndex] += 1
     todo.orderIndex = this[maxIndex] * 1000
 
