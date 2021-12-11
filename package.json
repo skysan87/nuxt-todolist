@@ -1,12 +1,13 @@
 {
   "name": "nuxt-todolist",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "Nuxt.js To-Do list",
   "author": "skysan",
   "private": true,
   "scripts": {
     "run-dev": "NUXT_HOST=0.0.0.0 NUXT_PORT=3000 nuxt dev",
     "run-prod": "nuxt generate && NUXT_HOST=0.0.0.0 NUXT_PORT=3000 nuxt start",
+    "release-build": "nuxt build && nuxt generate",
     "build": "nuxt build",
     "analyze": "nuxt build --analyze",
     "generate": "nuxt generate",
