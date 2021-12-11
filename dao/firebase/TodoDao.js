@@ -170,6 +170,12 @@ export class TodoDao extends TodoDaoBase {
         stateChangeDate: todo.stateChangeDate,
         listId: todo.listId,
         orderIndex: todo.orderIndex,
+        subTasks: todo.subTasks.map((t) => {
+          return {
+            title: t.title,
+            isDone: t.isDone
+          }
+        }),
         updatedAt: getServerTimestamp()
       })
       return true
