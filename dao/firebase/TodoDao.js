@@ -12,7 +12,7 @@ export class TodoDao extends TodoDaoBase {
     try {
       const querySnapshot = await todosRef.where('listId', '==', listId).get()
       const todos = querySnapshot.docs.map((doc) => {
-        return new Todo(doc.id, doc.data())
+        return this.convertToTodo(doc)
       })
       return todos
     } catch (error) {
@@ -35,7 +35,7 @@ export class TodoDao extends TodoDaoBase {
         .where('startdate', '<=', date)
         .get()
       todos.push(...querySnapshotTodo.docs.map((doc) => {
-        return new Todo(doc.id, doc.data())
+        return this.convertToTodo(doc)
       }))
 
       const querySnapshotInProgress = await todosRef.where('type', '==', 'todo')
@@ -44,7 +44,7 @@ export class TodoDao extends TodoDaoBase {
         .where('startdate', '<=', date)
         .get()
       todos.push(...querySnapshotInProgress.docs.map((doc) => {
-        return new Todo(doc.id, doc.data())
+        return this.convertToTodo(doc)
       }))
 
       return todos
@@ -66,7 +66,7 @@ export class TodoDao extends TodoDaoBase {
         .where('stateChangeDate', '==', date)
         .get()
       const todos = querySnapshot.docs.map((doc) => {
-        return new Todo(doc.id, doc.data())
+        return this.convertToTodo(doc)
       })
       return todos
     } catch (error) {
@@ -82,7 +82,7 @@ export class TodoDao extends TodoDaoBase {
         .where('startdate', '==', date)
         .get()
       const todos = querySnapshot.docs.map((doc) => {
-        return new Todo(doc.id, doc.data())
+        return this.convertToTodo(doc)
       })
       return todos
     } catch (error) {
@@ -247,5 +247,18 @@ export class TodoDao extends TodoDaoBase {
       console.error(error)
       return false
     }
+  }
+
+  /**
+   * @param {firestore.DocumentData} doc
+   * @returns {Todo}
+   */
+  convertToTodo (doc) {
+    const data = doc.data()
+    const todo = new Todo(doc.id, data)
+    // timestampをDateに変換
+    todo.createdAt = data.createdAt ? data.createdAt.toDate() : ''
+    todo.updatedAt = data.updatedAt ? data.updatedAt.toDate() : ''
+    return todo
   }
 }
