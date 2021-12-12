@@ -198,6 +198,10 @@ export default {
   },
 
   filters: {
+    /**
+     * @param {Date} value
+     * @return {String}
+     */
     dtFormat (value) {
       if (!value) {
         return ''
@@ -344,7 +348,3 @@ export default {
   }
 }
 </script>
-
-<style scoped>
-
-</style>
