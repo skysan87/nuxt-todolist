@@ -237,6 +237,10 @@ export class Habit {
     const year = today.getFullYear()
     const month = today.getMonth()
     const day = today.getDate()
+    // 年を跨いだ時
+    if (!this.result[year]) {
+      this.result[year] = this.initYearPlan()
+    }
     const unzipResult = this.unzip(this.result[year][month])
 
     unzipResult[day] = isDone ? '1' : '0'
