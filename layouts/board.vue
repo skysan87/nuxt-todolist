@@ -53,28 +53,35 @@
                 </div>
                 <fa :icon="['far', 'plus-square']" class="cursor-pointer" @click.left="openListDialog" />
               </div>
-              <div
-                v-for="todolist in todolists"
-                :key="todolist.id"
-                class="py-1 flex justify-between items-center hover:bg-blue-700 hover:opacity-75"
-                :class="{'bg-blue-700' : (selectedType === viewType.Todo && currentListId == todolist.id)}"
-                @mouseover="activeItemId = todolist.id"
-                @mouseout="activeItemId = ''"
+
+              <draggable
+                v-model="todolists"
+                @end="onDragEnd"
               >
                 <div
-                  class="px-5 flex-1 cursor-pointer"
-                  @click.left="onSelectList(todolist.id)"
+                  v-for="todolist in todolists"
+                  :key="todolist.id"
+                  class="py-1 flex justify-between items-center hover:bg-blue-700 hover:opacity-75"
+                  :class="{'bg-blue-700' : (selectedType === viewType.Todo && currentListId == todolist.id)}"
+                  @mouseover="activeItemId = todolist.id"
+                  @mouseout="activeItemId = ''"
                 >
-                  # {{ todolist.title }}
+                  <div
+                    class="px-5 flex-1 cursor-pointer"
+                    @click.left="onSelectList(todolist.id)"
+                  >
+                    # {{ todolist.title }}
+                  </div>
+                  <div
+                    class="flex-none m-0 pr-4 opacity-0"
+                    :class="{'opacity-100': activeItemId === todolist.id}"
+                    @click.left.prevent="editTodolist(todolist.id)"
+                  >
+                    <fa :icon="['fas', 'edit']" size="xs" class="cursor-pointer" />
+                  </div>
                 </div>
-                <div
-                  class="flex-none m-0 pr-4 opacity-0"
-                  :class="{'opacity-100': activeItemId === todolist.id}"
-                  @click.left.prevent="editTodolist(todolist.id)"
-                >
-                  <fa :icon="['fas', 'edit']" size="xs" class="cursor-pointer" />
-                </div>
-              </div>
+              </draggable>
+
               <div class="mt-5 px-4 flex justify-between items-center">
                 <div class="font-bold text-lg">
                   習慣
@@ -115,6 +122,7 @@
 
 <script>
 import Vue from 'vue'
+import draggable from 'vuedraggable'
 import NewListDialog from '@/components/NewListDialog'
 import InputDialog from '@/components/InputDialog'
 import { HabitFilter } from '@/util/HabitFilter'
@@ -125,6 +133,9 @@ const InputDialogController = Vue.extend(InputDialog)
 const viewType = { Todo: 0, Habit: 1, Today: 2 }
 
 export default {
+  components: {
+    draggable
+  },
   data () {
     return {
       userName: this.$store.getters['user/displayName'],
@@ -277,6 +288,20 @@ export default {
       const firstListId = this.$store.getters['todolist/getFistListId']
       this.currentListId = firstListId
       this.$router.push(`/todolist/${firstListId}`)
+    },
+    /**
+     * ドラッグ終了時
+     */
+    onDragEnd (ev) {
+      // この時点ですでに並び替えられている
+      if (ev.oldIndex === ev.newIndex) {
+        return
+      }
+      const params = {
+        oldIndex: ev.oldIndex,
+        newIndex: ev.newIndex
+      }
+      this.$store.dispatch('todolist/changeOrder', params)
     }
   }
 }
@@ -340,5 +365,14 @@ export default {
 
 .app-workspace__view {
   grid-area: app-workspace__view;
+}
+
+/* ドラッグするアイテム */
+.sortable-chosen {
+  opacity: 0.3;
+}
+
+.sortable-ghost {
+  background-color: #979797;
 }
 </style>

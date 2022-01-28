@@ -115,6 +115,46 @@ export default {
       }
     },
 
+    async changeOrder ({ commit, getters }, params) {
+      const sorted = getters.getLists
+      const srcTodolist = sorted[params.oldIndex]
+      const destTodolist = sorted[params.newIndex]
+
+      const actualNewIndex = sorted.findIndex(v => v.id === destTodolist.id)
+
+      let prevOrderIndex, nextOrderIndex
+      if (params.oldIndex > params.newIndex) {
+        // 上へ移動
+        // newIndexにあったアイテムは下に移動する
+        if (actualNewIndex > 0) {
+          prevOrderIndex = sorted[actualNewIndex - 1].orderIndex
+        } else {
+          prevOrderIndex = 1
+        }
+        nextOrderIndex = destTodolist.orderIndex
+      } else {
+        // 下へ移動
+        // newIndexにあったアイテムは上に移動する
+        prevOrderIndex = destTodolist.orderIndex
+        if (sorted.length - 1 > actualNewIndex) {
+          nextOrderIndex = sorted[actualNewIndex + 1].orderIndex
+        } else {
+          nextOrderIndex = Math.ceil(destTodolist.orderIndex) + 1
+        }
+      }
+
+      // NOTE: 並び替えは前後のorderから算出
+      //  firebaseで複雑なsortができないため
+      const newOrderIndex = (prevOrderIndex + nextOrderIndex) / 2
+
+      if (newOrderIndex !== destTodolist.orderIndex) {
+        srcTodolist.orderIndex = newOrderIndex
+        if (await dao.update(srcTodolist)) {
+          commit('update', srcTodolist)
+        }
+      }
+    },
+
     delete ({ commit, state }, id) {
       return new Promise((resolve, reject) => {
         if (state.lists.length <= 1) {

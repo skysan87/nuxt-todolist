@@ -49,6 +49,7 @@ export class TodolistDao extends TodolistDaoBase {
       await todolistsRef.doc(list.id).update({
         title: list.title,
         detail: list.detail,
+        orderIndex: list.orderIndex,
         updatedAt: getServerTimestamp()
       })
       return true

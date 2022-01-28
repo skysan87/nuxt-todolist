@@ -8,7 +8,10 @@ export class TodolistDaoBase {
     const list = new Todolist('defaultId', { title: 'dummy' })
     lists.push(list)
     for (let index = 0; index < 5; index++) {
-      const list = new Todolist(`list_id${index}`, { title: `dummy${index}` })
+      const list = new Todolist(`list_id${index}`, {
+        title: `dummy${index}`,
+        orderIndex: index + 1
+      })
       lists.push(list)
     }
     return lists
