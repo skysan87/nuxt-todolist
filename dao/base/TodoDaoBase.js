@@ -46,6 +46,10 @@ export class TodoDaoBase {
     return todos
   }
 
+  async getTaskInProgress (userId, date) {
+    return this.createDummyTodo(userId, TaskState.InProgress)
+  }
+
   async getTodaysDone(userId, date) {
     return this.createDummyTodo(userId, TaskState.Done)
   }
@@ -56,7 +60,7 @@ export class TodoDaoBase {
       const todo = new Todo('', {})
       todo.id = `dummy_${state.label}_${i}`
       todo.type ='todo'
-      todo.listId = 'list' + (i % 3)
+      todo.listId = `list_id${(i % 3)}`
       todo.userId = userId
       todo.title = `title_${i}_${state.label}`
       todo.detail = `detail_${i}_${state.label}`

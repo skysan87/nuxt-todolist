@@ -20,6 +20,8 @@ function getFilteredArray (array, option, isAllSelected) {
   }
 }
 
+const DEFAULT_STATE = [TaskState.Todo.value, TaskState.InProgress.value]
+
 /**
  * 習慣タスクの実績計算
  * @description 完了した場合は実績を更新、完了でなくなった場合は実績を戻す
@@ -59,7 +61,7 @@ export default {
   state () {
     return {
       todos: [],
-      selectedState: [TaskState.Todo.value, TaskState.InProgress.value],
+      selectedState: DEFAULT_STATE,
       canRemove: false,
       listId: ''
     }
@@ -113,13 +115,8 @@ export default {
   // 状態の更新
   mutations: {
     init (state, payload) {
-      state.selectedState = [TaskState.Todo.value, TaskState.InProgress.value]
-      state.listId = payload.listId
-      state.todos = payload.data
-    },
-
-    initToday (state, payload) {
-      state.listId = ''
+      state.selectedState = DEFAULT_STATE
+      state.listId = payload.listId || ''
       state.todos = payload.data
     },
 
@@ -172,7 +169,7 @@ export default {
 
     async initTodaylist ({ commit, dispatch, rootGetters }) {
       // 描画初期化
-      commit('initToday', { data: [] })
+      commit('init', { data: [], listId: '' })
 
       const userId = rootGetters['user/userId']
       const today = dateFactory().getDateNumber() // YYYYMMDD
@@ -213,9 +210,21 @@ export default {
       todos.push(...await dao.getTodaysTask(userId, today))
       // 今日完了したタスク
       todos.push(...await dao.getTodaysDone(userId, today))
-      commit('initToday', { data: todos })
+      commit('init', { data: todos, listId: '' })
 
       console.log('todaylist init')
+    },
+
+    async initInProgressList ({ commit, rootGetters }) {
+      // 描画初期化
+      commit('init', { data: [], listId: '' })
+
+      const userId = rootGetters['user/userId']
+      const today = dateFactory().getDateNumber() // YYYYMMDD
+
+      commit('init', { data: await dao.getTaskInProgress(userId, today), listId: '' })
+
+      console.log('wip init')
     },
 
     async changeOrder ({ commit, getters }, params) {

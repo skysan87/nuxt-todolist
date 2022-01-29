@@ -35,7 +35,7 @@
             <div class="flex-1 py-4 overflow-y-scroll scrollable-container">
               <div class="mt-5 px-4 flex items-center">
                 <div class="font-bold text-lg">
-                  今日の予定
+                  サマリ
                 </div>
               </div>
               <div
