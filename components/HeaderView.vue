@@ -113,7 +113,9 @@ export default {
      * 完了済みのタスクを削除
      */
     deleteDone () {
-      this.$store.dispatch('todo/deleteDone')
+      if (confirm('完了済みのタスクを削除しますか？')) {
+        this.$store.dispatch('todo/deleteDone')
+      }
     },
     switchRemoveButton () {
       this.$store.dispatch('todo/switchEdit')
