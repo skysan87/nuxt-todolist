@@ -18,6 +18,7 @@
       v-if="showMenu"
       class="btn btn-outline btn-clear-done ml-2"
       ontouchend=""
+      title="完了済みのタスクを削除する"
       @click="deleteDone"
     >
       Clear Done
@@ -27,6 +28,7 @@
       class="btn btn-outline btn-switch-edit ml-2"
       :class="{'switch-on': canRemove}"
       ontouchend=""
+      title="編集モード"
       @click="switchRemoveButton"
     >
       Edit
@@ -35,14 +37,28 @@
       v-if="showMenu"
       class="btn btn-regular ml-2"
       ontouchend=""
+      title="プロジェクトの詳細を表示する"
       @click="openListDialog"
     >
       詳細
     </button>
     <nuxt-link v-if="showMenu" to="calendar">
-      <fa :icon="['fas', 'calendar-day']" size="lg" class="cursor-pointer ml-2 text-gray-600" ontouchend="" />
+      <fa
+        :icon="['fas', 'calendar-day']"
+        size="lg"
+        class="cursor-pointer ml-2 text-gray-600"
+        ontouchend=""
+        title="カレンダー表示"
+      />
     </nuxt-link>
-    <fa v-if="showMenu" :icon="['fas', 'sync-alt']" class="cursor-pointer ml-2 text-gray-600" ontouchend="" @click.left="reload" />
+    <fa
+      v-if="showMenu"
+      :icon="['fas', 'sync-alt']"
+      class="cursor-pointer ml-2 text-gray-600"
+      ontouchend=""
+      title="リロード"
+      @click.left="reload"
+    />
   </div>
 </template>
 
