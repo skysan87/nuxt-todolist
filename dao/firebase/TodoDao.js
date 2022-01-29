@@ -54,6 +54,34 @@ export class TodoDao extends TodoDaoBase {
     }
   }
 
+  async getTaskInProgress (userId, date) {
+    try {
+      const todos = []
+
+      const querySnapshotTodo = await todosRef.where('type', '==', 'todo')
+        .where('userId', '==', userId)
+        .where('state', '==', TaskState.InProgress.value)
+        .get()
+      todos.push(...querySnapshotTodo.docs.map((doc) => {
+        return this.convertToTodo(doc)
+      }))
+
+      const querySnapshotHabit = await todosRef.where('type', '==', 'habit')
+        .where('userId', '==', userId)
+        .where('startdate', '==', date)
+        .where('state', '==', TaskState.InProgress.value)
+        .get()
+      todos.push(...querySnapshotHabit.docs.map((doc) => {
+        return this.convertToTodo(doc)
+      }))
+
+      return todos
+    } catch (error) {
+      console.error(error)
+      throw error
+    }
+  }
+
   /**
    * 今日完了したタスクを取得
    * @param {Number} date 今日の日付(YYYYMMDD)
