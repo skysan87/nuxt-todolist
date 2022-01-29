@@ -51,7 +51,12 @@
                 <div class="font-bold text-lg">
                   プロジェクト
                 </div>
-                <fa :icon="['far', 'plus-square']" class="cursor-pointer" @click.left="openListDialog" />
+                <fa
+                  :icon="['far', 'plus-square']"
+                  class="cursor-pointer"
+                  title="プロジェクトを追加する"
+                  @click.left="openListDialog"
+                />
               </div>
 
               <draggable
@@ -77,7 +82,12 @@
                     :class="{'opacity-100': activeItemId === todolist.id}"
                     @click.left.prevent="editTodolist(todolist.id)"
                   >
-                    <fa :icon="['fas', 'edit']" size="xs" class="cursor-pointer" />
+                    <fa
+                      :icon="['fas', 'edit']"
+                      size="xs"
+                      class="cursor-pointer"
+                      title="プロジェクトを編集する"
+                    />
                   </div>
                 </div>
               </draggable>
