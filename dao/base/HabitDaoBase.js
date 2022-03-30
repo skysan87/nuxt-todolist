@@ -62,13 +62,7 @@ export class HabitDaoBase {
       value: null
     }
     const tmpId = Date.now()
-    const habit = new Habit(tmpId.toString(), {})
-    habit.title = params.title
-    habit.detail = params.detail
-    habit.isActive = params.isActive
-    habit.frequency = params.frequency
-    habit.weekdays = params.weekdays
-    habit.rootId = params.rootId
+    const habit = new Habit(tmpId.toString(), params)
     habit.userId = userId
     this[maxIndex] += 1
     habit.orderIndex = this[maxIndex] * 1000
