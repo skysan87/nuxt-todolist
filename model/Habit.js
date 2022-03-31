@@ -231,11 +231,40 @@ export class Habit {
     if (this.frequency === Habit.FREQ_DAILY) {
       unzipPlan[_y][_m][_d] = '1'
       return true
-    } else {
+    } else if (this.frequency === Habit.FREQ_WEEKLY) {
       // 実施日ならフラグを立てる
       if (this.weekdays.includes(_dw)) {
         unzipPlan[_y][_m][_d] = '1'
         return true
+      }
+    } else if (this.frequency === Habit.FREQ_MONTHLY) {
+      switch (this.monthlyType) {
+        case Habit.MONTHLY_TYPE.DAY:
+          if (this.planDays.includes(_d)) {
+            unzipPlan[_y][_m][_d] = '1'
+            return true
+          }
+          break
+        case Habit.MONTHLY_TYPE.WEEK:
+          if (!this.planWeek) {
+            return false
+          }
+          // 第何周の何曜日か
+          if (dateFactory(_date).getWeekIndex() === this.planWeek.index &&
+            _date.getDay() === this.planWeek.day) {
+            unzipPlan[_y][_m][_d] = '1'
+            return true
+          }
+          break
+        case Habit.MONTHLY_TYPE.END:
+          // 月末判定
+          if (dateFactory(_date).daysInMonth() === _d) {
+            unzipPlan[_y][_m][_d] = '1'
+            return true
+          }
+          break
+        default:
+          return false
       }
     }
     return false

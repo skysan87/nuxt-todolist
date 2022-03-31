@@ -83,4 +83,20 @@ class Wrapper {
   format (template) {
     return this.instance.format(template)
   }
+
+  /**
+   * 月に何日あるか
+   * @return {Number}
+   */
+  daysInMonth () {
+    return this.instance.daysInMonth()
+  }
+
+  /**
+   * 月の第何週か
+   * @return {Number}
+   */
+  getWeekIndex () {
+    return Math.ceil(this.instance.get('date') / 7)
+  }
 }

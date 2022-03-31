@@ -48,29 +48,38 @@
               <span>毎月</span>
             </label>
             <span v-show="habit.frequency === FREQ_MONTHLY" class="flex flex-col">
-              <label class="ml-4 my-1">
-                <input v-model="monthlyType" type="radio" :value="MONTHLY_TYPE.DAY">
-                <span>日付</span>
+              <div>
+                <label class="ml-4 my-1">
+                  <input v-model="monthlyType" type="radio" :value="MONTHLY_TYPE.DAY">
+                  <span>日付で指定</span>
+                </label>
                 <!-- TODO: 複数日対応 -->
-                <select v-model="planDays" class="px-1 bg-gray-200">
+                <select v-model="planDays" class="ml-4 px-1 bg-gray-200">
                   <option v-for="day of 31" :key="day" :value="day">{{ day }}</option>
                 </select>
-              </label>
-              <label class="ml-4 my-1">
-                <input v-model="monthlyType" type="radio" :value="MONTHLY_TYPE.WEEK">
-                <span>第</span>
-                <select v-model="planWeek.index" class="px-1 bg-gray-200">
-                  <option v-for="id of 4" :key="id" :value="id">{{ id }}</option>
-                </select>
-                <select v-model="planWeek.day" class="px-1 bg-gray-200">
-                  <option v-for="(label, id) of weekdays" :key="id" :value="id">{{ label }}</option>
-                </select>
-                <span>曜日</span>
-              </label>
-              <label class="ml-4 my-1">
-                <input v-model="monthlyType" type="radio" :value="MONTHLY_TYPE.END">
-                <span>月末</span>
-              </label>
+              </div>
+              <div>
+                <label class="ml-4 my-1">
+                  <input v-model="monthlyType" type="radio" :value="MONTHLY_TYPE.WEEK">
+                  <span>週と曜日</span>
+                </label>
+                <div class="inline-block ml-4">
+                  <span>第</span>
+                  <select v-model="planWeek.index" class="px-1 bg-gray-200">
+                    <option v-for="id of 4" :key="id" :value="id">{{ id }}</option>
+                  </select>
+                  <select v-model="planWeek.day" class="px-1 bg-gray-200">
+                    <option v-for="(label, id) of weekdays" :key="id" :value="id">{{ label }}</option>
+                  </select>
+                  <span>曜日</span>
+                </div>
+              </div>
+              <div>
+                <label class="ml-4 my-1">
+                  <input v-model="monthlyType" type="radio" :value="MONTHLY_TYPE.END">
+                  <span>月末</span>
+                </label>
+              </div>
             </span>
           </div>
           <p class="text-red-500 text-xs italic">
@@ -217,7 +226,10 @@ export default {
               break
             case Habit.MONTHLY_TYPE.WEEK:
               this.habit.planDays = []
-              this.habit.planWeek = { ...this.planWeek }
+              this.habit.planWeek = {
+                index: parseInt(this.planWeek.index),
+                day: parseInt(this.planWeek.day)
+              }
               break
             case Habit.MONTHLY_TYPE.END:
             default:
