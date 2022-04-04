@@ -63,6 +63,9 @@ export default {
   methods: {
     changeEventHandler () {
       this.$store.dispatch('todo/changeState', this.todo.id)
+        .catch((error) => {
+          this.$toast.error(error.message)
+        })
     },
     badgeColor (state) {
       return getStateColor(state)
