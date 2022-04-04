@@ -76,7 +76,7 @@ export class Habit {
       weekdays: this.weekdays,
       monthlyType: this.monthlyType,
       planDays: this.planDays,
-      planWeekIndex: this.planWeekIndex,
+      planWeek: this.planWeek,
       orderIndex: this.orderIndex,
       userId: this.userId,
       lastActivityDate: this.lastActivityDate,
