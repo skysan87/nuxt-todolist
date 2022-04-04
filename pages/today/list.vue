@@ -64,6 +64,15 @@ export default {
       const todo = this.$store.getters['todo/getTodoById'](id)
       const list = this.$store.getters['todolist/getLists']
 
+      if (todo.type === 'habit') {
+        const habit = this.$store.getters['habit/getById'](todo.listId)
+        if (!habit) {
+          console.error('対象の習慣はすでに削除されています')
+          this.$toast.error('更新できません')
+          return
+        }
+      }
+
       this.dialog = new DialogController({
         propsData: {
           parent: this.$root.$el,
@@ -74,6 +83,9 @@ export default {
       })
       this.dialog.$on('update', (todo) => {
         this.$store.dispatch('todo/update', todo)
+          .catch((error) => {
+            this.$toast.error(error.message)
+          })
       })
       this.dialog.$on('delete', (todoId) => {
         this.$store.dispatch('todo/delete', todoId)

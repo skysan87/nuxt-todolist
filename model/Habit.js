@@ -4,6 +4,14 @@ import { dateFactory } from '@/util/DateFactory'
 export class Habit {
   static FREQ_DAILY = 'daily'
   static FREQ_WEEKLY = 'weekly'
+  static FREQ_MONTHLY = 'monthly'
+
+  static MONTHLY_TYPE = {
+    DAY: 'day',
+    WEEK: 'week',
+    END: 'end'
+  }
+
   static WEEKDAYS = { 0: '日', 1: '月', 2: '火', 3: '水', 4: '木', 5: '金', 6: '土' }
 
   constructor (id, params) {
@@ -14,6 +22,9 @@ export class Habit {
     this.isActive = (params.isActive !== undefined) ? params.isActive : true
     this.frequency = params.frequency || Habit.FREQ_DAILY // 繰り返し設定
     this.weekdays = params.weekdays || [] // 実施する曜日
+    this.monthlyType = params.monthlyType || null // 毎月実施する種別
+    this.planDays = params.planDays || [] // 実施する日(MONTHLY_TYPE.DAY)
+    this.planWeek = params.planWeek || null // 実施する週(MONTHLY_TYPE.WEEK)
     this.orderIndex = params.orderIndex || 0
     this.userId = params.userId || ''
     this.lastActivityDate = params.lastActivityDate || null // 前回実施日
@@ -63,6 +74,9 @@ export class Habit {
       isActive: this.isActive,
       frequency: this.frequency,
       weekdays: this.weekdays,
+      monthlyType: this.monthlyType,
+      planDays: this.planDays,
+      planWeek: this.planWeek,
       orderIndex: this.orderIndex,
       userId: this.userId,
       lastActivityDate: this.lastActivityDate,
@@ -217,11 +231,40 @@ export class Habit {
     if (this.frequency === Habit.FREQ_DAILY) {
       unzipPlan[_y][_m][_d] = '1'
       return true
-    } else {
+    } else if (this.frequency === Habit.FREQ_WEEKLY) {
       // 実施日ならフラグを立てる
       if (this.weekdays.includes(_dw)) {
         unzipPlan[_y][_m][_d] = '1'
         return true
+      }
+    } else if (this.frequency === Habit.FREQ_MONTHLY) {
+      switch (this.monthlyType) {
+        case Habit.MONTHLY_TYPE.DAY:
+          if (this.planDays.includes(_d)) {
+            unzipPlan[_y][_m][_d] = '1'
+            return true
+          }
+          break
+        case Habit.MONTHLY_TYPE.WEEK:
+          if (!this.planWeek) {
+            return false
+          }
+          // 第何周の何曜日か
+          if (dateFactory(_date).getWeekIndex() === this.planWeek.index &&
+            _date.getDay() === this.planWeek.day) {
+            unzipPlan[_y][_m][_d] = '1'
+            return true
+          }
+          break
+        case Habit.MONTHLY_TYPE.END:
+          // 月末判定
+          if (dateFactory(_date).daysInMonth() === _d) {
+            unzipPlan[_y][_m][_d] = '1'
+            return true
+          }
+          break
+        default:
+          return false
       }
     }
     return false
@@ -294,5 +337,9 @@ export class Habit {
 
   initYearPlan () {
     return Array.from({ length: 12 }, () => '0')
+  }
+
+  static valueOf (params) {
+    return new Habit(params.id || '', params)
   }
 }

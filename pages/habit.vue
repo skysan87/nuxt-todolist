@@ -109,6 +109,9 @@ export default {
       this.dialog.$on('update', (habit) => {
         this.$store.dispatch('habit/update', habit)
       })
+      this.dialog.$on('delete', (habit) => {
+        this.$store.dispatch('habit/delete', habit)
+      })
       this.dialog.$mount()
     }
   }

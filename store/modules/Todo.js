@@ -326,6 +326,10 @@ export default {
           return
         }
         const habit = rootGetters['habit/getById'](newTodo.listId)
+        if (!habit) {
+          console.error('対象の習慣はすでに削除されています')
+          throw new Error('更新に失敗しました')
+        }
         const { habit: updatedHabit, habitCounter } = calcHabitSummary(habit, oldTodo, newTodo)
 
         if (await dao.updateHabit(newTodo, updatedHabit, habitCounter)) {
@@ -369,6 +373,10 @@ export default {
 
       if (newTodo.type === 'habit') {
         const habit = rootGetters['habit/getById'](newTodo.listId)
+        if (!habit) {
+          console.error('対象の習慣はすでに削除されています')
+          throw new Error('更新に失敗しました')
+        }
         const { habit: updatedHabit, habitCounter } = calcHabitSummary(habit, oldTodo, newTodo)
 
         if (await dao.updateHabit(newTodo, updatedHabit, habitCounter)) {

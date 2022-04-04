@@ -111,6 +111,9 @@ export class HabitDao extends HabitDaoBase {
           isActive: habit.isActive,
           frequency: habit.frequency,
           weekdays: habit.weekdays,
+          monthlyType: habit.monthlyType,
+          planDays: habit.planDays,
+          planWeek: habit.planWeek,
           orderIndex: habit.orderIndex,
           updatedAt: getServerTimestamp()
         })
