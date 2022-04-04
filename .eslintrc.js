@@ -16,6 +16,7 @@ module.exports = {
   rules: {
     'no-lonely-if': 'off',
     'no-unused-vars': 'off',
-    'dot-notation': 'off'
+    'dot-notation': 'off',
+    'vue/multi-word-component-names': 'off'
   }
 }
