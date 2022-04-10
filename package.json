@@ -27,7 +27,7 @@
     "@nuxtjs/pwa": "^3.3.5",
     "@nuxtjs/toast": "^3.3.1",
     "dayjs": "^1.10.8",
-    "firebase": "^8.2.5",
+    "firebase": "^9.6.10",
     "nuxt": "^2.15.8",
     "v-calendar": "^2.4.1",
     "vuedraggable": "^2.24.3"
@@ -43,10 +43,13 @@
     "babel-jest": "^27.5.1",
     "eslint": "^8.11.0",
     "eslint-plugin-nuxt": ">=3.1.0",
-    "firebase-tools": "^10.2.2",
+    "firebase-tools": "^10.6.0",
     "jest": "^27.5.1",
     "sass": "^1.49.9",
     "sass-loader": "^10.2.1",
     "vue-jest": "^3.0.7"
+  },
+  "overrides": {
+    "minimist@1.2.5": "^1.2.6"
   }
 }
