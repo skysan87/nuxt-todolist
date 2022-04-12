@@ -1,6 +1,5 @@
-import firebase from 'firebase/app'
-import 'firebase/auth'
-import 'firebase/firestore'
+import { getApps, getApp, initializeApp } from 'firebase/app'
+import { serverTimestamp, getFirestore } from 'firebase/firestore'
 
 const config = {
   apiKey: process.env.FIREBASE_API_KEY,
@@ -12,19 +11,10 @@ const config = {
   appId: process.env.FIREBASE_APP_ID
 }
 
-const firebaseApp = firebase.initializeApp(config)
+export const firebaseApp = !getApps().length ? initializeApp(config) : getApp()
 
-export const firestore = firebaseApp.firestore()
-
-// 認証状態の永続性
-// SESSION: タブが表示している間のみログイン情報を保持
-// LOCAL: ログアウトしない限りログイン状態
-firebaseApp.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
-
-export const auth = firebaseApp.auth()
-
-export const authProvider = new firebase.auth.GoogleAuthProvider()
+export const firestore = getFirestore(firebaseApp)
 
 export function getServerTimestamp () {
-  return firebase.firestore.FieldValue.serverTimestamp()
+  return serverTimestamp()
 }

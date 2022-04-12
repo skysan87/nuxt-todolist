@@ -63,6 +63,19 @@ export default {
     async logout ({ commit }) {
       await dao.logout()
       commit('resetUser')
+    },
+
+    async checkLogin ({ commit }) {
+      const user = await dao.getAuthChanged()
+      if (user !== null) {
+        // login
+        commit('setUser', user)
+        return true
+      } else {
+        // logout
+        commit('resetUser')
+        return false
+      }
     }
   }
 }
