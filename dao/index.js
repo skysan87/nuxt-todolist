@@ -1,32 +1,25 @@
-import { TodoDaoBase as TodoBase } from '@/dao/base/TodoDaoBase'
-import { TodolistDaoBase as TodolistBase } from '@/dao/base/TodolistDaoBase'
-import { UserDaoBase as UserBase } from '@/dao/base/UserDaoBase'
-import { HabitDaoBase as HabitBase } from '@/dao/base/HabitDaoBase'
-import { ConfigDaoBase as ConfigBase } from '@/dao/base/ConfigDaoBase'
-import { TodoDao as TodoFB } from '@/dao/firebase/TodoDao'
-import { TodolistDao as TodolistFB } from '@/dao/firebase/TodolistDao'
-import { UserDao as UserFB } from '@/dao/firebase/UserDao'
-import { HabitDao as HabitFB } from '@/dao/firebase/HabitDao'
-import { ConfigDao as ConfigFB } from '@/dao/firebase/ConfigDao'
+import * as base from '@/dao/base'
+import * as fb from '@/dao/firebase'
 
-const DB_MODE = process.env.DATABASE_MODE
+const FB_MODE = process.env.DATABASE_MODE !== 'local'
+const GOOGLE_AUTH_MODE = process.env.GOOGLE_AUTH === '1'
 
 export function CreateTodoDao () {
-  return DB_MODE === 'local' ? new TodoBase() : new TodoFB()
+  return FB_MODE ? new fb.TodoDao() : new base.TodoDaoBase()
 }
 
 export function CreateTodolistDao () {
-  return DB_MODE === 'local' ? new TodolistBase() : new TodolistFB()
+  return FB_MODE ? new fb.TodolistDao() : new base.TodolistDaoBase()
 }
 
 export function CreateUserDao () {
-  return DB_MODE === 'local' ? new UserBase() : new UserFB()
+  return GOOGLE_AUTH_MODE ? new fb.UserDao() : new base.UserDaoBase()
 }
 
 export function CreateHabitDao () {
-  return DB_MODE === 'local' ? new HabitBase() : new HabitFB()
+  return FB_MODE ? new fb.HabitDao() : new base.HabitDaoBase()
 }
 
 export function CreateConfigDao () {
-  return DB_MODE === 'local' ? new ConfigBase() : new ConfigFB()
+  return FB_MODE ? new fb.ConfigDao() : new base.ConfigDaoBase()
 }

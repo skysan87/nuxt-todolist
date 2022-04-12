@@ -95,3 +95,5 @@ schedule.gantt
 .firebaserc
 config/
 .env
+
+emulator_data/

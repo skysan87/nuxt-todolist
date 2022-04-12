@@ -1,5 +1,5 @@
 import { getApps, getApp, initializeApp } from 'firebase/app'
-import { getFirestore } from 'firebase/firestore/lite'
+import { getFirestore, connectFirestoreEmulator } from 'firebase/firestore/lite'
 
 const config = {
   apiKey: process.env.FIREBASE_API_KEY,
@@ -14,3 +14,8 @@ const config = {
 export const firebaseApp = !getApps().length ? initializeApp(config) : getApp()
 
 export const firestore = getFirestore(firebaseApp)
+
+if (process.env.NODE_ENV !== 'production' &&
+  process.env.DATABASE_MODE === 'emulator') {
+  connectFirestoreEmulator(firestore, 'localhost', 8080)
+}
