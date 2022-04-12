@@ -48,13 +48,13 @@ export default {
   computed: {
     filteredTodos: {
       get () {
-        return this.$store.getters['todo/getFilteredTodos']
+        return this.$store.getters['Todo/getFilteredTodos']
       }
     }
   },
   mounted () {
     // 一括で取得する
-    this.$store.dispatch('todo/initInProgressList')
+    this.$store.dispatch('Todo/initInProgressList')
   },
   methods: {
     /**
@@ -63,11 +63,11 @@ export default {
     editTodo (id) {
       delete this.dialog
 
-      const todo = this.$store.getters['todo/getTodoById'](id)
-      const list = this.$store.getters['todolist/getLists']
+      const todo = this.$store.getters['Todo/getTodoById'](id)
+      const list = this.$store.getters['Todo/getLists']
 
       if (todo.type === 'habit') {
-        const habit = this.$store.getters['habit/getById'](todo.listId)
+        const habit = this.$store.getters['Habit/getById'](todo.listId)
         if (!habit) {
           console.error('対象の習慣はすでに削除されています')
           this.$toast.error('更新できません')
@@ -84,13 +84,13 @@ export default {
         }
       })
       this.dialog.$on('update', (todo) => {
-        this.$store.dispatch('todo/update', todo)
+        this.$store.dispatch('Todo/update', todo)
           .catch((error) => {
             this.$toast.error(error.message)
           })
       })
       this.dialog.$on('delete', (todoId) => {
-        this.$store.dispatch('todo/delete', todoId)
+        this.$store.dispatch('Todo/delete', todoId)
       })
       this.dialog.$mount()
     }

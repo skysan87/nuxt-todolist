@@ -10,7 +10,8 @@ export class UserDaoBase {
     return true
   }
 
-  getAuthChanged () {
+  async getAuthChanged () {
+    await authMock.sleep(800)
     return new Promise(resolve => resolve(authMock.loginUser))
   }
 }

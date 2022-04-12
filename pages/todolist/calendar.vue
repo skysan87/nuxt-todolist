@@ -56,7 +56,7 @@ export default {
   computed: {
     todos: {
       get () {
-        const todos = this.$store.getters['todo/getOrderdTodos']
+        const todos = this.$store.getters['Todo/getOrderdTodos']
 
         return todos.filter(t => t.startdate !== null && t.enddate !== null)
           .map((t) => {
@@ -83,11 +83,11 @@ export default {
     showDialog (id) {
       delete this.dialog
 
-      const todo = this.$store.getters['todo/getTodoById'](id)
-      const list = this.$store.getters['todolist/getLists']
+      const todo = this.$store.getters['Todo/getTodoById'](id)
+      const list = this.$store.getters['Todolist/getLists']
 
       if (todo.type === 'habit') {
-        const habit = this.$store.getters['habit/getById'](todo.listId)
+        const habit = this.$store.getters['Habit/getById'](todo.listId)
         if (!habit) {
           console.error('対象の習慣はすでに削除されています')
           this.$toast.error('更新できません')
@@ -104,18 +104,18 @@ export default {
         }
       })
       this.dialog.$on('update', (todo) => {
-        this.$store.dispatch('todo/update', todo)
+        this.$store.dispatch('Todo/update', todo)
           .catch((error) => {
             this.$toast.error(error.message)
           })
       })
       this.dialog.$on('delete', (todoId) => {
-        this.$store.dispatch('todo/delete', todoId)
+        this.$store.dispatch('Todo/delete', todoId)
       })
       this.dialog.$mount()
     },
     backToList () {
-      const listId = this.$store.getters['todo/getCurrentListId']
+      const listId = this.$store.getters['Todo/getCurrentListId']
       this.$router.push(`/todolist/${listId}`)
     }
   }

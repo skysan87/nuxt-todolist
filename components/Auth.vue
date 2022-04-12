@@ -59,16 +59,16 @@ export default {
   },
   computed: {
     isLogin () {
-      return this.$store.getters['user/isLogin']
+      return this.$store.getters['User/isLogin']
     },
 
     displayName () {
-      return this.$store.getters['user/dispalyName']
+      return this.$store.getters['User/dispalyName']
     }
   },
   async mounted () {
     // ログイン後リダイレクト時
-    const loginSucceeded = await this.$store.dispatch('user/checkLogin')
+    const loginSucceeded = await this.$store.dispatch('User/checkLogin')
     if (loginSucceeded) {
       this.$router.push(process.env.ROOT_PATH)
     }
@@ -77,9 +77,9 @@ export default {
   methods: {
     doLogin () {
       this.isClicked = true
-      this.$store.dispatch('user/login')
+      this.$store.dispatch('User/login')
         .then((user) => {
-          this.$store.dispatch('user/stateChanged', user)
+          this.$store.dispatch('User/stateChanged', user)
           if (user) {
             this.$router.push(process.env.ROOT_PATH)
           }
