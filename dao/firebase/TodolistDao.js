@@ -1,4 +1,4 @@
-import { collection, query, where, getDocs, addDoc, updateDoc, doc, deleteDoc, writeBatch, serverTimestamp } from 'firebase/firestore'
+import { collection, query, where, getDocs, addDoc, updateDoc, doc, deleteDoc, writeBatch, serverTimestamp } from 'firebase/firestore/lite'
 import { firestore } from '@/plugins/firebase'
 import { Todolist } from '@/model/Todolist'
 import { TodolistDaoBase } from '@/dao/base/TodolistDaoBase'

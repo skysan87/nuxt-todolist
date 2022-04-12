@@ -1,4 +1,4 @@
-import { collection, query, where, getDocs, limit, addDoc, updateDoc, doc, serverTimestamp } from 'firebase/firestore'
+import { collection, query, where, getDocs, limit, addDoc, updateDoc, doc, serverTimestamp } from 'firebase/firestore/lite'
 import { firestore } from '@/plugins/firebase'
 import { ConfigDaoBase } from '@/dao/base/ConfigDaoBase'
 import { Config } from '@/model/Config'

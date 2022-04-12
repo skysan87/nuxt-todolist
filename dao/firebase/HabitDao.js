@@ -1,4 +1,4 @@
-import { collection, query, where, getDocs, addDoc, updateDoc, doc, deleteDoc, writeBatch, limit, runTransaction, serverTimestamp } from 'firebase/firestore'
+import { collection, query, where, getDocs, addDoc, updateDoc, doc, deleteDoc, writeBatch, limit, runTransaction, serverTimestamp } from 'firebase/firestore/lite'
 import { firestore } from '@/plugins/firebase'
 import { HabitDaoBase } from '@/dao/base/HabitDaoBase'
 import { Habit } from '@/model/Habit'
