@@ -6,12 +6,6 @@ What to do Today
 
 
 
-## App URL
-
-https://what-to-do-today-b80b0.web.app
-
-
-
 ## 機能
 
 ### 1. プロジェクト単位でのタスク管理
@@ -49,26 +43,58 @@ https://what-to-do-today-b80b0.web.app
 
 
 
-## 工夫したポイント
-### 設計面
+## Firestore エミュレータ設定
 
-* 拡張性：DBへのアクセスをDAOにすることで、Firebase以外のサービスへの切り替えをしやすくしました
-  * IndexdDBを使用したオフライン版の作成も可能
+* version: 10.6.0
 
-### UX面
+### インストール
 
-* タスクを複数登録しやすいように、登録フォームを設計
-* タスクの並び順を変更できる機能
+```bash
+$ npm install -D firebase-tools
+
+$ npx firebase init
+
+? Which Firebase features do you want to set up for this directory? Press Space to select features, then Enter to confirm yo
+ur choices. (Press <space> to select, <a> to toggle all, <i> to invert selection, and <enter> to proceed)
+ ◯ Hosting: Configure files for Firebase Hosting and (optionally) set up GitHub Action deploys
+ ◯ Hosting: Set up GitHub Action deploys
+ ◯ Storage: Configure a security rules file for Cloud Storage
+❯◉ Emulators: Set up local emulators for Firebase products
+ ◯ Remote Config: Configure a template file for Remote Config
+ ◯ Realtime Database: Configure a security rules file for Realtime Database and (optionally) provision default instance
+ ◯ Firestore: Configure security rules and indexes files for Firestore
 
 
+? Which Firebase emulators do you want to set up? Press Space to select emulators, then Enter to confirm your choices. (Pres
+s <space> to select, <a> to toggle all, <i> to invert selection, and <enter> to proceed)
+❯◯ Authentication Emulator
+ ◯ Functions Emulator
+ ◉ Firestore Emulator
+ ◯ Database Emulator
+ ◯ Hosting Emulator
+ ◯ Pub/Sub Emulator
+ ◯ Storage Emulator
 
-## 今後実装予定
+? Which Firebase emulators do you want to set up? Press Space to select emulators, then Enter to confirm your choices. Firestore Emulator, Hosting Emulator
+? Which port do you want to use for the firestore emulator? 8080
+? Which port do you want to use for the hosting emulator? 5000
+? Would you like to enable the Emulator UI? Yes
+? Which port do you want to use for the Emulator UI (leave empty to use any available port)?
+? Would you like to download the emulators now? (y/N) y
 
-* スマホ対応
-* electron化
+# firebase.jsonに設定が追記される
+```
 
+### エミュレータ起動
 
+```bash
+# エミュレータ起動
+$ npx firebase emulators:start
 
-## 製作背景
+# エミュレータのデータをエクスポート
+# (エミュレータのUIで事前にデータを作成)
+$ npx firebase emulators:export <エクスポートするフォルダ>
 
-タスク管理アプリを色々使ってみたが、自分に合うアプリがなかったり、複数使うと管理が煩雑になるので、一元管理できるアプリを作りました。
+# データをインポートして起動
+$ npx firebase emulators:start --import=<エクスポートしたフォルダ>
+```
