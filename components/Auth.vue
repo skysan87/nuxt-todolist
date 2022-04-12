@@ -47,10 +47,6 @@
 </template>
 
 <script>
-import { auth } from '@/plugins/firebase'
-import { authMock } from '@/plugins/mock'
-
-const isDebug = process.env.DATABASE_MODE === 'local'
 const activeGoogleAuth = process.env.GOOGLE_AUTH === '1'
 
 export default {
@@ -71,17 +67,10 @@ export default {
     }
   },
   async mounted () {
-    if (!isDebug) {
-      // ログイン後リダイレクト時
-      const user = await new Promise((resolve, reject) => {
-        auth.onAuthStateChanged((user) => {
-          resolve(user)
-        })
-      })
-      this.$store.dispatch('user/stateChanged', user)
-      if (user) {
-        this.$router.push(process.env.ROOT_PATH)
-      }
+    // ログイン後リダイレクト時
+    const loginSucceeded = await this.$store.dispatch('user/checkLogin')
+    if (loginSucceeded) {
+      this.$router.push(process.env.ROOT_PATH)
     }
     this.isMounted = true
   },

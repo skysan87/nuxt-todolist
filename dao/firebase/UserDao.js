@@ -1,39 +1,41 @@
-import { auth, authProvider } from '@/plugins/firebase'
+import { getAuth, setPersistence, browserLocalPersistence, signInWithRedirect, GoogleAuthProvider, getRedirectResult, signOut, onAuthStateChanged } from 'firebase/auth'
+import { firebaseApp } from '@/plugins/firebase'
 import { UserDaoBase } from '@/dao/base/UserDaoBase'
 
-const activeGoogleAuth = process.env.GOOGLE_AUTH === '1'
-
 export class UserDao extends UserDaoBase {
-  login () {
-    return new Promise((resolve, reject) => {
-      if (activeGoogleAuth) {
-        // リダイレクト
-        auth.signInWithRedirect(authProvider)
-          .then((result) => {
-            resolve(result.user)
-          })
-          .catch((error) => {
-            reject(error)
-          })
-      } else {
-        auth.signInAnonymously()
-          .then((result) => {
-            resolve(result.user)
-          })
-          .catch((error) => {
-            reject(error)
-          })
-      }
-    })
+  constructor () {
+    super()
+    this.auth = getAuth(firebaseApp)
+    setPersistence(this.auth, browserLocalPersistence)
+  }
+
+  async login () {
+    const provider = new GoogleAuthProvider()
+    await signInWithRedirect(this.auth, provider)
+    const result = await getRedirectResult(this.auth)
+    if (result !== null) {
+      return result.user
+    } else {
+      return null
+    }
   }
 
   async logout () {
     try {
-      await auth.signOut()
+      await signOut(this.auth)
       return true
     } catch (error) {
       console.error(error)
-      throw error
+      return false
     }
+  }
+
+  getAuthChanged () {
+    return new Promise((resolve, reject) => {
+      onAuthStateChanged(this.auth,
+        user => resolve(user),
+        err => reject(err)
+      )
+    })
   }
 }

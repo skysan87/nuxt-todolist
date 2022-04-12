@@ -8,12 +8,7 @@ class AuthObserver {
   }
 
   async login () {
-    const user = {
-      uid: 'dummyId',
-      email: 'dummy@mail.com',
-      displayName: 'dummy user',
-      isGuest: false
-    }
+    const user = this.loginUser
     await this.sleep(800)
     if (this.callback !== null) {
       this.callback(user)
@@ -36,6 +31,15 @@ class AuthObserver {
 
   onAuthStateChanged = (_callback) => {
     this.callback = _callback
+  }
+
+  get loginUser () {
+    return {
+      uid: 'dummyId',
+      email: 'dummy@mail.com',
+      displayName: 'dummy user',
+      isGuest: false
+    }
   }
 }
 

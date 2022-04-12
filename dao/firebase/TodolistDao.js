@@ -1,16 +1,17 @@
-import { firestore, getServerTimestamp } from '@/plugins/firebase'
+import { collection, query, where, getDocs, addDoc, updateDoc, doc, deleteDoc, writeBatch, serverTimestamp } from 'firebase/firestore/lite'
+import { firestore } from '@/plugins/firebase'
 import { Todolist } from '@/model/Todolist'
 import { TodolistDaoBase } from '@/dao/base/TodolistDaoBase'
 
-const todosRef = firestore.collection('todos')
-const todolistsRef = firestore.collection('lists')
+const todosRef = collection(firestore, 'todos')
+const todolistsRef = collection(firestore, 'lists')
 
 export class TodolistDao extends TodolistDaoBase {
   async getLists (userId) {
     try {
-      const querySnapshot = await todolistsRef
-        .where('userId', '==', userId)
-        .get()
+      const q = query(todolistsRef
+        , where('userId', '==', userId))
+      const querySnapshot = await getDocs(q)
       const lists = querySnapshot.docs.map((doc) => {
         return new Todolist(doc.id, doc.data())
       })
@@ -25,15 +26,15 @@ export class TodolistDao extends TodolistDaoBase {
     const list = new Todolist('', params)
     list.userId = userId
     list.orderIndex = orderIndex
-    list.createdAt = getServerTimestamp()
-    list.updatedAt = getServerTimestamp()
+    list.createdAt = serverTimestamp()
+    list.updatedAt = serverTimestamp()
 
     try {
       const returnValues = {
         isSuccess: false,
         value: null
       }
-      const docRef = await todolistsRef.add(list.getData())
+      const docRef = await addDoc(todolistsRef, list.getData())
       list.id = docRef.id
       returnValues.isSuccess = true
       returnValues.value = list
@@ -46,12 +47,14 @@ export class TodolistDao extends TodolistDaoBase {
 
   async update (list) {
     try {
-      await todolistsRef.doc(list.id).update({
-        title: list.title,
-        detail: list.detail,
-        orderIndex: list.orderIndex,
-        updatedAt: getServerTimestamp()
-      })
+      const docRef = doc(todolistsRef, list.id)
+      await updateDoc(docRef,
+        {
+          title: list.title,
+          detail: list.detail,
+          orderIndex: list.orderIndex,
+          updatedAt: serverTimestamp()
+        })
       return true
     } catch (error) {
       console.error(error)
@@ -59,16 +62,20 @@ export class TodolistDao extends TodolistDaoBase {
     }
   }
 
-  async delete (id) {
+  async delete (listId) {
     try {
-      await todolistsRef.doc(id).delete()
+      // lists
+      const docRef = doc(todolistsRef, listId)
+      await deleteDoc(docRef)
 
-      const querySnapshot = await todosRef.where('listId', '==', id).get()
+      // todos
+      const q = query(todosRef, where('listId', '==', listId))
+      const querySnapshot = await getDocs(q)
       const todoIds = querySnapshot.docs.map(doc => doc.id)
 
-      const batch = firestore.batch()
-      todoIds.forEach((id) => {
-        const docRef = todosRef.doc(id)
+      const batch = writeBatch(firestore)
+      todoIds.forEach((todoId) => {
+        const docRef = doc(todosRef, todoId)
         batch.delete(docRef)
       })
       await batch.commit()

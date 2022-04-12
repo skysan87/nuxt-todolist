@@ -9,4 +9,8 @@ export class UserDaoBase {
     await authMock.logout()
     return true
   }
+
+  getAuthChanged () {
+    return new Promise(resolve => resolve(authMock.loginUser))
+  }
 }
