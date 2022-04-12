@@ -1,16 +1,18 @@
-import { firestore, getServerTimestamp } from '@/plugins/firebase'
+import { collection, query, where, getDocs, addDoc, updateDoc, doc, deleteDoc, writeBatch, runTransaction, serverTimestamp } from 'firebase/firestore'
+import { firestore } from '@/plugins/firebase'
 import { TodoDaoBase } from '@/dao/base/TodoDaoBase'
 import { Todo } from '@/model/Todo'
 import { TaskState } from '@/util/TaskState'
 
-const todosRef = firestore.collection('todos')
-const todolistsRef = firestore.collection('lists')
-const habitsRef = firestore.collection('habits')
+const todosRef = collection(firestore, 'todos')
+const todolistsRef = collection(firestore, 'lists')
 
 export class TodoDao extends TodoDaoBase {
   async getTodos (listId) {
     try {
-      const querySnapshot = await todosRef.where('listId', '==', listId).get()
+      const q = query(todosRef
+        , where('listId', '==', listId))
+      const querySnapshot = await getDocs(q)
       const todos = querySnapshot.docs.map((doc) => {
         return this.convertToTodo(doc)
       })
@@ -29,20 +31,20 @@ export class TodoDao extends TodoDaoBase {
     try {
       const todos = []
 
-      const querySnapshotTodo = await todosRef.where('type', '==', 'todo')
-        .where('userId', '==', userId)
-        .where('state', '==', TaskState.Todo.value)
-        .where('startdate', '<=', date)
-        .get()
+      const q = (state) => {
+        return query(todosRef
+          , where('type', '==', 'todo')
+          , where('userId', '==', userId)
+          , where('state', '==', state)
+          , where('startdate', '<=', date)
+        )
+      }
+      const querySnapshotTodo = await getDocs(q(TaskState.Todo.value))
       todos.push(...querySnapshotTodo.docs.map((doc) => {
         return this.convertToTodo(doc)
       }))
 
-      const querySnapshotInProgress = await todosRef.where('type', '==', 'todo')
-        .where('userId', '==', userId)
-        .where('state', '==', TaskState.InProgress.value)
-        .where('startdate', '<=', date)
-        .get()
+      const querySnapshotInProgress = await getDocs(q(TaskState.InProgress.value))
       todos.push(...querySnapshotInProgress.docs.map((doc) => {
         return this.convertToTodo(doc)
       }))
@@ -58,19 +60,23 @@ export class TodoDao extends TodoDaoBase {
     try {
       const todos = []
 
-      const querySnapshotTodo = await todosRef.where('type', '==', 'todo')
-        .where('userId', '==', userId)
-        .where('state', '==', TaskState.InProgress.value)
-        .get()
+      const qTodo = query(todosRef
+        , where('type', '==', 'todo')
+        , where('userId', '==', userId)
+        , where('state', '==', TaskState.InProgress.value)
+      )
+      const querySnapshotTodo = await getDocs(qTodo)
       todos.push(...querySnapshotTodo.docs.map((doc) => {
         return this.convertToTodo(doc)
       }))
 
-      const querySnapshotHabit = await todosRef.where('type', '==', 'habit')
-        .where('userId', '==', userId)
-        .where('startdate', '==', date)
-        .where('state', '==', TaskState.InProgress.value)
-        .get()
+      const qHabit = query(todosRef
+        , where('type', '==', 'todo')
+        , where('userId', '==', userId)
+        , where('startdate', '==', date)
+        , where('state', '==', TaskState.InProgress.value)
+      )
+      const querySnapshotHabit = await getDocs(qHabit)
       todos.push(...querySnapshotHabit.docs.map((doc) => {
         return this.convertToTodo(doc)
       }))
@@ -88,11 +94,13 @@ export class TodoDao extends TodoDaoBase {
    */
   async getTodaysDone (userId, date) {
     try {
-      const querySnapshot = await todosRef.where('type', '==', 'todo')
-        .where('userId', '==', userId)
-        .where('state', '==', TaskState.Done.value)
-        .where('stateChangeDate', '==', date)
-        .get()
+      const q = query(todosRef
+        , where('type', '==', 'todo')
+        , where('userId', '==', userId)
+        , where('state', '==', TaskState.Done.value)
+        , where('stateChangeDate', '==', date)
+      )
+      const querySnapshot = await getDocs(q)
       const todos = querySnapshot.docs.map((doc) => {
         return this.convertToTodo(doc)
       })
@@ -105,10 +113,12 @@ export class TodoDao extends TodoDaoBase {
 
   async getHabits (userId, date) {
     try {
-      const querySnapshot = await todosRef.where('type', '==', 'habit')
-        .where('userId', '==', userId)
-        .where('startdate', '==', date)
-        .get()
+      const q = query(todosRef
+        , where('type', '==', 'habit')
+        , where('userId', '==', userId)
+        , where('startdate', '==', date)
+      )
+      const querySnapshot = await getDocs(q)
       const todos = querySnapshot.docs.map((doc) => {
         return this.convertToTodo(doc)
       })
@@ -123,11 +133,11 @@ export class TodoDao extends TodoDaoBase {
     const todo = new Todo('', params)
     todo.userId = userId
     todo.listId = listId
-    todo.createdAt = getServerTimestamp()
-    todo.updatedAt = getServerTimestamp()
+    todo.createdAt = serverTimestamp()
+    todo.updatedAt = serverTimestamp()
 
-    const listDocRef = todolistsRef.doc(listId)
-    const newTodoDocRef = todosRef.doc()
+    const listDocRef = doc(todolistsRef, listId)
+    const newTodoDocRef = doc(todosRef)
 
     const returnValues = {
       isSuccess: false,
@@ -135,22 +145,21 @@ export class TodoDao extends TodoDaoBase {
     }
 
     try {
-      await firestore.runTransaction((transaction) => {
-        return transaction.get(listDocRef).then((listDoc) => {
-          if (!listDoc.exists) {
-            throw Object.assingn(new Error('list does not exist.'))
-          }
+      await runTransaction(firestore, async (transaction) => {
+        const listDoc = await transaction.get(listDocRef)
+        if (!listDoc.exists()) {
+          throw Object.assingn(new Error('list does not exist.'))
+        }
 
-          const newMaxIndex = listDoc.data().maxIndex + 1
+        const newMaxIndex = listDoc.data().maxIndex + 1
 
-          transaction.update(listDocRef, {
-            maxIndex: newMaxIndex,
-            updatedAt: getServerTimestamp()
-          })
-
-          todo.orderIndex = newMaxIndex * 1000
-          transaction.set(newTodoDocRef, todo.getData())
+        transaction.update(listDocRef, {
+          maxIndex: newMaxIndex,
+          updatedAt: serverTimestamp()
         })
+
+        todo.orderIndex = newMaxIndex * 1000
+        transaction.set(newTodoDocRef, todo.getData())
       })
 
       todo.id = newTodoDocRef.id
@@ -164,48 +173,47 @@ export class TodoDao extends TodoDaoBase {
     }
   }
 
-  addHabits (todos) {
-    const promisses = []
+  async addHabits (todos) {
+    const batch = writeBatch(firestore)
     for (const todo of todos) {
-      const p = new Promise((resolve, reject) => {
-        try {
-          todo.createdAt = getServerTimestamp()
-          todo.updatedAt = getServerTimestamp()
-          todosRef.add(todo.getData())
-            .then((docRef) => {
-              todo.id = docRef.id
-              resolve(todo)
-            })
-        } catch (error) {
-          console.error(error)
-          reject(error)
-        }
-      })
-      promisses.push(p)
+      todo.createdAt = serverTimestamp()
+      todo.updatedAt = serverTimestamp()
+      const newDocRef = doc(todosRef)
+      batch.set(newDocRef, todo.getData())
+      todo.id = newDocRef.id
     }
-    return Promise.all(promisses)
+
+    try {
+      await batch.commit()
+      return todos
+    } catch (error) {
+      console.error(error)
+      return null
+    }
   }
 
   async update (todo) {
     try {
-      await todosRef.doc(todo.id).update({
-        title: todo.title,
-        state: todo.state,
-        detail: todo.detail,
-        startdate: todo.startdate,
-        enddate: todo.enddate,
-        isDone: todo.isDone,
-        stateChangeDate: todo.stateChangeDate,
-        listId: todo.listId,
-        orderIndex: todo.orderIndex,
-        subTasks: todo.subTasks.map((t) => {
-          return {
-            title: t.title,
-            isDone: t.isDone
-          }
-        }),
-        updatedAt: getServerTimestamp()
-      })
+      const docRef = doc(todosRef, todo.id)
+      await updateDoc(docRef,
+        {
+          title: todo.title,
+          state: todo.state,
+          detail: todo.detail,
+          startdate: todo.startdate,
+          enddate: todo.enddate,
+          isDone: todo.isDone,
+          stateChangeDate: todo.stateChangeDate,
+          listId: todo.listId,
+          orderIndex: todo.orderIndex,
+          subTasks: todo.subTasks.map((t) => {
+            return {
+              title: t.title,
+              isDone: t.isDone
+            }
+          }),
+          updatedAt: serverTimestamp()
+        })
       return true
     } catch (error) {
       console.error(error)
@@ -215,32 +223,34 @@ export class TodoDao extends TodoDaoBase {
 
   async updateHabit (todo, habit, habitCounter) {
     // habitsRef
-    const habitDocRef = habitsRef.doc(habit.rootId).collection('habits').doc(todo.listId)
-    const todoDocRef = todosRef.doc(todo.id)
+    const habitSubRef = collection(firestore, 'habits', habit.rootId, 'habits')
+    const habitDocRef = doc(habitSubRef, todo.listId)
+
+    const todoDocRef = doc(todosRef, todo.id)
 
     try {
-      await firestore.runTransaction((transaction) => {
-        return transaction.get(habitDocRef).then((habitDoc) => {
-          if (!habitDoc.exists) {
-            throw Object.assingn(new Error('habit does not exist.'))
-          }
+      await runTransaction(firestore, async (transaction) => {
+        const habitDoc = await transaction.get(habitDocRef)
+        if (!habitDoc.exists()) {
+          throw Object.assingn(new Error('habit does not exist.'))
+        }
 
-          // 最新の物を反映
-          const latestHabit = habitDoc.data()
-          habit.totalActivityCount = latestHabit.totalActivityCount + habitCounter
-          habit.duration = latestHabit.duration + habitCounter
+        // 最新の物を反映
+        const latestHabit = habitDoc.data()
+        habit.totalActivityCount = latestHabit.totalActivityCount + habitCounter
+        habit.duration = latestHabit.duration + habitCounter
 
-          transaction.update(habitDocRef, {
-            result: habit.result, // 実績
-            lastActivityDate: habit.lastActivityDate, // 最終実行日
-            totalActivityCount: habit.totalActivityCount,
-            duration: habit.duration,
-            updatedAt: getServerTimestamp()
-          })
-
-          transaction.set(todoDocRef, todo.getData())
+        transaction.update(habitDocRef, {
+          result: habit.result, // 実績
+          lastActivityDate: habit.lastActivityDate, // 最終実行日
+          totalActivityCount: habit.totalActivityCount,
+          duration: habit.duration,
+          updatedAt: serverTimestamp()
         })
+
+        transaction.set(todoDocRef, todo.getData())
       })
+
       return true
     } catch (error) {
       console.error(error)
@@ -250,7 +260,9 @@ export class TodoDao extends TodoDaoBase {
 
   async delete (id) {
     try {
-      await todosRef.doc(id).delete()
+      const docRef = doc(todosRef, id)
+      await deleteDoc(docRef)
+
       return true
     } catch (error) {
       console.error(error)
@@ -260,10 +272,10 @@ export class TodoDao extends TodoDaoBase {
 
   async deleteTodos (todos, taskState) {
     // NOTE: 最大500件まで
-    const batch = firestore.batch()
+    const batch = writeBatch(firestore)
     todos.forEach((v) => {
       if (v.state === taskState.value) {
-        const docRef = todosRef.doc(v.id)
+        const docRef = doc(todosRef, v.id)
         batch.delete(docRef)
       }
     })

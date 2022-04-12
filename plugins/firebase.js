@@ -1,5 +1,5 @@
 import { getApps, getApp, initializeApp } from 'firebase/app'
-import { serverTimestamp, getFirestore } from 'firebase/firestore'
+import { getFirestore } from 'firebase/firestore'
 
 const config = {
   apiKey: process.env.FIREBASE_API_KEY,
@@ -14,7 +14,3 @@ const config = {
 export const firebaseApp = !getApps().length ? initializeApp(config) : getApp()
 
 export const firestore = getFirestore(firebaseApp)
-
-export function getServerTimestamp () {
-  return serverTimestamp()
-}
