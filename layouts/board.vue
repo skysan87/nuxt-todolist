@@ -1,11 +1,11 @@
 <template>
   <transition name="layout" mode="out-in">
-    <div class="app-container">
+    <div class="app-container select-none">
       <div class="app-top_nav bg-green-400 text-center">
         {{ globalMessage }}
       </div>
       <div class="app-workspace-layout">
-        <div class="app-workspace__sidebar">
+        <div class="app-workspace__sidebar" :style="{ width: sidewidth + 'px' }">
           <div class="app-workspace__task_sidebar flex flex-col flex-none bg-gray-800 pt-3 text-gray-500">
             <div
               class="flex justify-between items-center px-4 cursor-pointer pb-1"
@@ -34,7 +34,7 @@
 
             <div class="flex-1 py-4 overflow-y-scroll scrollable-container">
               <div class="mt-5 px-4 flex items-center">
-                <div class="font-bold text-lg">
+                <div class="font-bold text-lg select-none">
                   サマリ
                 </div>
               </div>
@@ -101,7 +101,7 @@
                 <div
                   v-for="habitfilter in habitFilters"
                   :key="habitfilter.value"
-                  class="py-1 px-5 cursor-pointer  hover:bg-blue-700 hover:opacity-75"
+                  class="py-1 px-5 cursor-pointer hover:bg-blue-700 hover:opacity-75"
                   :class="{'bg-blue-700' : (selectedType === viewType.Habit && currentFilter === habitfilter.value)}"
                   @click.left="onSelectHabit(habitfilter.value)"
                 >
@@ -122,6 +122,7 @@
             </div>
           </div>
         </div>
+        <div class="dragSidebar h-screen" @mousedown="dragStartSidebar($event)" @mousemove="draggingSidebar($event)" />
         <div class="app-workspace__view">
           <nuxt />
         </div>
@@ -142,6 +143,9 @@ const DialogController = Vue.extend(NewListDialog)
 const InputDialogController = Vue.extend(InputDialog)
 const viewType = { Todo: 0, Habit: 1, Today: 2 }
 
+const MIN_SIDEBAR_WIDTH = 200
+const MAX_SIDEBAR_WIDTH_MARGIN = 255
+
 export default {
   components: {
     draggable
@@ -158,7 +162,10 @@ export default {
       dialog: null,
       inputDialog: null,
       currentListId: '',
-      appVersion: process.env.app_version
+      appVersion: process.env.app_version,
+      sidewidth: 240,
+      isDragging: false,
+      clientWidth: 0
     }
   },
   computed: {
@@ -195,8 +202,18 @@ export default {
     }
   },
   mounted () {
+    window.addEventListener('mouseup', this.dragEndSidebar, false)
+    window.addEventListener('mousemove', this.draggingSidebar, false)
+    window.addEventListener('resize', this.resizeSidebar, false)
     this.init()
   },
+
+  destroyed () {
+    window.removeEventListener('mouseup', this.dragEndSidebar, false)
+    window.removeEventListener('mousemove', this.draggingSidebar, false)
+    window.removeEventListener('resize', this.resizeSidebar, false)
+  },
+
   methods: {
     init () {
       this.$store.dispatch('Todolist/init')
@@ -312,6 +329,42 @@ export default {
         newIndex: ev.newIndex
       }
       this.$store.dispatch('Todolist/changeOrder', params)
+    },
+
+    /**
+     * サイドメニュー ドラッグ開始
+     */
+    dragStartSidebar (ev) {
+      this.isDragging = true
+      this.clientWidth = window.innerWidth
+    },
+
+    /**
+     * サイドメニュー ドラッグ中
+     */
+    draggingSidebar (ev) {
+      if (this.isDragging) {
+        if (ev.pageX > (this.clientWidth - MAX_SIDEBAR_WIDTH_MARGIN)) {
+          this.sidewidth = this.clientWidth - MAX_SIDEBAR_WIDTH_MARGIN
+        } else if (ev.pageX < MIN_SIDEBAR_WIDTH) {
+          this.sidewidth = MIN_SIDEBAR_WIDTH
+        } else {
+          this.sidewidth = ev.pageX
+        }
+      }
+    },
+
+    /**
+     * サイドメニュー ドラッグ終了
+     */
+    dragEndSidebar (ev) {
+      this.isDragging = false
+    },
+
+    resizeSidebar (ev) {
+      if (this.sidewidth >= window.innerWidth) {
+        this.sidewidth = window.innerWidth - MAX_SIDEBAR_WIDTH_MARGIN
+      }
     }
   }
 }
@@ -349,10 +402,10 @@ export default {
   grid-area: app-container__workspace;
   display: grid;
   overflow: hidden;
-  grid-template-columns: 230px calc(100% - 230px);
+  grid-template-columns: minmax(min-content, max-content) 6px auto;
   grid-template-rows: 100%;
   grid-template-areas:
-    "app-workspace__sidebar app-workspace__view";
+    "app-workspace__sidebar app-workspace__dragbar app-workspace__view";
 }
 
 .app-workspace__sidebar {
@@ -375,6 +428,20 @@ export default {
 
 .app-workspace__view {
   grid-area: app-workspace__view;
+}
+
+.dragSidebar {
+  grid-area: app-workspace__dragbar;
+
+  width: 6px;
+  cursor: ew-resize;
+  background: transparent;
+  transition: background .3s;
+  content: '';
+}
+
+.dragSidebar:hover {
+  background: skyblue;
 }
 
 /* ドラッグするアイテム */
