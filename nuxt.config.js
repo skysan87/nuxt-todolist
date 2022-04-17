@@ -4,7 +4,8 @@ export default {
   ssr: false,
   target: 'static',
   env: {
-    app_version: packageInfo.version
+    app_version: packageInfo.version,
+    ROOT_PATH: '/today/list'
   },
   /*
   ** Headers of the page
