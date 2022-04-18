@@ -2,9 +2,11 @@ import { TaskState } from '@/util/TaskState'
 import { SubTask } from '@/model/SubTask'
 
 export class Todo {
+  static TYPE = { TODO: 'todo', HABIT: 'habit' }
+
   constructor (id, params) {
     this.id = id
-    this.type = params.type || 'todo' // todo/habit
+    this.type = params.type || Todo.TYPE.TODO // todo/habit
     this.title = params.title || null
     this.state = params.state || TaskState.Todo.value
     this.detail = params.detail || null

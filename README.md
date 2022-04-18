@@ -93,8 +93,11 @@ $ npx firebase emulators:start
 
 # エミュレータのデータをエクスポート
 # (エミュレータのUIで事前にデータを作成)
-$ npx firebase emulators:export <エクスポートするフォルダ>
+$ npx firebase emulators:export <エクスポート先フォルダ>
 
 # データをインポートして起動
-$ npx firebase emulators:start --import=<エクスポートしたフォルダ>
+$ npx firebase emulators:start --import=<エクスポート先フォルダ>
+
+# エミュレータのデータと同期
+npx firebase emulators:start --import=<エクスポート先フォルダ> --export-on-exit=<エクスポート先フォルダ>
 ```

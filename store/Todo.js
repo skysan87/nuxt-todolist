@@ -31,11 +31,13 @@ const DEFAULT_STATE = [TaskState.Todo.value, TaskState.InProgress.value]
  * @return {{Habit, Number}} {habit, habitCounter}
  */
 function calcHabitSummary (habit, oldTodo, newTodo) {
+  const cloneHabit = Habit.valueOf(habit)
+
   let habitCounter = 0
   let lastActivityDate = oldTodo.lastActivityDate
 
   if (oldTodo.state === newTodo.state) {
-    return { habit, habitCounter }
+    return { habit: cloneHabit, habitCounter }
   }
 
   if (newTodo.state === TaskState.Done.value) {
@@ -47,13 +49,13 @@ function calcHabitSummary (habit, oldTodo, newTodo) {
     lastActivityDate = oldTodo.lastActivityDate
   }
 
-  habit.updateResult(newTodo.state === TaskState.Done.value)
+  cloneHabit.updateResult(newTodo.state === TaskState.Done.value)
 
-  habit.totalActivityCount += habitCounter
-  habit.duration += habitCounter
-  habit.lastActivityDate = lastActivityDate
+  cloneHabit.totalActivityCount += habitCounter
+  cloneHabit.duration += habitCounter
+  cloneHabit.lastActivityDate = lastActivityDate
 
-  return { habit, habitCounter }
+  return { habit: cloneHabit, habitCounter }
 }
 
 export const state = () => ({
@@ -178,7 +180,7 @@ export const actions = {
       // Habit.id === Todo.listId
       if (habitTodos.findIndex(v => v.listId === _habit.id) < 0) {
         const todo = new Todo('', {})
-        todo.type = 'habit'
+        todo.type = Todo.TYPE.HABIT
         todo.listId = _habit.id // habitsのサブコレクションのId
         todo.userId = _habit.userId
         todo.title = _habit.title
@@ -314,7 +316,7 @@ export const actions = {
       newTodo.stateChangeDate = dateFactory().getDateNumber()
     }
 
-    if (newTodo.type === 'habit') {
+    if (newTodo.type === Todo.TYPE.HABIT) {
       if (!stateChanged) {
         // ステータス以外は変更できないため、更新しない
         return
@@ -328,7 +330,7 @@ export const actions = {
 
       if (await dao.updateHabit(newTodo, updatedHabit, habitCounter)) {
         commit('update', newTodo)
-        commit('habit/update', updatedHabit, { root: true })
+        commit('Habit/update', updatedHabit, { root: true })
       }
     } else {
       if (await dao.update(newTodo)) {
@@ -365,7 +367,7 @@ export const actions = {
     }
     newTodo.stateChangeDate = dateFactory().getDateNumber()
 
-    if (newTodo.type === 'habit') {
+    if (newTodo.type === Todo.TYPE.HABIT) {
       const habit = rootGetters['Habit/getById'](newTodo.listId)
       if (!habit) {
         console.error('対象の習慣はすでに削除されています')
@@ -375,7 +377,7 @@ export const actions = {
 
       if (await dao.updateHabit(newTodo, updatedHabit, habitCounter)) {
         commit('update', newTodo)
-        commit('habit/update', updatedHabit, { root: true })
+        commit('Habit/update', updatedHabit, { root: true })
       }
     } else {
       if (await dao.update(newTodo)) {

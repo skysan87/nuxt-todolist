@@ -30,6 +30,7 @@ import Vue from 'vue'
 import TodoItem from '@/components/TodoItem.vue'
 import ModalDialog from '@/components/ModalDialog.vue'
 import NoData from '@/components/NoData.vue'
+import { Todo } from '@/model/Todo'
 
 const DialogController = Vue.extend(ModalDialog)
 
@@ -66,7 +67,7 @@ export default {
       const todo = this.$store.getters['Todo/getTodoById'](id)
       const list = this.$store.getters['Todo/getLists']
 
-      if (todo.type === 'habit') {
+      if (todo.type === Todo.TYPE.HABIT) {
         const habit = this.$store.getters['Habit/getById'](todo.listId)
         if (!habit) {
           console.error('対象の習慣はすでに削除されています')
