@@ -33,7 +33,7 @@ export class TodoDao extends TodoDaoBase {
 
       const q = (state) => {
         return query(todosRef
-          , where('type', '==', 'todo')
+          , where('type', '==', Todo.TYPE.TODO)
           , where('userId', '==', userId)
           , where('state', '==', state)
           , where('startdate', '<=', date)
@@ -61,7 +61,7 @@ export class TodoDao extends TodoDaoBase {
       const todos = []
 
       const qTodo = query(todosRef
-        , where('type', '==', 'todo')
+        , where('type', '==', Todo.TYPE.TODO)
         , where('userId', '==', userId)
         , where('state', '==', TaskState.InProgress.value)
       )
@@ -71,7 +71,7 @@ export class TodoDao extends TodoDaoBase {
       }))
 
       const qHabit = query(todosRef
-        , where('type', '==', 'todo')
+        , where('type', '==', Todo.TYPE.HABIT)
         , where('userId', '==', userId)
         , where('startdate', '==', date)
         , where('state', '==', TaskState.InProgress.value)
@@ -95,7 +95,7 @@ export class TodoDao extends TodoDaoBase {
   async getTodaysDone (userId, date) {
     try {
       const q = query(todosRef
-        , where('type', '==', 'todo')
+        , where('type', '==', Todo.TYPE.TODO)
         , where('userId', '==', userId)
         , where('state', '==', TaskState.Done.value)
         , where('stateChangeDate', '==', date)
@@ -114,7 +114,7 @@ export class TodoDao extends TodoDaoBase {
   async getHabits (userId, date) {
     try {
       const q = query(todosRef
-        , where('type', '==', 'habit')
+        , where('type', '==', Todo.TYPE.HABIT)
         , where('userId', '==', userId)
         , where('startdate', '==', date)
       )

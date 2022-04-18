@@ -18,7 +18,7 @@ export class TodoDaoBase {
     for (let i = 1; i <= 10; i++) {
       const todo = new Todo('', {})
       todo.id = 'dummy' + i
-      todo.type ='todo'
+      todo.type = Todo.TYPE.TODO
       todo.listId = listId
       todo.userId = 'dummy_user_id'
       todo.title = `${listId}_${i}`
@@ -59,7 +59,7 @@ export class TodoDaoBase {
     for (let i = 1; i <= 10; i++) {
       const todo = new Todo('', {})
       todo.id = `dummy_${state.label}_${i}`
-      todo.type ='todo'
+      todo.type = Todo.TYPE.TODO
       todo.listId = `list_id${(i % 3)}`
       todo.userId = userId
       todo.title = `title_${i}_${state.label}`

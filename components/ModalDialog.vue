@@ -289,7 +289,7 @@ export default {
       }
 
       // 編集の禁止
-      if (this.todo.type === 'habit') {
+      if (this.todo.type === Todo.TYPE.HABIT) {
         this.forbid.title = true
         this.forbid.detail = true
         this.forbid.range = true
