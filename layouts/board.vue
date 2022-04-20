@@ -122,7 +122,14 @@
             </div>
           </div>
         </div>
-        <div class="dragSidebar h-screen" @mousedown="dragStartSidebar($event)" @mousemove="draggingSidebar($event)" />
+
+        <div
+          class="dragSidebar h-screen"
+          :style="{ left: (sidewidth - 3) + 'px' }"
+          @mousedown="dragStartSidebar($event)"
+          @mousemove="draggingSidebar($event)"
+        />
+
         <div class="app-workspace__view">
           <nuxt />
         </div>
@@ -143,7 +150,7 @@ const DialogController = Vue.extend(NewListDialog)
 const InputDialogController = Vue.extend(InputDialog)
 const viewType = { Todo: 0, Habit: 1, Today: 2 }
 
-const MIN_SIDEBAR_WIDTH = 200
+const MIN_SIDEBAR_WIDTH = 180
 const MAX_SIDEBAR_WIDTH_MARGIN = 255
 
 export default {
@@ -402,10 +409,11 @@ export default {
   grid-area: app-container__workspace;
   display: grid;
   overflow: hidden;
-  grid-template-columns: minmax(min-content, max-content) 6px auto;
+  position: relative; /* dragSidebar */
+  grid-template-columns: minmax(min-content, max-content) auto;
   grid-template-rows: 100%;
   grid-template-areas:
-    "app-workspace__sidebar app-workspace__dragbar app-workspace__view";
+    "app-workspace__sidebar app-workspace__view";
 }
 
 .app-workspace__sidebar {
@@ -431,13 +439,16 @@ export default {
 }
 
 .dragSidebar {
-  grid-area: app-workspace__dragbar;
-
+  position: absolute;
+  z-index: 1000;
+  top: 0;
+  bottom: 0;
   width: 6px;
-  cursor: ew-resize;
+  cursor: col-resize;
   background: transparent;
   transition: background .3s;
   content: '';
+  user-select: none;
 }
 
 .dragSidebar:hover {
