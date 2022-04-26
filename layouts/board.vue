@@ -6,7 +6,7 @@
       </div>
       <div class="app-workspace-layout">
         <div class="app-workspace__sidebar" :style="{ width: sidewidth + 'px' }">
-          <div class="app-workspace__task_sidebar flex flex-col flex-none bg-gray-800 pt-3 text-gray-500">
+          <div class="app-workspace__task_sidebar flex flex-col flex-none bg-gray-800 pt-3 text-white">
             <div
               class="flex justify-between items-center px-4 cursor-pointer pb-1"
               @click.left="(isMenuExpanded = !isMenuExpanded)"
@@ -20,11 +20,11 @@
               <span class="block px-6 pt-1">Ver.{{ appVersion }}</span>
               <span class="block px-6 pt-1">{{ userName }}</span>
               <a class="block px-6 pt-1 hover:bg-blue-800 hover:opacity-75 cursor-pointer" @click.left="reload">
-                <fa :icon="['fas', 'sync-alt']" size="lg" class="text-gray-600" />
+                <fa :icon="['fas', 'sync-alt']" size="lg" />
                 <span class="pl-1">リロード</span>
               </a>
               <a class="block px-6 pt-1 hover:bg-blue-800 hover:opacity-75 cursor-pointer" @click.left="logout">
-                <fa :icon="['fas', 'sign-out-alt']" size="lg" class="text-gray-600" />
+                <fa :icon="['fas', 'sign-out-alt']" size="lg" />
                 <span class="pl-1">ログアウト</span>
               </a>
             </div>
