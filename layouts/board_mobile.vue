@@ -9,7 +9,7 @@
           >
             <a @click.left="(showGlobalMessage = !showGlobalMessage)">
               <h1 class="font-semibold text-xl leading-tight">
-                To-Do List
+                <span class="font-mono">{{ currentDate }}</span>
                 <fa :icon="['fas', 'caret-down']" :class="{'fa-rotate-180': showGlobalMessage}" />
               </h1>
             </a>
@@ -34,7 +34,7 @@
           <div v-show="isMenuExpanded" class="fixed left-0 mt-10 w-full bg-gray-800 h-full overflow-y-scroll">
             <div class="pb-24">
               <div class="flex-none px-4">
-                v{{ appVersion }}
+                Ver.{{ appVersion }}
               </div>
               <div class="flex-none px-4">
                 {{ userName }}
@@ -134,6 +134,7 @@ import NewListDialog from '@/components/NewListDialog'
 import InputDialog from '@/components/InputDialog'
 import { HabitFilter } from '@/util/HabitFilter'
 import { TodayFilter } from '@/util/TodayFilter'
+import { dateFactory } from '@/util/DateFactory'
 
 const DialogController = Vue.extend(NewListDialog)
 const InputDialogController = Vue.extend(InputDialog)
@@ -152,7 +153,8 @@ export default {
       dialog: null,
       currentListId: '',
       showGlobalMessage: false,
-      appVersion: process.env.app_version
+      appVersion: process.env.app_version,
+      currentDate: dateFactory().format('YYYY.M.D(ddd)')
     }
   },
   computed: {

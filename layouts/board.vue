@@ -6,25 +6,25 @@
       </div>
       <div class="app-workspace-layout">
         <div class="app-workspace__sidebar" :style="{ width: sidewidth + 'px' }">
-          <div class="app-workspace__task_sidebar flex flex-col flex-none bg-gray-800 pt-3 text-gray-500">
+          <div class="app-workspace__task_sidebar flex flex-col flex-none bg-gray-800 pt-3 text-white">
             <div
               class="flex justify-between items-center px-4 cursor-pointer pb-1"
               @click.left="(isMenuExpanded = !isMenuExpanded)"
             >
               <h1 class="font-semibold text-xl leading-tight">
-                <span>To-Do List</span>
-                <span class="pl-1 text-xs">v{{ appVersion }}</span>
+                <span class="font-mono">{{ currentDate }}</span>
               </h1>
               <fa :icon="['fas', 'caret-down']" :class="{'fa-rotate-180': isMenuExpanded}" />
             </div>
             <div v-show="isMenuExpanded" class="flex-none">
+              <span class="block px-6 pt-1">Ver.{{ appVersion }}</span>
               <span class="block px-6 pt-1">{{ userName }}</span>
               <a class="block px-6 pt-1 hover:bg-blue-800 hover:opacity-75 cursor-pointer" @click.left="reload">
-                <fa :icon="['fas', 'sync-alt']" size="lg" class="text-gray-600" />
+                <fa :icon="['fas', 'sync-alt']" size="lg" />
                 <span class="pl-1">リロード</span>
               </a>
               <a class="block px-6 pt-1 hover:bg-blue-800 hover:opacity-75 cursor-pointer" @click.left="logout">
-                <fa :icon="['fas', 'sign-out-alt']" size="lg" class="text-gray-600" />
+                <fa :icon="['fas', 'sign-out-alt']" size="lg" />
                 <span class="pl-1">ログアウト</span>
               </a>
             </div>
@@ -145,6 +145,7 @@ import NewListDialog from '@/components/NewListDialog'
 import InputDialog from '@/components/InputDialog'
 import { HabitFilter } from '@/util/HabitFilter'
 import { TodayFilter } from '@/util/TodayFilter'
+import { dateFactory } from '@/util/DateFactory'
 
 const DialogController = Vue.extend(NewListDialog)
 const InputDialogController = Vue.extend(InputDialog)
@@ -172,7 +173,8 @@ export default {
       appVersion: process.env.app_version,
       sidewidth: 240,
       isDragging: false,
-      clientWidth: 0
+      clientWidth: 0,
+      currentDate: dateFactory().format('YYYY.M.D(ddd)')
     }
   },
   computed: {
