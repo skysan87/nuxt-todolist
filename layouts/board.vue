@@ -12,12 +12,12 @@
               @click.left="(isMenuExpanded = !isMenuExpanded)"
             >
               <h1 class="font-semibold text-xl leading-tight">
-                <span>To-Do List</span>
-                <span class="pl-1 text-xs">v{{ appVersion }}</span>
+                <span class="font-mono">{{ currentDate }}</span>
               </h1>
               <fa :icon="['fas', 'caret-down']" :class="{'fa-rotate-180': isMenuExpanded}" />
             </div>
             <div v-show="isMenuExpanded" class="flex-none">
+              <span class="block px-6 pt-1">Ver.{{ appVersion }}</span>
               <span class="block px-6 pt-1">{{ userName }}</span>
               <a class="block px-6 pt-1 hover:bg-blue-800 hover:opacity-75 cursor-pointer" @click.left="reload">
                 <fa :icon="['fas', 'sync-alt']" size="lg" class="text-gray-600" />
@@ -145,6 +145,7 @@ import NewListDialog from '@/components/NewListDialog'
 import InputDialog from '@/components/InputDialog'
 import { HabitFilter } from '@/util/HabitFilter'
 import { TodayFilter } from '@/util/TodayFilter'
+import { dateFactory } from '@/util/DateFactory'
 
 const DialogController = Vue.extend(NewListDialog)
 const InputDialogController = Vue.extend(InputDialog)
@@ -172,7 +173,8 @@ export default {
       appVersion: process.env.app_version,
       sidewidth: 240,
       isDragging: false,
-      clientWidth: 0
+      clientWidth: 0,
+      currentDate: dateFactory().format('YYYY.M.D(ddd)')
     }
   },
   computed: {
