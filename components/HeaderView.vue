@@ -1,16 +1,16 @@
 <template>
   <div class="w-full flex items-center justify-center flex-wrap py-1">
-    <label>
+    <label class="flex items-center">
       <input v-model="isAllSelected" type="checkbox" @click="selectAll">
-      <span class="p-1 align-middle">All</span>
-      <span class="badge" :style="badgeColor(-1)">
+      <span class="ml-1">All</span>
+      <span class="ml-1 badge" :style="badgeColor(-1)">
         {{ todoCounts(-1) }}
       </span>
     </label>
-    <label v-for="viewOp in options" :key="viewOp.value">
-      <input v-model="filterOption" class="ml-2" type="checkbox" :value="viewOp.value" @change="filterChanged">
-      <span class="p-1 align-middle">{{ viewOp.label }}</span>
-      <span class="badge" :style="badgeColor(viewOp.value)">
+    <label v-for="viewOp in options" :key="viewOp.value" class="ml-2 flex items-center">
+      <input v-model="filterOption" type="checkbox" :value="viewOp.value" @change="filterChanged">
+      <span class="ml-1">{{ viewOp.label }}</span>
+      <span class="ml-1 badge" :style="badgeColor(viewOp.value)">
         {{ todoCounts(viewOp.value) }}
       </span>
     </label>

@@ -9,14 +9,14 @@
           placeholder="Add New Task..."
         >
       </form>
-      <div class="mt-1 flex flex-row">
-        <div class="flex-none inline-block">
-          <span class="px-2 align-middle font-bold">期限</span>
+      <div class="mt-1 flex flex-row items-center text-white">
+        <div class="flex-none block">
+          <span class="px-2 font-bold">期限</span>
         </div>
-        <div class="flex-1 inline-block">
-          <label v-for="dl in deadlines" :key="dl.value" class="ml-2">
+        <div class="flex-1 flex flex-row">
+          <label v-for="dl in deadlines" :key="dl.value" class="ml-2 flex items-center">
             <input v-model="checkedDeadline" type="radio" name="deadline" :value="dl.value">
-            <span class="align-middle">{{ dl.label }}</span>
+            <span class="ml-2">{{ dl.label }}</span>
           </label>
         </div>
         <div class="flex-none inline-block">
