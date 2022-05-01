@@ -144,7 +144,6 @@ export default {
   data () {
     return {
       userName: this.$store.getters['User/displayName'],
-      isMenuExpanded: false,
       habitFilters: Object.values(HabitFilter),
       todayFilters: Object.values(TodayFilter),
       viewType,
@@ -187,6 +186,14 @@ export default {
         } else {
           return viewType.Today
         }
+      }
+    },
+    isMenuExpanded: {
+      get () {
+        return this.$store.getters['View/isMenuExpanded']
+      },
+      set (value) {
+        this.$store.dispatch('View/isMenuExpanded', value)
       }
     }
   },
@@ -297,4 +304,7 @@ export default {
   height: min-content;
 }
 
+.hide-container {
+  z-index: -1;
+}
 </style>

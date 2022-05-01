@@ -8,13 +8,14 @@
     </header>
     <main class="flex-1 overflow-y-scroll">
       <v-calendar
+        v-show="!isMenuExpanded"
         is-expanded
         disable-page-swipe
         class="max-w-full custom-calendar"
         :attributes="todos"
       >
         <template #day-content="{ day, attributes }">
-          <div class="flex flex-col h-full z-10 overflow-hidden">
+          <div class="flex flex-col h-full overflow-hidden">
             <span class="day-label text-sm text-gray-900">{{ day.day }}</span>
             <div class="flex-grow overflow-y-auto overflow-x-auto">
               <p
@@ -77,6 +78,11 @@ export default {
               dates: duration
             }
           })
+      }
+    },
+    isMenuExpanded: {
+      get () {
+        return this.$store.getters['View/isMenuExpanded']
       }
     }
   },
