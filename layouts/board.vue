@@ -445,7 +445,7 @@ export default {
 
 .dragSidebar {
   position: absolute;
-  z-index: 1000;
+  z-index: 2;
   top: 0;
   bottom: 0;
   width: 6px;
