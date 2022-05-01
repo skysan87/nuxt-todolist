@@ -346,6 +346,9 @@ export default {
       }
     },
     deleteTodo () {
+      if (!confirm('削除しますか？')) {
+        return
+      }
       this.$emit('delete', this.todo.id)
       this.$destroy()
     },

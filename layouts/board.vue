@@ -299,6 +299,9 @@ export default {
       })
       this.inputDialog.$on('update', (message) => {
         this.$store.dispatch('Config/updateMessage', message)
+          .then(() => {
+            this.$toast.success('更新しました')
+          })
       })
       this.inputDialog.$mount()
     },

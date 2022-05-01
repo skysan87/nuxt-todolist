@@ -106,6 +106,9 @@ export default {
       })
       this.dialog.$on('update', (todo) => {
         this.$store.dispatch('Todo/update', todo)
+          .then(() => {
+            this.$toast.success('更新しました')
+          })
           .catch((error) => {
             this.$toast.error(error.message)
           })

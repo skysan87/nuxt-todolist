@@ -108,6 +108,9 @@ export default {
       })
       this.dialog.$on('update', (habit) => {
         this.$store.dispatch('Habit/update', habit)
+          .then(() => {
+            this.$toast.success('更新しました')
+          })
       })
       this.dialog.$on('delete', (habit) => {
         this.$store.dispatch('Habit/delete', habit)
