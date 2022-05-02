@@ -16,25 +16,6 @@
     </label>
     <button
       v-if="showMenu"
-      class="btn btn-outline btn-clear-done ml-2"
-      ontouchend=""
-      title="完了済みのタスクを削除する"
-      @click="deleteDone"
-    >
-      Clear Done
-    </button>
-    <button
-      v-if="showMenu"
-      class="btn btn-outline btn-switch-edit ml-2"
-      :class="{'switch-on': canRemove}"
-      ontouchend=""
-      title="編集モード"
-      @click="switchRemoveButton"
-    >
-      Edit
-    </button>
-    <button
-      v-if="showMenu"
       class="btn btn-regular ml-2"
       ontouchend=""
       title="プロジェクトの詳細を表示する"
@@ -42,29 +23,70 @@
     >
       詳細
     </button>
-    <nuxt-link v-if="showMenu" to="calendar">
-      <fa
-        :icon="['fas', 'calendar-day']"
-        size="lg"
-        class="cursor-pointer ml-2 text-gray-600"
-        ontouchend=""
-        title="カレンダー表示"
-      />
-    </nuxt-link>
-    <fa
-      v-if="showMenu"
-      :icon="['fas', 'sync-alt']"
-      class="cursor-pointer ml-2 text-gray-600"
-      ontouchend=""
-      title="リロード"
-      @click.left="reload"
-    />
+    <dropdown-menu v-if="showMenu" class="ml-2 dropdown-menu">
+      <template #activator="{ open }">
+        <button class="btn btn-outline" @click="open">
+          メニュー
+        </button>
+      </template>
+      <template #content="{ close }">
+        <ul>
+          <li v-if="showMenu">
+            <p @click.left="deleteDone(), close()">
+              <span class="icon">
+                <fa
+                  :icon="['fas', 'trash-can']"
+                  class="text-gray-600"
+                />
+              </span>
+              <span class="ml-2">完了済みのタスクを削除</span>
+            </p>
+          </li>
+          <li v-if="showMenu">
+            <p @click.left="switchRemoveButton(), close()">
+              <span class="icon">
+                <fa
+                  :icon="['fas', 'edit']"
+                  class="text-gray-600"
+                />
+              </span>
+              <span class="ml-2">編集モード: {{ edieMode ? 'OFF' : 'ON' }}</span>
+            </p>
+          </li>
+          <li v-if="showMenu">
+            <p>
+              <nuxt-link to="calendar">
+                <span class="icon">
+                  <fa
+                    :icon="['fas', 'calendar-day']"
+                    class="text-gray-600"
+                  />
+                </span>
+                <span class="ml-2">カレンダー表示</span>
+              </nuxt-link>
+            </p>
+          </li>
+          <li v-if="showMenu">
+            <p @click.left="reload(), close()">
+              <span class="icon">
+                <fa
+                  :icon="['fas', 'sync-alt']"
+                  class="text-gray-600"
+                />
+              </span>
+              <span class="ml-2">リロード</span>
+            </p>
+          </li>
+        </ul>
+      </template>
+    </dropdown-menu>
   </div>
 </template>
 
 <script>
 import Vue from 'vue'
 import NewListDialog from '@/components/NewListDialog'
+import DropdownMenu from '@/components/DropdownMenu.vue'
 import { TaskState } from '@/util/TaskState'
 import { getStateColor } from '@/util/StateColor'
 
@@ -72,6 +94,11 @@ const DialogController = Vue.extend(NewListDialog)
 
 export default {
   name: 'HeaderView',
+
+  components: {
+    DropdownMenu
+  },
+
   props: {
     showMenu: {
       type: Boolean,
@@ -86,7 +113,8 @@ export default {
     }
   },
   computed: {
-    canRemove () {
+    edieMode () {
+      // canRemove: true = editMode: true
       return this.$store.getters['Todo/canRemove']
     },
     filterOption: {
@@ -180,7 +208,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .input-form {
   display: flex;
   width: 100%;
@@ -200,23 +228,32 @@ export default {
   font-weight: bold;
 }
 
-.btn-switch-edit {
-  @apply text-green-500 border border-green-500 outline-none;
-}
+.dropdown-menu {
+  ul {
+    margin: 0;
+    padding: 0;
+  }
 
-.btn-switch-edit:active {
-  @apply bg-green-500 text-white border-transparent;
-}
+  li {
+    list-style: none;
+    line-height: 1;
+    padding: 5px 5px;
+    cursor: pointer;
 
-.switch-on {
-  @apply bg-green-500 text-white border-transparent;
-}
+    &:hover {
+      @apply bg-gray-200;
+    }
+  }
 
-.btn-clear-done {
-  @apply text-red-500 border border-red-500 outline-none;
-}
+  p {
+    color: rgb(66, 66, 66);
+    text-decoration: none;
+    font-size: 1.2rem;
+  }
 
-.btn-clear-done:active {
-  @apply bg-red-500 text-white border-transparent;
+  .icon {
+    display: inline-block;
+    width: 1rem;
+  }
 }
 </style>
