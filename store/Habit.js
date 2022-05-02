@@ -100,33 +100,22 @@ export const actions = {
         })
     } else {
       // Add First List
-      const result = await dao.addInfo(userId)
-      if (result.isSuccess) {
-        commit('init', {
-          habits: [],
-          rootId: result.value.id
-        })
-      }
+      const habitInfo = await dao.addInfo(userId)
+      commit('init', {
+        habits: [],
+        rootId: habitInfo.id
+      })
     }
     console.log('habit init')
   },
 
-  add ({ commit, getters, rootGetters }, params) {
-    return new Promise((resolve, reject) => {
-      if (getters.size + 1 > MAX_SIZE) {
-        reject(new Error('これ以上登録できません'))
-        return
-      }
-      const userId = rootGetters['User/userId']
-      dao.add(params, userId).then((result) => {
-        if (result.isSuccess) {
-          commit('add', result.value)
-          resolve()
-        } else {
-          reject(new Error('登録に失敗しました'))
-        }
-      })
-    })
+  async add ({ commit, getters, rootGetters }, params) {
+    if (getters.size + 1 > MAX_SIZE) {
+      throw new Error('これ以上登録できません')
+    }
+    const userId = rootGetters['User/userId']
+    const habit = await dao.add(params, userId)
+    commit('add', habit)
   },
 
   async update ({ commit }, habit) {

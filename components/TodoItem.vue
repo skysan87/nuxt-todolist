@@ -64,7 +64,8 @@ export default {
     changeEventHandler () {
       this.$store.dispatch('Todo/changeState', this.todo.id)
         .catch((error) => {
-          this.$toast.error(error.message)
+          console.log(error)
+          this.$toast.error('更新に失敗しました')
         })
     },
     badgeColor (state) {
@@ -75,6 +76,10 @@ export default {
     },
     removeEventHandler () {
       this.$store.dispatch('Todo/delete', this.todo.id)
+        .catch((error) => {
+          console.log(error)
+          this.$toast.error('削除に失敗しました')
+        })
     }
   }
 }

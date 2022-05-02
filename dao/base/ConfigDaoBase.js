@@ -18,10 +18,7 @@ export class ConfigDaoBase {
     const config = new Config('', { userId })
     config.id = Date.now().toString()
 
-    return {
-      isSuccess: true,
-      value: config
-    }
+    return config
   }
 
   async update(config) {

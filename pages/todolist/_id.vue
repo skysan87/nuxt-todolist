@@ -75,6 +75,10 @@ export default {
   },
   mounted () {
     this.$store.dispatch('Todo/init', this.$route.params.id)
+      .catch((error) => {
+        console.error(error)
+        this.$toast.error('初期化に失敗しました')
+      })
   },
   methods: {
     /**
@@ -109,11 +113,16 @@ export default {
             this.$toast.success('更新しました')
           })
           .catch((error) => {
-            this.$toast.error(error.message)
+            console.error(error)
+            this.$toast.error('更新に失敗しました')
           })
       })
       this.dialog.$on('delete', (todoId) => {
         this.$store.dispatch('Todo/delete', todoId)
+          .catch((error) => {
+            console.error(error)
+            this.$toast.error('削除に失敗しました')
+          })
       })
       this.dialog.$mount()
     },
@@ -133,6 +142,10 @@ export default {
         newIndex: ev.newIndex
       }
       this.$store.dispatch('Todo/changeOrder', params)
+        .catch((error) => {
+          console.error(error)
+          this.$toast.error(error.message)
+        })
     }
   }
 }

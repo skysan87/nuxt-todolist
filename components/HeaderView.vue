@@ -95,6 +95,10 @@ export default {
       },
       set (value) {
         this.$store.dispatch('Todo/changeFilter', value)
+          .catch((error) => {
+            console.error(error)
+            this.$toast.error(error.message)
+          })
       }
     }
   },
@@ -131,10 +135,18 @@ export default {
     deleteDone () {
       if (confirm('完了済みのタスクを削除しますか？')) {
         this.$store.dispatch('Todo/deleteDone')
+          .catch((error) => {
+            console.error(error)
+            this.$toast.error('削除に失敗しました')
+          })
       }
     },
     switchRemoveButton () {
       this.$store.dispatch('Todo/switchEdit')
+        .catch((error) => {
+          console.error(error)
+          this.$toast.error(error.message)
+        })
     },
     openListDialog () {
       const listId = this.$store.getters['Todo/getCurrentListId']
@@ -150,11 +162,19 @@ export default {
       })
       this.dialog.$on('add', (todolist) => {
         this.$store.dispatch('Todolist/update', todolist)
+          .catch((error) => {
+            console.error(error)
+            this.$toast.error('更新に失敗しました')
+          })
       })
       this.dialog.$mount()
     },
     reload () {
       this.$store.dispatch('Todo/init', this.$route.params.id)
+        .catch((error) => {
+          console.error(error)
+          this.$toast.error('リロードに失敗しました')
+        })
     }
   }
 }

@@ -20,10 +20,7 @@ export class HabitDaoBase {
     const list =  new Habitlist('', { userId })
     list.id = Date.now().toString()
 
-    return {
-      isSuccess: false,
-      value: list
-    }
+    return list
   }
 
   async get(rootId, userId) {
@@ -51,25 +48,19 @@ export class HabitDaoBase {
       habit.summaryUpdatedAt = lastUpdateNum
       habit.lastActivityDate = lastUpdateNum
       habits.push(habit)
-      this[maxIndex] = i
+      this[maxIndex] += 1
     }
     return habits
   }
 
   async add(params, userId) {
-    const returnValues = {
-      isSuccess: false,
-      value: null
-    }
     const tmpId = Date.now()
     const habit = new Habit(tmpId.toString(), params)
     habit.userId = userId
     this[maxIndex] += 1
     habit.orderIndex = this[maxIndex] * 1000
 
-    returnValues.isSuccess = true
-    returnValues.value = habit
-    return returnValues
+    return habit
   }
 
   async update(habit) {

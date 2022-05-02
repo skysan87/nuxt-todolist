@@ -224,9 +224,14 @@ export default {
   },
 
   methods: {
-    init () {
-      this.$store.dispatch('Todolist/init')
-      this.$store.dispatch('Config/init')
+    async init () {
+      try {
+        await this.$store.dispatch('Todolist/init')
+        await this.$store.dispatch('Config/init')
+      } catch (error) {
+        console.error(error)
+        this.$toast.error('初期化に失敗しました')
+      }
     },
     onSelectToday (filter) {
       this.selectedTodayFilter = filter
@@ -238,6 +243,10 @@ export default {
     },
     onSelectHabit (filter) {
       this.$store.dispatch('Habit/changeFilter', filter)
+        .catch((error) => {
+          console.error(error)
+          this.$toast.error('System Error')
+        })
     },
     openListDialog () {
       delete this.dialog
@@ -262,6 +271,10 @@ export default {
       })
       this.dialog.$on('add', (todolist) => {
         this.$store.dispatch('Todolist/update', todolist)
+          .catch((error) => {
+            console.error(error)
+            this.$toast.error('登録に失敗しました')
+          })
       })
       this.dialog.$on('deleteList', () => {
         this.$store.dispatch('Todolist/delete', listId)
@@ -270,7 +283,8 @@ export default {
             this.goToFirstList()
           })
           .catch((error) => {
-            this.$toast.error(error.message)
+            console.error(error)
+            this.$toast.error('削除に失敗しました')
           })
       })
       this.dialog.$mount()
@@ -285,7 +299,8 @@ export default {
           this.$router.push(`/todolist/${listId}`)
         })
         .catch((error) => {
-          this.$toast.error(error.message)
+          console.error(error)
+          this.$toast.error('登録に失敗しました')
         })
     },
     updateHeaderText () {
@@ -302,6 +317,10 @@ export default {
           .then(() => {
             this.$toast.success('更新しました')
           })
+          .catch((error) => {
+            console.error(error)
+            this.$toast.error('更新に失敗しました')
+          })
       })
       this.inputDialog.$mount()
     },
@@ -312,7 +331,10 @@ export default {
           console.log('logout')
           this.$router.push('/login')
         })
-        .catch(err => console.error(err))
+        .catch((err) => {
+          console.error(err)
+          this.$toast.error('ログアウトに失敗しました')
+        })
     },
     reload () {
       this.init()
@@ -341,6 +363,10 @@ export default {
         newIndex: ev.newIndex
       }
       this.$store.dispatch('Todolist/changeOrder', params)
+        .catch((error) => {
+          console.error(error)
+          this.$toast.error('更新に失敗しました')
+        })
     },
 
     /**

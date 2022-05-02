@@ -67,7 +67,8 @@ export default {
       this.todo.startdate = this.todo.enddate = this.checkDeadline()
       this.$store.dispatch('Todo/add', this.todo.getData())
         .catch((error) => {
-          this.$toast.error(error.message)
+          console.error(error)
+          this.$toast.error('登録に失敗しました')
         })
         .finally(() => {
           this.todo.title = ''
@@ -90,7 +91,8 @@ export default {
       this.dialog.$on('add', (todo) => {
         this.$store.dispatch('Todo/add', todo.getData())
           .catch((error) => {
-            this.$toast.error(error.message)
+            console.error(error)
+            this.$toast.error('登録に失敗しました')
           })
           .finally(() => {
             this.todo.title = ''

@@ -9,18 +9,13 @@ const todolistsRef = collection(firestore, 'lists')
 
 export class TodoDao extends TodoDaoBase {
   async getTodos (listId) {
-    try {
-      const q = query(todosRef
-        , where('listId', '==', listId))
-      const querySnapshot = await getDocs(q)
-      const todos = querySnapshot.docs.map((doc) => {
-        return this.convertToTodo(doc)
-      })
-      return todos
-    } catch (error) {
-      console.error(error)
-      throw error
-    }
+    const q = query(todosRef
+      , where('listId', '==', listId))
+    const querySnapshot = await getDocs(q)
+    const todos = querySnapshot.docs.map((doc) => {
+      return this.convertToTodo(doc)
+    })
+    return todos
   }
 
   /**
@@ -28,64 +23,54 @@ export class TodoDao extends TodoDaoBase {
    * @param {Number} date 今日の日付(YYYYMMDD)
    */
   async getTodaysTask (userId, date) {
-    try {
-      const todos = []
+    const todos = []
 
-      const q = (state) => {
-        return query(todosRef
-          , where('type', '==', Todo.TYPE.TODO)
-          , where('userId', '==', userId)
-          , where('state', '==', state)
-          , where('startdate', '<=', date)
-        )
-      }
-      const querySnapshotTodo = await getDocs(q(TaskState.Todo.value))
-      todos.push(...querySnapshotTodo.docs.map((doc) => {
-        return this.convertToTodo(doc)
-      }))
-
-      const querySnapshotInProgress = await getDocs(q(TaskState.InProgress.value))
-      todos.push(...querySnapshotInProgress.docs.map((doc) => {
-        return this.convertToTodo(doc)
-      }))
-
-      return todos
-    } catch (error) {
-      console.error(error)
-      throw error
+    const q = (state) => {
+      return query(todosRef
+        , where('type', '==', Todo.TYPE.TODO)
+        , where('userId', '==', userId)
+        , where('state', '==', state)
+        , where('startdate', '<=', date)
+      )
     }
+    const querySnapshotTodo = await getDocs(q(TaskState.Todo.value))
+    todos.push(...querySnapshotTodo.docs.map((doc) => {
+      return this.convertToTodo(doc)
+    }))
+
+    const querySnapshotInProgress = await getDocs(q(TaskState.InProgress.value))
+    todos.push(...querySnapshotInProgress.docs.map((doc) => {
+      return this.convertToTodo(doc)
+    }))
+
+    return todos
   }
 
   async getTaskInProgress (userId, date) {
-    try {
-      const todos = []
+    const todos = []
 
-      const qTodo = query(todosRef
-        , where('type', '==', Todo.TYPE.TODO)
-        , where('userId', '==', userId)
-        , where('state', '==', TaskState.InProgress.value)
-      )
-      const querySnapshotTodo = await getDocs(qTodo)
-      todos.push(...querySnapshotTodo.docs.map((doc) => {
-        return this.convertToTodo(doc)
-      }))
+    const qTodo = query(todosRef
+      , where('type', '==', Todo.TYPE.TODO)
+      , where('userId', '==', userId)
+      , where('state', '==', TaskState.InProgress.value)
+    )
+    const querySnapshotTodo = await getDocs(qTodo)
+    todos.push(...querySnapshotTodo.docs.map((doc) => {
+      return this.convertToTodo(doc)
+    }))
 
-      const qHabit = query(todosRef
-        , where('type', '==', Todo.TYPE.HABIT)
-        , where('userId', '==', userId)
-        , where('startdate', '==', date)
-        , where('state', '==', TaskState.InProgress.value)
-      )
-      const querySnapshotHabit = await getDocs(qHabit)
-      todos.push(...querySnapshotHabit.docs.map((doc) => {
-        return this.convertToTodo(doc)
-      }))
+    const qHabit = query(todosRef
+      , where('type', '==', Todo.TYPE.HABIT)
+      , where('userId', '==', userId)
+      , where('startdate', '==', date)
+      , where('state', '==', TaskState.InProgress.value)
+    )
+    const querySnapshotHabit = await getDocs(qHabit)
+    todos.push(...querySnapshotHabit.docs.map((doc) => {
+      return this.convertToTodo(doc)
+    }))
 
-      return todos
-    } catch (error) {
-      console.error(error)
-      throw error
-    }
+    return todos
   }
 
   /**
@@ -93,40 +78,30 @@ export class TodoDao extends TodoDaoBase {
    * @param {Number} date 今日の日付(YYYYMMDD)
    */
   async getTodaysDone (userId, date) {
-    try {
-      const q = query(todosRef
-        , where('type', '==', Todo.TYPE.TODO)
-        , where('userId', '==', userId)
-        , where('state', '==', TaskState.Done.value)
-        , where('stateChangeDate', '==', date)
-      )
-      const querySnapshot = await getDocs(q)
-      const todos = querySnapshot.docs.map((doc) => {
-        return this.convertToTodo(doc)
-      })
-      return todos
-    } catch (error) {
-      console.error(error)
-      throw error
-    }
+    const q = query(todosRef
+      , where('type', '==', Todo.TYPE.TODO)
+      , where('userId', '==', userId)
+      , where('state', '==', TaskState.Done.value)
+      , where('stateChangeDate', '==', date)
+    )
+    const querySnapshot = await getDocs(q)
+    const todos = querySnapshot.docs.map((doc) => {
+      return this.convertToTodo(doc)
+    })
+    return todos
   }
 
   async getHabits (userId, date) {
-    try {
-      const q = query(todosRef
-        , where('type', '==', Todo.TYPE.HABIT)
-        , where('userId', '==', userId)
-        , where('startdate', '==', date)
-      )
-      const querySnapshot = await getDocs(q)
-      const todos = querySnapshot.docs.map((doc) => {
-        return this.convertToTodo(doc)
-      })
-      return todos
-    } catch (error) {
-      console.error(error)
-      throw error
-    }
+    const q = query(todosRef
+      , where('type', '==', Todo.TYPE.HABIT)
+      , where('userId', '==', userId)
+      , where('startdate', '==', date)
+    )
+    const querySnapshot = await getDocs(q)
+    const todos = querySnapshot.docs.map((doc) => {
+      return this.convertToTodo(doc)
+    })
+    return todos
   }
 
   async add (listId, params, userId) {
@@ -139,38 +114,25 @@ export class TodoDao extends TodoDaoBase {
     const listDocRef = doc(todolistsRef, listId)
     const newTodoDocRef = doc(todosRef)
 
-    const returnValues = {
-      isSuccess: false,
-      value: null
-    }
+    await runTransaction(firestore, async (transaction) => {
+      const listDoc = await transaction.get(listDocRef)
+      if (!listDoc.exists()) {
+        throw Object.assingn(new Error('list does not exist.'))
+      }
 
-    try {
-      await runTransaction(firestore, async (transaction) => {
-        const listDoc = await transaction.get(listDocRef)
-        if (!listDoc.exists()) {
-          throw Object.assingn(new Error('list does not exist.'))
-        }
+      const newMaxIndex = listDoc.data().maxIndex + 1
 
-        const newMaxIndex = listDoc.data().maxIndex + 1
-
-        transaction.update(listDocRef, {
-          maxIndex: newMaxIndex,
-          updatedAt: serverTimestamp()
-        })
-
-        todo.orderIndex = newMaxIndex * 1000
-        transaction.set(newTodoDocRef, todo.getData())
+      transaction.update(listDocRef, {
+        maxIndex: newMaxIndex,
+        updatedAt: serverTimestamp()
       })
 
-      todo.id = newTodoDocRef.id
-      returnValues.isSuccess = true
-      returnValues.value = todo
-      return returnValues
-    } catch (error) {
-      console.error(error)
-      returnValues.isSuccess = false
-      return returnValues
-    }
+      todo.orderIndex = newMaxIndex * 1000
+      transaction.set(newTodoDocRef, todo.getData())
+    })
+
+    todo.id = newTodoDocRef.id
+    return todo
   }
 
   async addHabits (todos) {
@@ -183,42 +145,33 @@ export class TodoDao extends TodoDaoBase {
       todo.id = newDocRef.id
     }
 
-    try {
-      await batch.commit()
-      return todos
-    } catch (error) {
-      console.error(error)
-      return null
-    }
+    await batch.commit()
+    return todos
   }
 
   async update (todo) {
-    try {
-      const docRef = doc(todosRef, todo.id)
-      await updateDoc(docRef,
-        {
-          title: todo.title,
-          state: todo.state,
-          detail: todo.detail,
-          startdate: todo.startdate,
-          enddate: todo.enddate,
-          isDone: todo.isDone,
-          stateChangeDate: todo.stateChangeDate,
-          listId: todo.listId,
-          orderIndex: todo.orderIndex,
-          subTasks: todo.subTasks.map((t) => {
-            return {
-              title: t.title,
-              isDone: t.isDone
-            }
-          }),
-          updatedAt: serverTimestamp()
-        })
-      return true
-    } catch (error) {
-      console.error(error)
-      return false
-    }
+    const docRef = doc(todosRef, todo.id)
+    await updateDoc(docRef,
+      {
+        title: todo.title,
+        state: todo.state,
+        detail: todo.detail,
+        startdate: todo.startdate,
+        enddate: todo.enddate,
+        isDone: todo.isDone,
+        stateChangeDate: todo.stateChangeDate,
+        listId: todo.listId,
+        orderIndex: todo.orderIndex,
+        subTasks: todo.subTasks.map((t) => {
+          return {
+            title: t.title,
+            isDone: t.isDone
+          }
+        }),
+        updatedAt: serverTimestamp()
+      }
+    )
+    return true
   }
 
   async updateHabit (todo, habit, habitCounter) {
@@ -228,46 +181,35 @@ export class TodoDao extends TodoDaoBase {
 
     const todoDocRef = doc(todosRef, todo.id)
 
-    try {
-      await runTransaction(firestore, async (transaction) => {
-        const habitDoc = await transaction.get(habitDocRef)
-        if (!habitDoc.exists()) {
-          throw Object.assingn(new Error('habit does not exist.'))
-        }
+    await runTransaction(firestore, async (transaction) => {
+      const habitDoc = await transaction.get(habitDocRef)
+      if (!habitDoc.exists()) {
+        throw Object.assingn(new Error('habit does not exist.'))
+      }
 
-        // 最新の物を反映
-        const latestHabit = habitDoc.data()
-        habit.totalActivityCount = latestHabit.totalActivityCount + habitCounter
-        habit.duration = latestHabit.duration + habitCounter
+      // 最新の物を反映
+      const latestHabit = habitDoc.data()
+      habit.totalActivityCount = latestHabit.totalActivityCount + habitCounter
+      habit.duration = latestHabit.duration + habitCounter
 
-        transaction.update(habitDocRef, {
-          result: habit.result, // 実績
-          lastActivityDate: habit.lastActivityDate, // 最終実行日
-          totalActivityCount: habit.totalActivityCount,
-          duration: habit.duration,
-          updatedAt: serverTimestamp()
-        })
-
-        transaction.set(todoDocRef, todo.getData())
+      transaction.update(habitDocRef, {
+        result: habit.result, // 実績
+        lastActivityDate: habit.lastActivityDate, // 最終実行日
+        totalActivityCount: habit.totalActivityCount,
+        duration: habit.duration,
+        updatedAt: serverTimestamp()
       })
 
-      return true
-    } catch (error) {
-      console.error(error)
-      return false
-    }
+      transaction.set(todoDocRef, todo.getData())
+    })
+
+    return true
   }
 
   async delete (id) {
-    try {
-      const docRef = doc(todosRef, id)
-      await deleteDoc(docRef)
-
-      return true
-    } catch (error) {
-      console.error(error)
-      return false
-    }
+    const docRef = doc(todosRef, id)
+    await deleteDoc(docRef)
+    return true
   }
 
   async deleteTodos (todos, taskState) {
@@ -280,13 +222,8 @@ export class TodoDao extends TodoDaoBase {
       }
     })
 
-    try {
-      await batch.commit()
-      return true
-    } catch (error) {
-      console.error(error)
-      return false
-    }
+    await batch.commit()
+    return true
   }
 
   /**

@@ -31,7 +31,7 @@ export class TodoDaoBase {
       todo.subTasks = Array.from({ length: 3 }
           , (v,j) => new SubTask({title: `${listId}_${i}_subtask_${j}`}))
       todos.push(todo)
-      this[maxIndex] = i
+      this[maxIndex] += 1
     }
     return todos
   }
@@ -87,10 +87,6 @@ export class TodoDaoBase {
   }
 
   async add(listId, params, userId) {
-    const returnValues = {
-      isSuccess: false,
-      value: null
-    }
     const tmpId = Date.now()
     const todo = new Todo('', params)
     todo.id = tmpId.toString()
@@ -101,9 +97,7 @@ export class TodoDaoBase {
     this[maxIndex] += 1
     todo.orderIndex = this[maxIndex] * 1000
 
-    returnValues.isSuccess = true
-    returnValues.value = todo
-    return returnValues
+    return todo
   }
 
   /**

@@ -206,6 +206,7 @@ export const actions = {
     todos.push(...await dao.getTodaysTask(userId, today))
     // 今日完了したタスク
     todos.push(...await dao.getTodaysDone(userId, today))
+
     commit('init', { data: todos, listId: '' })
 
     console.log('todaylist init')
@@ -278,24 +279,14 @@ export const actions = {
     commit('switchEdit')
   },
 
-  add ({ commit, state, rootGetters, getters }, params) {
-    return new Promise((resolve, reject) => {
-      if (getters.size + 1 > MAX_SIZE) {
-        reject(new Error('これ以上登録できません'))
-        return
-      }
-      const userId = rootGetters['User/userId']
-      params.stateChangeDate = dateFactory().getDateNumber()
-      dao.add(state.listId, params, userId)
-        .then((result) => {
-          if (result.isSuccess) {
-            commit('add', result.value)
-            resolve()
-          } else {
-            reject(new Error('登録に失敗しました'))
-          }
-        })
-    })
+  async add ({ commit, state, rootGetters, getters }, params) {
+    if (getters.size + 1 > MAX_SIZE) {
+      throw new Error('これ以上登録できません')
+    }
+    const userId = rootGetters['User/userId']
+    params.stateChangeDate = dateFactory().getDateNumber()
+    const todo = await dao.add(state.listId, params, userId)
+    commit('add', todo)
   },
 
   async delete ({ commit }, id) {

@@ -84,7 +84,8 @@ export default {
             this.$router.push(process.env.ROOT_PATH)
           }
         })
-        .catch(() => {
+        .catch((error) => {
+          console.error(error)
           this.$toast.error('ログインに失敗しました')
         })
     }
