@@ -1,6 +1,6 @@
 <template>
   <div
-    class="flex items-center w-full box"
+    class="box flex items-center w-full"
     @click.stop="handleSelect"
   >
     <fa
@@ -18,7 +18,7 @@
         class="circle-button cursor-pointer"
       />
     </div>
-    <div class="flex-1 no-wrap text-left p-1">
+    <div class="no-wrap flex-1 text-left p-1">
       {{ todo.title }}
     </div>
     <fa
@@ -99,9 +99,10 @@ export default {
 }
 
 .no-wrap {
-  white-space: nowrap;
   overflow: hidden;
-  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
 }
 
 .box:active {
