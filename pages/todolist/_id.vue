@@ -1,7 +1,39 @@
 <template>
   <div class="flex flex-col bg-white h-full">
-    <header class="border-b flex-none">
-      <header-view />
+    <header class="flex-none">
+      <header-view class="border-b" />
+      <div v-if="editMode" class="w-full flex items-center justify-center flex-wrap p-1 border-b">
+        <fa
+          class="mx-0.5 cursor-pointer"
+          :icon="['fas', 'circle-info']"
+          @click="showInfo"
+        />
+        <span class="mx-0.5">編集モード:</span>
+        <div class="mx-0.5 flex flex items-center">
+          <v-date-picker
+            class="flex-1"
+            :value="null"
+            :attributes="[{
+              key: 'today',
+              dot: 'blue',
+              dates: [new Date()]
+            }]"
+            @input="setDeadline"
+          >
+            <template #default="{ togglePopover }">
+              <button class="btn-sm btn-outline block" @click="togglePopover">
+                期限の設定
+              </button>
+            </template>
+          </v-date-picker>
+        </div>
+        <button class="btn-sm btn-outline mx-0.5" @click="deleteSelected">
+          一括削除
+        </button>
+        <button class="btn-sm btn-regular mx-0.5" @click="cancelEditMode">
+          キャンセル
+        </button>
+      </div>
     </header>
     <main class="pt-2 pb-4 flex-1 overflow-y-scroll">
       <div v-if="filteredTodos.length > 0" class="mx-2 overflow-x-hidden flex-grow">
@@ -166,6 +198,25 @@ export default {
           this.selectedIds.push(todoId)
         }
       }
+    },
+    setDeadline (targetDate) {
+      if (targetDate !== null && confirm('期限を設定しますか？')) {
+        // TODO: バッチで更新
+      }
+    },
+    deleteSelected () {
+      // TODO: バッチで削除
+    },
+    cancelEditMode () {
+      // 編集モードを終了
+      this.$store.dispatch('Todo/switchEdit')
+        .catch((error) => {
+          console.error(error)
+          this.$toast.error(error.message)
+        })
+    },
+    showInfo () {
+      alert('選択した項目を一括操作します')
     }
   }
 }
