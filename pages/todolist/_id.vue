@@ -16,8 +16,10 @@
               :key="item.id"
               :todo="item"
               :option="{showPointer: editMode, showEdit: editMode}"
+              :is-selected="selectedIds.includes(item.id)"
               class="list-group-item list-style"
               @edit="editTodo"
+              @select="handleSelect"
             />
           </draggable>
         </div>
@@ -54,7 +56,8 @@ export default {
   layout: ctx => ctx.$device.isMobile ? 'board_mobile' : 'board',
   data () {
     return {
-      dialog: null
+      dialog: null,
+      selectedIds: []
     }
   },
   computed: {
@@ -69,7 +72,14 @@ export default {
     },
     editMode: {
       get () {
-        return this.$store.getters['Todo/canRemove']
+        return this.$store.getters['Todo/editMode']
+      }
+    }
+  },
+  watch: {
+    editMode (n, o) {
+      if (n === false) {
+        this.selectedIds = []
       }
     }
   },
@@ -146,6 +156,16 @@ export default {
           console.error(error)
           this.$toast.error(error.message)
         })
+    },
+    handleSelect (todoId) {
+      if (this.editMode) {
+        const index = this.selectedIds.findIndex(id => id === todoId)
+        if (index >= 0) {
+          this.selectedIds.splice(index, 1)
+        } else {
+          this.selectedIds.push(todoId)
+        }
+      }
     }
   }
 }

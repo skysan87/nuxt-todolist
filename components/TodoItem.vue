@@ -1,9 +1,18 @@
 <template>
-  <div class="flex w-full">
-    <div v-if="option.showPointer" class="p-1 move-icon">
-      <fa :icon="['fas', 'ellipsis-v']" />
-    </div>
-    <div v-show="option.showEdit == false" class="p-1" @click="changeEventHandler">
+  <div
+    class="flex items-center w-full box"
+    @click.stop="handleSelect"
+  >
+    <fa
+      v-if="option.showPointer"
+      :icon="['fas', 'ellipsis-v']"
+      class="move-icon px-1"
+    />
+    <div
+      v-show="option.showEdit == false"
+      class="px-1"
+      @click.stop="changeEventHandler"
+    >
       <span
         :style="badgeColor(todo.state)"
         class="circle-button cursor-pointer"
@@ -12,17 +21,18 @@
     <div class="flex-1 no-wrap text-left p-1">
       {{ todo.title }}
     </div>
-    <div v-show="option.showEdit == false" class="p-1" @click.stop="editEventHandler" title="編集">
-      <fa :icon="['fas', 'edit']" size="xs" class="cursor-pointer" />
-    </div>
-    <div
-      v-show="option.showEdit && canRemove"
-      class="todo-x-pointer p-1"
-      title="削除"
-      @click="removeEventHandler"
-    >
-      <span class="cursor-pointer">×</span>
-    </div>
+    <fa
+      v-show="option.showEdit == false"
+      title="編集"
+      :icon="['fas', 'edit']"
+      size="xs"
+      class="cursor-pointer px-1"
+      @click.stop="editEventHandler"
+    />
+    <fa
+      v-show="option.showEdit && isSelected"
+      :icon="['fas', 'circle-check']"
+    />
   </div>
 </template>
 
@@ -48,14 +58,18 @@ export default {
           showEdit: true
         }
       }
+    },
+    isSelected: {
+      type: Boolean,
+      default: false
     }
   },
   data () {
     return {}
   },
   computed: {
-    canRemove () {
-      return this.$store.getters['Todo/canRemove']
+    editMode () {
+      return this.$store.getters['Todo/editMode']
     }
   },
   methods: {
@@ -72,12 +86,8 @@ export default {
     editEventHandler () {
       this.$emit('edit', this.todo.id)
     },
-    removeEventHandler () {
-      this.$store.dispatch('Todo/delete', this.todo.id)
-        .catch((error) => {
-          console.log(error)
-          this.$toast.error('削除に失敗しました')
-        })
+    handleSelect () {
+      this.$emit('select', this.todo.id)
     }
   }
 }
@@ -92,5 +102,9 @@ export default {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.box:active {
+  opacity: 0.4;
 }
 </style>

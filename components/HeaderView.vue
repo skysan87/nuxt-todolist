@@ -114,8 +114,7 @@ export default {
   },
   computed: {
     edieMode () {
-      // canRemove: true = editMode: true
-      return this.$store.getters['Todo/canRemove']
+      return this.$store.getters['Todo/editMode']
     },
     filterOption: {
       get () {

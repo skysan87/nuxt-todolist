@@ -61,7 +61,7 @@ function calcHabitSummary (habit, oldTodo, newTodo) {
 export const state = () => ({
   todos: [],
   selectedState: DEFAULT_STATE,
-  canRemove: false,
+  editMode: false,
   listId: ''
 })
 
@@ -93,8 +93,8 @@ export const getters = {
     }).length
   },
 
-  canRemove: (state) => {
-    return state.canRemove
+  editMode: (state) => {
+    return state.editMode
   },
 
   getSelectedState: (state) => {
@@ -148,7 +148,7 @@ export const mutations = {
   },
 
   switchEdit (state) {
-    state.canRemove = !state.canRemove
+    state.editMode = !state.editMode
   }
 }
 
