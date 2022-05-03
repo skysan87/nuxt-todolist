@@ -1,29 +1,27 @@
 <template>
-  <div :class="{'move-icon': option.showPointer}">
-    <div class="flex w-full">
-      <div v-if="option.showPointer" class="p-1">
-        <fa :icon="['fas', 'ellipsis-v']" />
-      </div>
-      <div v-show="option.showEdit == false" class="p-1" @click="changeEventHandler">
-        <span
-          :style="badgeColor(todo.state)"
-          class="circle-button cursor-pointer"
-        />
-      </div>
-      <div class="flex-1 no-wrap text-left p-1">
-        {{ todo.title }}
-      </div>
-      <div v-show="option.showEdit == false" class="p-1" @click.stop="editEventHandler" title="編集">
-        <fa :icon="['fas', 'edit']" size="xs" class="cursor-pointer" />
-      </div>
-      <div
-        v-show="option.showEdit && canRemove"
-        class="todo-x-pointer p-1"
-        title="削除"
-        @click="removeEventHandler"
-      >
-        <span class="cursor-pointer">×</span>
-      </div>
+  <div class="flex w-full">
+    <div v-if="option.showPointer" class="p-1 move-icon">
+      <fa :icon="['fas', 'ellipsis-v']" />
+    </div>
+    <div v-show="option.showEdit == false" class="p-1" @click="changeEventHandler">
+      <span
+        :style="badgeColor(todo.state)"
+        class="circle-button cursor-pointer"
+      />
+    </div>
+    <div class="flex-1 no-wrap text-left p-1">
+      {{ todo.title }}
+    </div>
+    <div v-show="option.showEdit == false" class="p-1" @click.stop="editEventHandler" title="編集">
+      <fa :icon="['fas', 'edit']" size="xs" class="cursor-pointer" />
+    </div>
+    <div
+      v-show="option.showEdit && canRemove"
+      class="todo-x-pointer p-1"
+      title="削除"
+      @click="removeEventHandler"
+    >
+      <span class="cursor-pointer">×</span>
     </div>
   </div>
 </template>

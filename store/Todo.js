@@ -226,8 +226,8 @@ export const actions = {
 
   async changeOrder ({ commit, getters }, params) {
     const filtered = getters.getFilteredTodos
-    const srcTodo = filtered[params.oldIndex]
-    const destTodo = filtered[params.newIndex]
+    const srcTodo = { ...filtered[params.oldIndex] }
+    const destTodo = { ...filtered[params.newIndex] }
 
     const sorted = getters.getOrderdTodos
     const actualNewIndex = sorted.findIndex(v => v.id === destTodo.id)
