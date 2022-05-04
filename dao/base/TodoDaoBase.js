@@ -121,6 +121,10 @@ export class TodoDaoBase {
     return true
   }
 
+  async updateList (todos) {
+    return true
+  }
+
   async updateHabit(todo, habit, habitCounter) {
     return true
   }

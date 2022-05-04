@@ -11,6 +11,7 @@
         <span class="mx-0.5">編集モード:</span>
         <div class="mx-0.5 flex flex items-center">
           <v-date-picker
+            is-range
             class="flex-1"
             :value="null"
             :attributes="[{
@@ -73,6 +74,7 @@ import ModalDialog from '@/components/ModalDialog.vue'
 import InputTask from '@/components/InputTask.vue'
 import NoData from '@/components/NoData.vue'
 import { Todo } from '@/model/Todo'
+import { dateFactory } from '@/util/dateFactory'
 
 const DialogController = Vue.extend(ModalDialog)
 
@@ -199,17 +201,36 @@ export default {
         }
       }
     },
+
     setDeadline (targetDate) {
-      if (targetDate !== null && confirm('期限を設定しますか？')) {
-        // TODO: バッチで更新
+      if (!this.editMode) {
+        return
+      }
+
+      if (targetDate !== null &&
+        this.selectedIds.length > 0 &&
+        confirm('期限を設定しますか？')
+      ) {
+        this.$store.dispatch('Todo/setDeadline', {
+          ids: this.selectedIds,
+          startDate: dateFactory(targetDate.start).getDateNumber(),
+          endDate: dateFactory(targetDate.end).getDateNumber()
+        })
+          .then(() => this.$toast.success('更新しました'))
+          .catch((error) => {
+            console.error(error)
+            this.$toast.error('更新に失敗しました')
+          })
       }
     },
+
     deleteSelected () {
       if (!this.editMode) {
         return
       }
       if (this.selectedIds.length > 0 && confirm('削除しますか？')) {
         this.$store.dispatch('Todo/deleteTodos', this.selectedIds)
+          .then(() => this.$toast.success('削除しました'))
           .catch((error) => {
             console.error(error)
             this.$toast.error(error.message)

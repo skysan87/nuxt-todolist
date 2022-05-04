@@ -304,6 +304,21 @@ export const actions = {
     }
   },
 
+  async setDeadline ({ commit, state }, { ids, startDate, endDate }) {
+    const targets = state.todos.filter(t => ids.includes(t.id))
+      .map((t) => {
+        return {
+          ...t,
+          startdate: startDate,
+          enddate: endDate
+        }
+      })
+
+    if (await dao.updateList(targets)) {
+      targets.forEach(t => commit('update', t))
+    }
+  },
+
   /**
    * タスクの更新
    * @param {*} context

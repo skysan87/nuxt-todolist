@@ -151,26 +151,18 @@ export class TodoDao extends TodoDaoBase {
 
   async update (todo) {
     const docRef = doc(todosRef, todo.id)
-    await updateDoc(docRef,
-      {
-        title: todo.title,
-        state: todo.state,
-        detail: todo.detail,
-        startdate: todo.startdate,
-        enddate: todo.enddate,
-        isDone: todo.isDone,
-        stateChangeDate: todo.stateChangeDate,
-        listId: todo.listId,
-        orderIndex: todo.orderIndex,
-        subTasks: todo.subTasks.map((t) => {
-          return {
-            title: t.title,
-            isDone: t.isDone
-          }
-        }),
-        updatedAt: serverTimestamp()
-      }
-    )
+    await updateDoc(docRef, this.getUpdateData(todo))
+    return true
+  }
+
+  async updateList (todos) {
+    const batch = writeBatch(firestore)
+    for (const todo of todos) {
+      const todoDocRef = doc(todosRef, todo.id)
+      batch.update(todoDocRef, this.getUpdateData(todo))
+    }
+
+    await batch.commit()
     return true
   }
 
@@ -239,5 +231,28 @@ export class TodoDao extends TodoDaoBase {
     todo.createdAt = data.createdAt ? data.createdAt.toDate() : ''
     todo.updatedAt = data.updatedAt ? data.updatedAt.toDate() : ''
     return todo
+  }
+
+  getUpdateData (param) {
+    const todo = Todo.valueOf(param)
+
+    return {
+      title: todo.title,
+      state: todo.state,
+      detail: todo.detail,
+      startdate: todo.startdate,
+      enddate: todo.enddate,
+      isDone: todo.isDone,
+      stateChangeDate: todo.stateChangeDate,
+      listId: todo.listId,
+      orderIndex: todo.orderIndex,
+      subTasks: todo.subTasks.map((t) => {
+        return {
+          title: t.title,
+          isDone: t.isDone
+        }
+      }),
+      updatedAt: serverTimestamp()
+    }
   }
 }
