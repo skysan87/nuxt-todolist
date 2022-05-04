@@ -212,14 +212,16 @@ export class TodoDao extends TodoDaoBase {
     return true
   }
 
-  async deleteTodos (todos, taskState) {
+  /**
+   * @param {array<String>} ids 削除対象のid
+   * @returns Boolean
+   */
+  async deleteTodos (ids) {
     // NOTE: 最大500件まで
     const batch = writeBatch(firestore)
-    todos.forEach((v) => {
-      if (v.state === taskState.value) {
-        const docRef = doc(todosRef, v.id)
-        batch.delete(docRef)
-      }
+    ids.forEach((id) => {
+      const docRef = doc(todosRef, id)
+      batch.delete(docRef)
     })
 
     await batch.commit()

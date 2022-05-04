@@ -205,7 +205,16 @@ export default {
       }
     },
     deleteSelected () {
-      // TODO: バッチで削除
+      if (!this.editMode) {
+        return
+      }
+      if (this.selectedIds.length > 0 && confirm('削除しますか？')) {
+        this.$store.dispatch('Todo/deleteTodos', this.selectedIds)
+          .catch((error) => {
+            console.error(error)
+            this.$toast.error(error.message)
+          })
+      }
     },
     cancelEditMode () {
       // 編集モードを終了

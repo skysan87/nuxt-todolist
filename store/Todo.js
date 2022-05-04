@@ -138,9 +138,8 @@ export const mutations = {
     Object.assign(state.todos[index], payload)
   },
 
-  deleteDone (state) {
-    const options = [TaskState.Todo.value, TaskState.InProgress.value]
-    state.todos = getFilteredArray(state.todos, options, false)
+  deleteTodos (state, targetIds) {
+    state.todos = state.todos.filter(t => targetIds.includes(t.id) === false)
   },
 
   changeFilter (state, payload) {
@@ -266,8 +265,18 @@ export const actions = {
   },
 
   async deleteDone ({ commit, state }) {
-    if (await dao.deleteTodos(state.todos, TaskState.Done)) {
-      commit('deleteDone')
+    const doneTodoIds = state.todos
+      .filter(t => t.state === TaskState.Done.value)
+      .map(t => t.id)
+
+    if (await dao.deleteTodos(doneTodoIds)) {
+      commit('deleteTodos', doneTodoIds)
+    }
+  },
+
+  async deleteTodos ({ commit }, targetIds) {
+    if (await dao.deleteTodos(targetIds)) {
+      commit('deleteTodos', targetIds)
     }
   },
 

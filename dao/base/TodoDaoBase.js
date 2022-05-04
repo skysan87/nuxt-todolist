@@ -129,7 +129,7 @@ export class TodoDaoBase {
     return true
   }
 
-  async deleteTodos(todos, taskState) {
+  async deleteTodos(ids) {
     return true
   }
 
