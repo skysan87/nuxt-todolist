@@ -133,6 +133,9 @@
         <div class="app-workspace__view">
           <nuxt />
         </div>
+
+        <div class="app-workspace__view-2">
+        </div>
       </div>
     </div>
   </transition>
@@ -441,10 +444,10 @@ export default {
   display: grid;
   overflow: hidden;
   position: relative; /* dragSidebar */
-  grid-template-columns: minmax(min-content, max-content) auto;
+  grid-template-columns: minmax(min-content, max-content) auto minmax(min-content, max-content);
   grid-template-rows: 100%;
   grid-template-areas:
-    "app-workspace__sidebar app-workspace__view";
+    "app-workspace__sidebar app-workspace__view app-workspace__view-2";
 }
 
 .app-workspace__sidebar {
@@ -467,6 +470,10 @@ export default {
 
 .app-workspace__view {
   grid-area: app-workspace__view;
+}
+
+.app-workspace__view-2 {
+  grid-area: app-workspace__view-2;
 }
 
 .dragSidebar {

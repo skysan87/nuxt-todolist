@@ -74,7 +74,7 @@ import ModalDialog from '@/components/ModalDialog.vue'
 import InputTask from '@/components/InputTask.vue'
 import NoData from '@/components/NoData.vue'
 import { Todo } from '@/model/Todo'
-import { dateFactory } from '@/util/dateFactory'
+import { dateFactory } from '@/util/DateFactory'
 
 const DialogController = Vue.extend(ModalDialog)
 
