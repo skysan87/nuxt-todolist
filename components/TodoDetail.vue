@@ -1,7 +1,7 @@
 <template>
   <div v-if="todo !== null" class="p-2">
     <div>
-      <button class="btn-sm btn-outline" @click="close">X</button>
+      <button class="btn-sm btn-outline" @click="close">閉じる</button>
     </div>
 
     <div class="mt-4">
@@ -14,7 +14,7 @@
       </div>
     </div>
 
-    <div class="mt-4">
+    <div v-if="todo.type === 'todo'" class="mt-4">
       <label class="input-label">プロジェクト</label>
       <div>
         <span class="input-text">{{ getProjectTitle(todo) }}</span>
@@ -82,6 +82,7 @@
 <script>
 import { TaskState } from '@/util/TaskState'
 import { dateFactory } from '@/util/DateFactory'
+import { Todo } from '@/model/Todo'
 import ExpandPanel from '@/components/parts/ExpandPanel.vue'
 
 export default {
@@ -107,8 +108,7 @@ export default {
       if (!this.todo) {
         return ''
       }
-      const listId = !this.todo ? '' : this.todo.listId
-      const project = this.projects.find(v => v === listId)
+      const project = this.projects.find(v => v === this.todo.listId)
       return !project ? '' : project.title
     },
 

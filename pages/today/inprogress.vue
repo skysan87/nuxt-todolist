@@ -17,6 +17,7 @@
             :option="{showPointer: false, showEdit: false}"
             class="list-group-item list-style"
             @edit="editTodo"
+            @select="handleSelect"
           />
         </div>
       </div>
@@ -106,6 +107,10 @@ export default {
           })
       })
       this.dialog.$mount()
+    },
+
+    handleSelect (todoId) {
+      this.$store.dispatch('Todo/select', todoId)
     }
   }
 }
