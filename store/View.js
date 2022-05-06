@@ -1,6 +1,9 @@
+import { dateFactory } from '@/util/DateFactory'
+
 export const state = () => ({
   isMenuExpanded: false,
-  subPanelName: ''
+  subPanelName: '',
+  today: dateFactory()
 })
 
 export const getters = {
@@ -10,6 +13,10 @@ export const getters = {
 
   subPanelName: (state) => {
     return state.subPanelName
+  },
+
+  getDate: (state) => {
+    return state.today.getDateNumber()
   }
 }
 

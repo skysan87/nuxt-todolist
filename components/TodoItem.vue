@@ -21,6 +21,7 @@
     <div class="no-wrap flex-1 text-left p-1">
       {{ todo.title }}
     </div>
+    <span v-show="isExpired" class="text-red-500 px-1 font-bold" title="期限切れ">!</span>
     <fa
       v-show="option.showEdit == false"
       title="編集"
@@ -70,6 +71,15 @@ export default {
   computed: {
     editMode () {
       return this.$store.getters['Todo/editMode']
+    },
+
+    isExpired () {
+      if (!this.todo.enddate) {
+        return false
+      } else {
+        const num = this.$store.getters['View/getDate']
+        return this.todo.enddate < num
+      }
     }
   },
   methods: {
