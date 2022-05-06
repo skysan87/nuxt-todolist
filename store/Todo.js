@@ -58,11 +58,21 @@ function calcHabitSummary (habit, oldTodo, newTodo) {
   return { habit: cloneHabit, habitCounter }
 }
 
+function checkSelected (state) {
+  if (!state.selectedItem) {
+    return
+  }
+  if (!state.todos.includes(v => v.id === state.selectedItem.id)) {
+    state.selectedItem = null
+  }
+}
+
 export const state = () => ({
   todos: [],
   selectedState: DEFAULT_STATE,
   editMode: false,
-  listId: ''
+  listId: '',
+  selectedItem: null
 })
 
 export const getters = {
@@ -107,6 +117,10 @@ export const getters = {
 
   size: (state) => {
     return state.todos.length
+  },
+
+  selectedItem: (state) => {
+    return state.selectedItem
   }
 }
 
@@ -115,6 +129,11 @@ export const mutations = {
     state.selectedState = DEFAULT_STATE
     state.listId = payload.listId || ''
     state.todos = payload.data
+    checkSelected(state)
+  },
+
+  select (state, target) {
+    state.selectedItem = target
   },
 
   add (state, payload) {
@@ -124,6 +143,7 @@ export const mutations = {
   delete (state, id) {
     const index = state.todos.findIndex(v => v.id === id)
     state.todos.splice(index, 1)
+    checkSelected(state)
   },
 
   update (state, payload) {
@@ -140,6 +160,7 @@ export const mutations = {
 
   deleteTodos (state, targetIds) {
     state.todos = state.todos.filter(t => targetIds.includes(t.id) === false)
+    checkSelected(state)
   },
 
   changeFilter (state, payload) {
@@ -160,6 +181,13 @@ export const actions = {
 
   initNewList ({ commit }, listId) {
     commit('init', { data: [], listId })
+  },
+
+  select ({ commit, dispatch, state }, id) {
+    const target = state.todos.find(v => v.id === id) || null
+
+    commit('select', target)
+    dispatch('View/subPanelName', target ? 'todo-detail' : '', { root: true })
   },
 
   async initTodaylist ({ commit, dispatch, rootGetters }) {

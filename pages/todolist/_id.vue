@@ -199,6 +199,8 @@ export default {
         } else {
           this.selectedIds.push(todoId)
         }
+      } else {
+        this.$store.dispatch('Todo/select', todoId)
       }
     },
 

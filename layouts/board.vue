@@ -1,11 +1,11 @@
 <template>
   <transition name="layout" mode="out-in">
-    <div class="app-container select-none">
+    <div class="app-container select-none" :style="widthStyle">
       <div class="app-top_nav bg-green-400 text-center">
         {{ globalMessage }}
       </div>
       <div class="app-workspace-layout">
-        <div class="app-workspace__sidebar" :style="{ width: sidewidth + 'px' }">
+        <div class="app-workspace__sidebar">
           <div class="app-workspace__task_sidebar flex flex-col flex-none bg-gray-800 pt-3 text-white">
             <div
               class="flex justify-between items-center px-4 cursor-pointer pb-1"
@@ -135,6 +135,7 @@
         </div>
 
         <div class="app-workspace__view-2">
+          <component :is="subPanel" />
         </div>
       </div>
     </div>
@@ -159,7 +160,8 @@ const MAX_SIDEBAR_WIDTH_MARGIN = 255
 
 export default {
   components: {
-    draggable
+    draggable,
+    TodoDetail: () => import('@/components/TodoDetail')
   },
   data () {
     return {
@@ -211,8 +213,18 @@ export default {
           return viewType.Today
         }
       }
+    },
+    subPanel () {
+      return this.$store.getters['View/subPanelName']
+    },
+    widthStyle () {
+      return {
+        '--sidebar-width': this.sidewidth + 'px',
+        '--sidepanel-width': this.subPanel !== '' ? '25vw' : '0'
+      }
     }
   },
+
   mounted () {
     window.addEventListener('mouseup', this.dragEndSidebar, false)
     window.addEventListener('mousemove', this.draggingSidebar, false)
@@ -444,7 +456,7 @@ export default {
   display: grid;
   overflow: hidden;
   position: relative; /* dragSidebar */
-  grid-template-columns: minmax(min-content, max-content) auto minmax(min-content, max-content);
+  grid-template-columns: var(--sidebar-width) auto var(--sidepanel-width);
   grid-template-rows: 100%;
   grid-template-areas:
     "app-workspace__sidebar app-workspace__view app-workspace__view-2";
@@ -474,6 +486,11 @@ export default {
 
 .app-workspace__view-2 {
   grid-area: app-workspace__view-2;
+  max-width: 30vw;
+  min-height: 0;
+  height: auto;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 .dragSidebar {
