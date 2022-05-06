@@ -7,27 +7,27 @@
       <div class="app-workspace-layout">
         <div class="app-workspace__sidebar">
           <div class="app-workspace__task_sidebar flex flex-col flex-none bg-gray-800 pt-3 text-white">
-            <div
-              class="flex justify-between items-center px-4 cursor-pointer pb-1"
-              @click.left="(isMenuExpanded = !isMenuExpanded)"
-            >
-              <h1 class="font-semibold text-xl leading-tight">
-                <span class="font-mono">{{ currentDate }}</span>
-              </h1>
-              <fa :icon="['fas', 'caret-down']" :class="{'fa-rotate-180': isMenuExpanded}" />
-            </div>
-            <div v-show="isMenuExpanded" class="flex-none">
-              <span class="block px-6 pt-1">Ver.{{ appVersion }}</span>
-              <span class="block px-6 pt-1">{{ userName }}</span>
-              <a class="block px-6 pt-1 hover:bg-blue-800 hover:opacity-75 cursor-pointer" @click.left="reload">
-                <fa :icon="['fas', 'sync-alt']" size="lg" />
-                <span class="pl-1">リロード</span>
-              </a>
-              <a class="block px-6 pt-1 hover:bg-blue-800 hover:opacity-75 cursor-pointer" @click.left="logout">
-                <fa :icon="['fas', 'sign-out-alt']" size="lg" />
-                <span class="pl-1">ログアウト</span>
-              </a>
-            </div>
+            <expand-panel right>
+              <template #title>
+                <h1 class="font-semibold text-xl leading-tight px-4 pb-1 cursor-pointer">
+                  <span class="font-mono">{{ currentDate }}</span>
+                </h1>
+              </template>
+              <template #component>
+                <div class="flex-none">
+                  <span class="block px-6 pt-1">Ver.{{ appVersion }}</span>
+                  <span class="block px-6 pt-1">{{ userName }}</span>
+                  <a class="block px-6 pt-1 hover:bg-blue-800 hover:opacity-75 cursor-pointer" @click.left="reload">
+                    <fa :icon="['fas', 'sync-alt']" size="lg" />
+                    <span class="pl-1">リロード</span>
+                  </a>
+                  <a class="block px-6 pt-1 hover:bg-blue-800 hover:opacity-75 cursor-pointer" @click.left="logout">
+                    <fa :icon="['fas', 'sign-out-alt']" size="lg" />
+                    <span class="pl-1">ログアウト</span>
+                  </a>
+                </div>
+              </template>
+            </expand-panel>
 
             <!-- border -->
             <div class="border-b border-gray-600 pt-1" />
@@ -147,6 +147,7 @@ import Vue from 'vue'
 import draggable from 'vuedraggable'
 import NewListDialog from '@/components/NewListDialog'
 import InputDialog from '@/components/InputDialog'
+import ExpandPanel from '@/components/parts/ExpandPanel'
 import { HabitFilter } from '@/util/HabitFilter'
 import { TodayFilter } from '@/util/TodayFilter'
 import { dateFactory } from '@/util/DateFactory'
@@ -161,6 +162,7 @@ const MAX_SIDEBAR_WIDTH_MARGIN = 255
 export default {
   components: {
     draggable,
+    ExpandPanel,
     TodoDetail: () => import('@/components/TodoDetail')
   },
   data () {
