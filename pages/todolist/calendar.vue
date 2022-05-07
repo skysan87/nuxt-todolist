@@ -8,13 +8,14 @@
     </header>
     <main class="flex-1 overflow-y-scroll">
       <v-calendar
+        v-show="!isMenuExpanded"
         is-expanded
         disable-page-swipe
         class="max-w-full custom-calendar"
         :attributes="todos"
       >
         <template #day-content="{ day, attributes }">
-          <div class="flex flex-col h-full z-10 overflow-hidden">
+          <div class="flex flex-col h-full overflow-hidden">
             <span class="day-label text-sm text-gray-900">{{ day.day }}</span>
             <div class="flex-grow overflow-y-auto overflow-x-auto">
               <p
@@ -78,6 +79,11 @@ export default {
             }
           })
       }
+    },
+    isMenuExpanded: {
+      get () {
+        return this.$store.getters['View/isMenuExpanded']
+      }
     }
   },
   methods: {
@@ -106,12 +112,20 @@ export default {
       })
       this.dialog.$on('update', (todo) => {
         this.$store.dispatch('Todo/update', todo)
+          .then(() => {
+            this.$toast.success('更新しました')
+          })
           .catch((error) => {
-            this.$toast.error(error.message)
+            console.error(error)
+            this.$toast.error('更新に失敗しました')
           })
       })
       this.dialog.$on('delete', (todoId) => {
         this.$store.dispatch('Todo/delete', todoId)
+          .catch((error) => {
+            console.error(error)
+            this.$toast.error('削除に失敗しました')
+          })
       })
       this.dialog.$mount()
     },

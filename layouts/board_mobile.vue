@@ -144,7 +144,6 @@ export default {
   data () {
     return {
       userName: this.$store.getters['User/displayName'],
-      isMenuExpanded: false,
       habitFilters: Object.values(HabitFilter),
       todayFilters: Object.values(TodayFilter),
       viewType,
@@ -188,15 +187,28 @@ export default {
           return viewType.Today
         }
       }
+    },
+    isMenuExpanded: {
+      get () {
+        return this.$store.getters['View/isMenuExpanded']
+      },
+      set (value) {
+        this.$store.dispatch('View/isMenuExpanded', value)
+      }
     }
   },
   mounted () {
     this.init()
   },
   methods: {
-    init () {
-      this.$store.dispatch('Todolist/init')
-      this.$store.dispatch('Config/init')
+    async init () {
+      try {
+        await this.$store.dispatch('Todolist/init')
+        await this.$store.dispatch('Config/init')
+      } catch (error) {
+        console.log(error)
+        this.$toast.error('初期化に失敗しました')
+      }
     },
     onSelectToday (filter) {
       this.isMenuExpanded = false
@@ -211,6 +223,10 @@ export default {
     onSelectHabit (filter) {
       this.isMenuExpanded = false
       this.$store.dispatch('Habit/changeFilter', filter)
+        .catch((error) => {
+          console.log(error)
+          this.$toast.error('System Error')
+        })
     },
     openListDialog () {
       delete this.dialog
@@ -233,7 +249,8 @@ export default {
           this.$router.push(`/todolist/${listId}`)
         })
         .catch((error) => {
-          this.$toast.error(error.message)
+          console.log(error)
+          this.$toast.error('登録に失敗しました')
         })
     },
     updateHeaderText () {
@@ -247,6 +264,13 @@ export default {
       })
       this.inputDialog.$on('update', (message) => {
         this.$store.dispatch('Config/updateMessage', message)
+          .then(() => {
+            this.$toast.success('更新しました')
+          })
+          .catch((error) => {
+            console.log(error)
+            this.$toast.error('更新に失敗しました')
+          })
       })
       this.inputDialog.$mount()
     },
@@ -257,7 +281,10 @@ export default {
           console.log('logout')
           this.$router.push('/login')
         })
-        .catch(err => console.error(err))
+        .catch((error) => {
+          console.error(error)
+          this.$toast.error('ログアウトに失敗しました')
+        })
     },
     reload () {
       this.init()
@@ -294,4 +321,7 @@ export default {
   height: min-content;
 }
 
+.hide-container {
+  z-index: -1;
+}
 </style>

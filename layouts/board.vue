@@ -1,33 +1,33 @@
 <template>
   <transition name="layout" mode="out-in">
-    <div class="app-container select-none">
+    <div class="app-container select-none" :style="widthStyle">
       <div class="app-top_nav bg-green-400 text-center">
         {{ globalMessage }}
       </div>
       <div class="app-workspace-layout">
-        <div class="app-workspace__sidebar" :style="{ width: sidewidth + 'px' }">
+        <div class="app-workspace__sidebar">
           <div class="app-workspace__task_sidebar flex flex-col flex-none bg-gray-800 pt-3 text-white">
-            <div
-              class="flex justify-between items-center px-4 cursor-pointer pb-1"
-              @click.left="(isMenuExpanded = !isMenuExpanded)"
-            >
-              <h1 class="font-semibold text-xl leading-tight">
-                <span class="font-mono">{{ currentDate }}</span>
-              </h1>
-              <fa :icon="['fas', 'caret-down']" :class="{'fa-rotate-180': isMenuExpanded}" />
-            </div>
-            <div v-show="isMenuExpanded" class="flex-none">
-              <span class="block px-6 pt-1">Ver.{{ appVersion }}</span>
-              <span class="block px-6 pt-1">{{ userName }}</span>
-              <a class="block px-6 pt-1 hover:bg-blue-800 hover:opacity-75 cursor-pointer" @click.left="reload">
-                <fa :icon="['fas', 'sync-alt']" size="lg" />
-                <span class="pl-1">リロード</span>
-              </a>
-              <a class="block px-6 pt-1 hover:bg-blue-800 hover:opacity-75 cursor-pointer" @click.left="logout">
-                <fa :icon="['fas', 'sign-out-alt']" size="lg" />
-                <span class="pl-1">ログアウト</span>
-              </a>
-            </div>
+            <expand-panel right>
+              <template #title>
+                <h1 class="font-semibold text-xl leading-tight px-4 pb-1 cursor-pointer">
+                  <span class="font-mono">{{ currentDate }}</span>
+                </h1>
+              </template>
+              <template #component>
+                <div class="flex-none">
+                  <span class="block px-6 pt-1">Ver.{{ appVersion }}</span>
+                  <span class="block px-6 pt-1">{{ userName }}</span>
+                  <a class="block px-6 pt-1 hover:bg-blue-800 hover:opacity-75 cursor-pointer" @click.left="reload">
+                    <fa :icon="['fas', 'sync-alt']" size="lg" />
+                    <span class="pl-1">リロード</span>
+                  </a>
+                  <a class="block px-6 pt-1 hover:bg-blue-800 hover:opacity-75 cursor-pointer" @click.left="logout">
+                    <fa :icon="['fas', 'sign-out-alt']" size="lg" />
+                    <span class="pl-1">ログアウト</span>
+                  </a>
+                </div>
+              </template>
+            </expand-panel>
 
             <!-- border -->
             <div class="border-b border-gray-600 pt-1" />
@@ -133,6 +133,10 @@
         <div class="app-workspace__view">
           <nuxt />
         </div>
+
+        <div class="app-workspace__view-2">
+          <component :is="subPanel" />
+        </div>
       </div>
     </div>
   </transition>
@@ -143,6 +147,7 @@ import Vue from 'vue'
 import draggable from 'vuedraggable'
 import NewListDialog from '@/components/NewListDialog'
 import InputDialog from '@/components/InputDialog'
+import ExpandPanel from '@/components/parts/ExpandPanel'
 import { HabitFilter } from '@/util/HabitFilter'
 import { TodayFilter } from '@/util/TodayFilter'
 import { dateFactory } from '@/util/DateFactory'
@@ -156,7 +161,9 @@ const MAX_SIDEBAR_WIDTH_MARGIN = 255
 
 export default {
   components: {
-    draggable
+    draggable,
+    ExpandPanel,
+    TodoDetail: () => import('@/components/TodoDetail')
   },
   data () {
     return {
@@ -208,8 +215,18 @@ export default {
           return viewType.Today
         }
       }
+    },
+    subPanel () {
+      return this.$store.getters['View/subPanelName']
+    },
+    widthStyle () {
+      return {
+        '--sidebar-width': this.sidewidth + 'px',
+        '--sidepanel-width': this.subPanel !== '' ? '25vw' : '0'
+      }
     }
   },
+
   mounted () {
     window.addEventListener('mouseup', this.dragEndSidebar, false)
     window.addEventListener('mousemove', this.draggingSidebar, false)
@@ -224,9 +241,14 @@ export default {
   },
 
   methods: {
-    init () {
-      this.$store.dispatch('Todolist/init')
-      this.$store.dispatch('Config/init')
+    async init () {
+      try {
+        await this.$store.dispatch('Todolist/init')
+        await this.$store.dispatch('Config/init')
+      } catch (error) {
+        console.error(error)
+        this.$toast.error('初期化に失敗しました')
+      }
     },
     onSelectToday (filter) {
       this.selectedTodayFilter = filter
@@ -238,6 +260,10 @@ export default {
     },
     onSelectHabit (filter) {
       this.$store.dispatch('Habit/changeFilter', filter)
+        .catch((error) => {
+          console.error(error)
+          this.$toast.error('System Error')
+        })
     },
     openListDialog () {
       delete this.dialog
@@ -262,6 +288,10 @@ export default {
       })
       this.dialog.$on('add', (todolist) => {
         this.$store.dispatch('Todolist/update', todolist)
+          .catch((error) => {
+            console.error(error)
+            this.$toast.error('登録に失敗しました')
+          })
       })
       this.dialog.$on('deleteList', () => {
         this.$store.dispatch('Todolist/delete', listId)
@@ -270,7 +300,8 @@ export default {
             this.goToFirstList()
           })
           .catch((error) => {
-            this.$toast.error(error.message)
+            console.error(error)
+            this.$toast.error('削除に失敗しました')
           })
       })
       this.dialog.$mount()
@@ -285,7 +316,8 @@ export default {
           this.$router.push(`/todolist/${listId}`)
         })
         .catch((error) => {
-          this.$toast.error(error.message)
+          console.error(error)
+          this.$toast.error('登録に失敗しました')
         })
     },
     updateHeaderText () {
@@ -299,6 +331,13 @@ export default {
       })
       this.inputDialog.$on('update', (message) => {
         this.$store.dispatch('Config/updateMessage', message)
+          .then(() => {
+            this.$toast.success('更新しました')
+          })
+          .catch((error) => {
+            console.error(error)
+            this.$toast.error('更新に失敗しました')
+          })
       })
       this.inputDialog.$mount()
     },
@@ -309,7 +348,10 @@ export default {
           console.log('logout')
           this.$router.push('/login')
         })
-        .catch(err => console.error(err))
+        .catch((err) => {
+          console.error(err)
+          this.$toast.error('ログアウトに失敗しました')
+        })
     },
     reload () {
       this.init()
@@ -338,6 +380,10 @@ export default {
         newIndex: ev.newIndex
       }
       this.$store.dispatch('Todolist/changeOrder', params)
+        .catch((error) => {
+          console.error(error)
+          this.$toast.error('更新に失敗しました')
+        })
     },
 
     /**
@@ -412,10 +458,10 @@ export default {
   display: grid;
   overflow: hidden;
   position: relative; /* dragSidebar */
-  grid-template-columns: minmax(min-content, max-content) auto;
+  grid-template-columns: var(--sidebar-width) auto var(--sidepanel-width);
   grid-template-rows: 100%;
   grid-template-areas:
-    "app-workspace__sidebar app-workspace__view";
+    "app-workspace__sidebar app-workspace__view app-workspace__view-2";
 }
 
 .app-workspace__sidebar {
@@ -440,9 +486,18 @@ export default {
   grid-area: app-workspace__view;
 }
 
+.app-workspace__view-2 {
+  grid-area: app-workspace__view-2;
+  max-width: 30vw;
+  min-height: 0;
+  height: auto;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
 .dragSidebar {
   position: absolute;
-  z-index: 1000;
+  z-index: 2;
   top: 0;
   bottom: 0;
   width: 6px;

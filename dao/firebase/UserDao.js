@@ -21,13 +21,8 @@ export class UserDao extends UserDaoBase {
   }
 
   async logout () {
-    try {
-      await signOut(this.auth)
-      return true
-    } catch (error) {
-      console.error(error)
-      return false
-    }
+    await signOut(this.auth)
+    return true
   }
 
   getAuthChanged () {

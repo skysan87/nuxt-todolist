@@ -58,11 +58,21 @@ function calcHabitSummary (habit, oldTodo, newTodo) {
   return { habit: cloneHabit, habitCounter }
 }
 
+function checkSelected (state) {
+  if (!state.selectedItem) {
+    return
+  }
+  if (!state.todos.includes(v => v.id === state.selectedItem.id)) {
+    state.selectedItem = null
+  }
+}
+
 export const state = () => ({
   todos: [],
   selectedState: DEFAULT_STATE,
-  canRemove: false,
-  listId: ''
+  editMode: false,
+  listId: '',
+  selectedItem: null
 })
 
 export const getters = {
@@ -93,8 +103,8 @@ export const getters = {
     }).length
   },
 
-  canRemove: (state) => {
-    return state.canRemove
+  editMode: (state) => {
+    return state.editMode
   },
 
   getSelectedState: (state) => {
@@ -107,6 +117,10 @@ export const getters = {
 
   size: (state) => {
     return state.todos.length
+  },
+
+  selectedItem: (state) => {
+    return state.selectedItem
   }
 }
 
@@ -115,6 +129,11 @@ export const mutations = {
     state.selectedState = DEFAULT_STATE
     state.listId = payload.listId || ''
     state.todos = payload.data
+    checkSelected(state)
+  },
+
+  select (state, target) {
+    state.selectedItem = target
   },
 
   add (state, payload) {
@@ -124,6 +143,7 @@ export const mutations = {
   delete (state, id) {
     const index = state.todos.findIndex(v => v.id === id)
     state.todos.splice(index, 1)
+    checkSelected(state)
   },
 
   update (state, payload) {
@@ -138,9 +158,9 @@ export const mutations = {
     Object.assign(state.todos[index], payload)
   },
 
-  deleteDone (state) {
-    const options = [TaskState.Todo.value, TaskState.InProgress.value]
-    state.todos = getFilteredArray(state.todos, options, false)
+  deleteTodos (state, targetIds) {
+    state.todos = state.todos.filter(t => targetIds.includes(t.id) === false)
+    checkSelected(state)
   },
 
   changeFilter (state, payload) {
@@ -148,7 +168,7 @@ export const mutations = {
   },
 
   switchEdit (state) {
-    state.canRemove = !state.canRemove
+    state.editMode = !state.editMode
   }
 }
 
@@ -161,6 +181,13 @@ export const actions = {
 
   initNewList ({ commit }, listId) {
     commit('init', { data: [], listId })
+  },
+
+  select ({ commit, dispatch, state }, id) {
+    const target = state.todos.find(v => v.id === id) || null
+
+    commit('select', target)
+    dispatch('View/subPanelName', target ? 'todo-detail' : '', { root: true })
   },
 
   async initTodaylist ({ commit, dispatch, rootGetters }) {
@@ -206,6 +233,7 @@ export const actions = {
     todos.push(...await dao.getTodaysTask(userId, today))
     // 今日完了したタスク
     todos.push(...await dao.getTodaysDone(userId, today))
+
     commit('init', { data: todos, listId: '' })
 
     console.log('todaylist init')
@@ -225,8 +253,8 @@ export const actions = {
 
   async changeOrder ({ commit, getters }, params) {
     const filtered = getters.getFilteredTodos
-    const srcTodo = filtered[params.oldIndex]
-    const destTodo = filtered[params.newIndex]
+    const srcTodo = { ...filtered[params.oldIndex] }
+    const destTodo = { ...filtered[params.newIndex] }
 
     const sorted = getters.getOrderdTodos
     const actualNewIndex = sorted.findIndex(v => v.id === destTodo.id)
@@ -265,8 +293,18 @@ export const actions = {
   },
 
   async deleteDone ({ commit, state }) {
-    if (await dao.deleteTodos(state.todos, TaskState.Done)) {
-      commit('deleteDone')
+    const doneTodoIds = state.todos
+      .filter(t => t.state === TaskState.Done.value)
+      .map(t => t.id)
+
+    if (await dao.deleteTodos(doneTodoIds)) {
+      commit('deleteTodos', doneTodoIds)
+    }
+  },
+
+  async deleteTodos ({ commit }, targetIds) {
+    if (await dao.deleteTodos(targetIds)) {
+      commit('deleteTodos', targetIds)
     }
   },
 
@@ -278,29 +316,34 @@ export const actions = {
     commit('switchEdit')
   },
 
-  add ({ commit, state, rootGetters, getters }, params) {
-    return new Promise((resolve, reject) => {
-      if (getters.size + 1 > MAX_SIZE) {
-        reject(new Error('これ以上登録できません'))
-        return
-      }
-      const userId = rootGetters['User/userId']
-      params.stateChangeDate = dateFactory().getDateNumber()
-      dao.add(state.listId, params, userId)
-        .then((result) => {
-          if (result.isSuccess) {
-            commit('add', result.value)
-            resolve()
-          } else {
-            reject(new Error('登録に失敗しました'))
-          }
-        })
-    })
+  async add ({ commit, state, rootGetters, getters }, params) {
+    if (getters.size + 1 > MAX_SIZE) {
+      throw new Error('これ以上登録できません')
+    }
+    const userId = rootGetters['User/userId']
+    params.stateChangeDate = dateFactory().getDateNumber()
+    const todo = await dao.add(state.listId, params, userId)
+    commit('add', todo)
   },
 
   async delete ({ commit }, id) {
     if (await dao.delete(id)) {
       commit('delete', id)
+    }
+  },
+
+  async setDeadline ({ commit, state }, { ids, startDate, endDate }) {
+    const targets = state.todos.filter(t => ids.includes(t.id))
+      .map((t) => {
+        return {
+          ...t,
+          startdate: startDate,
+          enddate: endDate
+        }
+      })
+
+    if (await dao.updateList(targets)) {
+      targets.forEach(t => commit('update', t))
     }
   },
 

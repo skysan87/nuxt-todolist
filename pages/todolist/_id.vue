@@ -1,7 +1,40 @@
 <template>
   <div class="flex flex-col bg-white h-full">
-    <header class="border-b flex-none">
-      <header-view />
+    <header class="flex-none">
+      <header-view class="border-b" />
+      <div v-if="editMode" class="w-full flex items-center justify-center flex-wrap p-1 border-b">
+        <fa
+          class="mx-0.5 cursor-pointer"
+          :icon="['fas', 'circle-info']"
+          @click="showInfo"
+        />
+        <span class="mx-0.5">編集モード:</span>
+        <div class="mx-0.5 flex flex items-center">
+          <v-date-picker
+            is-range
+            class="flex-1"
+            :value="null"
+            :attributes="[{
+              key: 'today',
+              dot: 'blue',
+              dates: [new Date()]
+            }]"
+            @input="setDeadline"
+          >
+            <template #default="{ togglePopover }">
+              <button class="btn-sm btn-outline block" @click="togglePopover">
+                期限の設定
+              </button>
+            </template>
+          </v-date-picker>
+        </div>
+        <button class="btn-sm btn-outline mx-0.5" @click="deleteSelected">
+          一括削除
+        </button>
+        <button class="btn-sm btn-regular mx-0.5" @click="cancelEditMode">
+          キャンセル
+        </button>
+      </div>
     </header>
     <main class="pt-2 pb-4 flex-1 overflow-y-scroll">
       <div v-if="filteredTodos.length > 0" class="mx-2 overflow-x-hidden flex-grow">
@@ -16,8 +49,10 @@
               :key="item.id"
               :todo="item"
               :option="{showPointer: editMode, showEdit: editMode}"
+              :is-selected="selectedIds.includes(item.id)"
               class="list-group-item list-style"
               @edit="editTodo"
+              @select="handleSelect"
             />
           </draggable>
         </div>
@@ -39,6 +74,7 @@ import ModalDialog from '@/components/ModalDialog.vue'
 import InputTask from '@/components/InputTask.vue'
 import NoData from '@/components/NoData.vue'
 import { Todo } from '@/model/Todo'
+import { dateFactory } from '@/util/DateFactory'
 
 const DialogController = Vue.extend(ModalDialog)
 
@@ -54,7 +90,8 @@ export default {
   layout: ctx => ctx.$device.isMobile ? 'board_mobile' : 'board',
   data () {
     return {
-      dialog: null
+      dialog: null,
+      selectedIds: []
     }
   },
   computed: {
@@ -69,12 +106,23 @@ export default {
     },
     editMode: {
       get () {
-        return this.$store.getters['Todo/canRemove']
+        return this.$store.getters['Todo/editMode']
+      }
+    }
+  },
+  watch: {
+    editMode (n, o) {
+      if (n === false) {
+        this.selectedIds = []
       }
     }
   },
   mounted () {
     this.$store.dispatch('Todo/init', this.$route.params.id)
+      .catch((error) => {
+        console.error(error)
+        this.$toast.error('初期化に失敗しました')
+      })
   },
   methods: {
     /**
@@ -105,12 +153,20 @@ export default {
       })
       this.dialog.$on('update', (todo) => {
         this.$store.dispatch('Todo/update', todo)
+          .then(() => {
+            this.$toast.success('更新しました')
+          })
           .catch((error) => {
-            this.$toast.error(error.message)
+            console.error(error)
+            this.$toast.error('更新に失敗しました')
           })
       })
       this.dialog.$on('delete', (todoId) => {
         this.$store.dispatch('Todo/delete', todoId)
+          .catch((error) => {
+            console.error(error)
+            this.$toast.error('削除に失敗しました')
+          })
       })
       this.dialog.$mount()
     },
@@ -130,6 +186,69 @@ export default {
         newIndex: ev.newIndex
       }
       this.$store.dispatch('Todo/changeOrder', params)
+        .catch((error) => {
+          console.error(error)
+          this.$toast.error(error.message)
+        })
+    },
+    handleSelect (todoId) {
+      if (this.editMode) {
+        const index = this.selectedIds.findIndex(id => id === todoId)
+        if (index >= 0) {
+          this.selectedIds.splice(index, 1)
+        } else {
+          this.selectedIds.push(todoId)
+        }
+      } else {
+        this.$store.dispatch('Todo/select', todoId)
+      }
+    },
+
+    setDeadline (targetDate) {
+      if (!this.editMode) {
+        return
+      }
+
+      if (targetDate !== null &&
+        this.selectedIds.length > 0 &&
+        confirm('期限を設定しますか？')
+      ) {
+        this.$store.dispatch('Todo/setDeadline', {
+          ids: this.selectedIds,
+          startDate: dateFactory(targetDate.start).getDateNumber(),
+          endDate: dateFactory(targetDate.end).getDateNumber()
+        })
+          .then(() => this.$toast.success('更新しました'))
+          .catch((error) => {
+            console.error(error)
+            this.$toast.error('更新に失敗しました')
+          })
+      }
+    },
+
+    deleteSelected () {
+      if (!this.editMode) {
+        return
+      }
+      if (this.selectedIds.length > 0 && confirm('削除しますか？')) {
+        this.$store.dispatch('Todo/deleteTodos', this.selectedIds)
+          .then(() => this.$toast.success('削除しました'))
+          .catch((error) => {
+            console.error(error)
+            this.$toast.error(error.message)
+          })
+      }
+    },
+    cancelEditMode () {
+      // 編集モードを終了
+      this.$store.dispatch('Todo/switchEdit')
+        .catch((error) => {
+          console.error(error)
+          this.$toast.error(error.message)
+        })
+    },
+    showInfo () {
+      alert('選択した項目を一括操作します')
     }
   }
 }

@@ -73,37 +73,25 @@ export const actions = {
     } else {
       // Add First List
       const list = new Todolist('', { title: 'inbox' })
-      const result = await dao.add(list.getData(), 1, userId)
-      if (result.isSuccess) {
-        commit('init', [result.value])
-      }
+      const todolist = await dao.add(list.getData(), 1, userId)
+      commit('init', [todolist])
     }
     console.log('todolist init')
   },
 
-  add ({ commit, dispatch, state, rootGetters, getters }, params) {
-    return new Promise((resolve, reject) => {
-      if (getters.size + 1 > MAX_SIZE) {
-        reject(new Error('これ以上登録できません'))
-        return
-      }
-      const userId = rootGetters['User/userId']
+  async add ({ commit, dispatch, state, rootGetters, getters }, params) {
+    if (getters.size + 1 > MAX_SIZE) {
+      throw new Error('これ以上登録できません')
+    }
+    const userId = rootGetters['User/userId']
 
-      dao.add(params, state.maxIndex + 1, userId).then((result) => {
-        if (result.isSuccess) {
-          commit('add', result.value)
-          dispatch('Todo/initNewList', result.value.id, { root: true })
-          resolve()
-        } else {
-          reject(new Error('登録に失敗しました'))
-        }
-      })
-    })
+    const todolist = await dao.add(params, state.maxIndex + 1, userId)
+    commit('add', todolist)
+    dispatch('Todo/initNewList', todolist.id, { root: true })
   },
 
   async update ({ commit }, list) {
-    const isSuccess = await dao.update(list)
-    if (isSuccess) {
+    if (await dao.update(list)) {
       commit('update', list)
     }
   },
@@ -148,19 +136,13 @@ export const actions = {
     }
   },
 
-  delete ({ commit, state }, id) {
-    return new Promise((resolve, reject) => {
-      if (state.lists.length <= 1) {
-        reject(new Error('これ以上削除できません'))
-        return
-      }
+  async delete ({ commit, getters }, id) {
+    if (getters.size <= 1) {
+      throw new Error('これ以上削除できません')
+    }
 
-      if (dao.delete(id)) {
-        commit('delete', id)
-        resolve()
-      } else {
-        reject(new Error('削除できませんでした'))
-      }
-    })
+    if (await dao.delete(id)) {
+      commit('delete', id)
+    }
   }
 }

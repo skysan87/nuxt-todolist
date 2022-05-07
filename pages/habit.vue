@@ -92,7 +92,8 @@ export default {
         this.$store.dispatch('Habit/add', habit)
           .then(() => this.$toast.success('登録しました'))
           .catch((error) => {
-            this.$toast.error(error.message)
+            console.error(error)
+            this.$toast.error('登録に失敗しました')
           })
       })
       this.dialog.$mount()
@@ -108,9 +109,20 @@ export default {
       })
       this.dialog.$on('update', (habit) => {
         this.$store.dispatch('Habit/update', habit)
+          .then(() => {
+            this.$toast.success('更新しました')
+          })
+          .catch((error) => {
+            console.error(error)
+            this.$toast.error('更新に失敗しました')
+          })
       })
       this.dialog.$on('delete', (habit) => {
         this.$store.dispatch('Habit/delete', habit)
+          .catch((error) => {
+            console.error(error)
+            this.$toast.error('削除に失敗しました')
+          })
       })
       this.dialog.$mount()
     }

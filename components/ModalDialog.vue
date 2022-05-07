@@ -8,9 +8,9 @@
         <div class="modal-body">
           <label class="input-label">ステータス</label>
           <div class="flex justify-evenly">
-            <label v-for="viewOp in options" :key="viewOp.value">
+            <label v-for="viewOp in options" :key="viewOp.value" class="flex items-center">
               <input v-model="todo.state" type="radio" :value="viewOp.value">
-              <span class="ml-2 align-middle">{{ viewOp.label }}</span>
+              <span class="ml-2">{{ viewOp.label }}</span>
             </label>
           </div>
         </div>
@@ -346,6 +346,9 @@ export default {
       }
     },
     deleteTodo () {
+      if (!confirm('削除しますか？')) {
+        return
+      }
       this.$emit('delete', this.todo.id)
       this.$destroy()
     },

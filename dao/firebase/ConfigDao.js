@@ -7,19 +7,14 @@ const configsRef = collection(firestore, 'configs')
 
 export class ConfigDao extends ConfigDaoBase {
   async getByUserId (userId) {
-    try {
-      const q = query(configsRef
-        , where('userId', '==', userId)
-        , limit(1))
-      const querySnapshot = await getDocs(q)
-      const list = querySnapshot.docs.map((doc) => {
-        return new Config(doc.id, doc.data())
-      })
-      return list
-    } catch (error) {
-      console.log(error)
-      throw error
-    }
+    const q = query(configsRef
+      , where('userId', '==', userId)
+      , limit(1))
+    const querySnapshot = await getDocs(q)
+    const list = querySnapshot.docs.map((doc) => {
+      return new Config(doc.id, doc.data())
+    })
+    return list
   }
 
   async add (userId) {
@@ -28,36 +23,18 @@ export class ConfigDao extends ConfigDaoBase {
     config.createdAt = serverTimestamp()
     config.updatedAt = serverTimestamp()
 
-    const returnValues = {
-      isSuccess: false,
-      value: null
-    }
-
-    try {
-      const docRef = await addDoc(configsRef, config.getData())
-      config.id = docRef.id
-      returnValues.isSuccess = true
-      returnValues.value = config
-      return returnValues
-    } catch (error) {
-      console.error(error)
-      returnValues.isSuccess = false
-      return returnValues
-    }
+    const docRef = await addDoc(configsRef, config.getData())
+    config.id = docRef.id
+    return config
   }
 
   async update (config) {
-    try {
-      const docRef = doc(configsRef, config.id)
-      await updateDoc(docRef,
-        {
-          globalMessage: config.globalMessage,
-          updatedAt: serverTimestamp()
-        })
-      return true
-    } catch (error) {
-      console.error(error)
-      return false
-    }
+    const docRef = doc(configsRef, config.id)
+    await updateDoc(docRef,
+      {
+        globalMessage: config.globalMessage,
+        updatedAt: serverTimestamp()
+      })
+    return true
   }
 }

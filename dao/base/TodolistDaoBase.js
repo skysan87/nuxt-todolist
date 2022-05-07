@@ -23,10 +23,7 @@ export class TodolistDaoBase {
     list.orderIndex = orderIndex
     list.userId = userId
 
-    return {
-      isSuccess: true,
-      value: list
-    }
+    return list
   }
 
   async update(list) {
