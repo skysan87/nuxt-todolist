@@ -70,7 +70,7 @@ export default {
       delete this.dialog
 
       const todo = this.$store.getters['Todo/getTodoById'](id)
-      const list = this.$store.getters['Todo/getLists']
+      const list = this.$store.getters['Todolist/getLists']
 
       if (todo.type === Todo.TYPE.HABIT) {
         const habit = this.$store.getters['Habit/getById'](todo.listId)
