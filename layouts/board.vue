@@ -222,7 +222,7 @@ export default {
     widthStyle () {
       return {
         '--sidebar-width': this.sidewidth + 'px',
-        '--sidepanel-width': this.subPanel !== '' ? '25vw' : '0'
+        '--sidepanel-width': this.subPanel !== '' ? '25vw' : '0px'
       }
     }
   },
@@ -484,6 +484,7 @@ export default {
 
 .app-workspace__view {
   grid-area: app-workspace__view;
+  width: calc(100vw - var(--sidebar-width) - var(--sidepanel-width));
 }
 
 .app-workspace__view-2 {

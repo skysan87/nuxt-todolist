@@ -67,6 +67,14 @@
             </p>
           </li>
           <li v-if="showMenu">
+            <p>
+              <nuxt-link to="gantt">
+                <span class="icon" />
+                <span class="ml-2">期限編集</span>
+              </nuxt-link>
+            </p>
+          </li>
+          <li v-if="showMenu">
             <p @click.left="reload(), close()">
               <span class="icon">
                 <fa
