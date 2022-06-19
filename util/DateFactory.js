@@ -1,7 +1,11 @@
-import dayjs from 'dayjs'
-dayjs.extend(require('dayjs/plugin/timezone'))
-dayjs.extend(require('dayjs/plugin/utc'))
-require('dayjs/locale/ja')
+import dayjs from 'dayjs/esm/index.js'
+import utc from 'dayjs/plugin/utc.js'
+import timezone from 'dayjs/plugin/timezone.js'
+
+await import('dayjs/locale/ja.js')
+
+dayjs.extend(utc)
+dayjs.extend(timezone)
 dayjs.tz.setDefault('Asia/Tokyo')
 dayjs.locale('ja')
 
