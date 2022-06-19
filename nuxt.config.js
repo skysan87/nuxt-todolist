@@ -47,7 +47,8 @@ export default {
     '@nuxtjs/eslint-module',
     // Doc: https://github.com/nuxt-community/nuxt-tailwindcss
     '@nuxtjs/tailwindcss',
-    '@nuxtjs/device'
+    '@nuxtjs/device',
+    'nuxt-vite'
   ],
   /*
   ** Nuxt.js modules
