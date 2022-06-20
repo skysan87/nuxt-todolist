@@ -214,7 +214,7 @@ export default {
 
       const days = []
       for (let i = 0; i < startMonth.daysInMonth(); i++) {
-        const targetDate = startMonth.addDay(i) // FIXME: immutable
+        const targetDate = startMonth.addDay(i)
         days.push({
           date: targetDate.get('date'),
           dayOfWeek: dayOfWeek[targetDate.get('day')]
@@ -226,7 +226,7 @@ export default {
     serCalendar () {
       const betweenMonth = this.endMonth.diff(this.startMonth, 'month')
       for (let i = 0; i <= betweenMonth; i++) {
-        const targetMonth = this.startMonth.add(i, 'month') // FIXME: immutable
+        const targetMonth = this.startMonth.add(i, 'month')
         this.calendars.push({
           title: targetMonth.format('YYYY年MM月'),
           days: this.getDays(targetMonth)
