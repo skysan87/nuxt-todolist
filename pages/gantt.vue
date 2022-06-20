@@ -1,9 +1,12 @@
 <template>
   <div class="flex flex-col h-full">
     <div class="h-8 p-2 flex items-center">
-      <h1 class="text-xl font-bold">
-        ガントチャート
-      </h1>
+      <select class="block border py-1 px-2 bg-gray-200" @change="onSelectProject">
+        <option value="">プロジェクトを選択</option>
+        <option v-for="list in projectList" :key="list.id" :value="list.id">
+          {{ list.title }}
+        </option>
+      </select>
     </div>
 
     <div ref="calendar" class="flex-1 overflow-auto w-full select-none">
@@ -134,7 +137,8 @@ export default {
       startMonth: _today.add(0, 'month'),
       endMonth: _today.add(1, 'month'),
       calendars: [],
-      tasks: []
+      tasks: [],
+      projectList: []
     }
   },
 
@@ -184,7 +188,7 @@ export default {
 
   mounted () {
     this.initView()
-    this.makeData()
+    this.projectList = this.$store.getters['Todolist/getLists']
     document.addEventListener('mousemove', this.onMouseDown_Moving)
     document.addEventListener('mouseup', this.onMouseDown_MoveStop)
     document.addEventListener('mousemove', this.onMouseDown_Resizing)
@@ -385,8 +389,24 @@ export default {
       }
     },
 
+    async onSelectProject (e) {
+      try {
+        const projectId = e.target.value
+        if (!projectId) {
+          this.tasks = []
+        } else {
+          await this.$store.dispatch('Todo/init', projectId)
+          await this.makeData()
+        }
+      } catch (error) {
+        console.error(error)
+        this.$toast.error('プロジェクトの読み込みに失敗しました')
+      }
+    },
+
     async makeData () {
-      (await this.$store.getters['Todo/getFilteredTodos'])
+      this.tasks = []
+      await this.$store.getters['Todo/getFilteredTodos']
         .forEach((todo) => {
           this.tasks.push({
             id: todo.id,
