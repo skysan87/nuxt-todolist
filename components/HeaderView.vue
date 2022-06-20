@@ -70,7 +70,7 @@
             <p>
               <nuxt-link to="gantt">
                 <span class="icon" />
-                <span class="ml-2">期限編集</span>
+                <span class="ml-2">ガントチャート</span>
               </nuxt-link>
             </p>
           </li>
