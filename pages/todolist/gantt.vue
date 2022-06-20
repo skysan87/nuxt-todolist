@@ -1,6 +1,6 @@
 <template>
   <div class="flex flex-col h-full">
-    <div class="h-12 p-2 flex items-center">
+    <div class="h-8 p-2 flex items-center">
       <h1 class="text-xl font-bold">
         ガントチャート
       </h1>
@@ -76,10 +76,10 @@
               {{ task.name }}
             </div>
             <div class="py-2 h-full text-center border-r border-black text-sm" style="width: 90px">
-              {{ task.startDate }}
+              {{ task.startDate.format('YYYY/MM/DD') }}
             </div>
             <div class="py-2 h-full text-center border-r border-black text-sm" style="width: 90px">
-              {{ task.endDate }}
+              {{ task.endDate.format('YYYY/MM/DD') }}
             </div>
           </div>
           <div
@@ -104,7 +104,7 @@
 </template>
 
 <script>
-import dayjs from 'dayjs'
+import { dateFactory } from '@/util/DateFactory'
 
 const BLOCK_SIZE = 20
 const TASK_WIDTH = 300
@@ -115,7 +115,7 @@ export default {
   layout: 'board', // PC only
 
   data () {
-    const _today = dayjs()
+    const _today = dateFactory().getFirstDayOfMonth()
 
     return {
       dragging: false,
@@ -131,30 +131,21 @@ export default {
       viewWidth: 0,
       contentWidth: 0,
       totalDays: 0,
-      startMonth: _today.add(0, 'month').format('YYYY-MM'),
-      endMonth: _today.add(1, 'month').format('YYYY-MM'),
+      startMonth: _today.add(0, 'month'),
+      endMonth: _today.add(1, 'month'),
       calendars: [],
       tasks: []
     }
   },
 
   computed: {
-    // filteredTodos: {
-    //   get () {
-    //     return this.$store.getters['Todo/getFilteredTodos']
-    //   }
-    // },
-
     taskRows () {
-      const startMonth = dayjs(this.startMonth)
-      const endMonth = dayjs(this.endMonth)
-
       return this.tasks.map((task) => {
-        const dateFrom = dayjs(task.startDate)
-        const dateTo = dayjs(task.endDate)
-        const between = dateTo.diff(dateFrom, 'day') + 1
-        const start = dateFrom.diff(startMonth, 'day')
-        const end = endMonth.diff(dateTo, 'day') + endMonth.daysInMonth()
+        // const dateFrom = dateFactory(task.startDate)
+        // const dateTo = dateFactory(task.endDate)
+        const between = task.endDate.diff(task.startDate, 'day') + 1
+        const start = task.startDate.diff(this.startMonth, 'day')
+        const end = this.endMonth.diff(task.endDate, 'day') + this.endMonth.daysInMonth()
 
         const pos = {
           x: start * BLOCK_SIZE,
@@ -182,11 +173,9 @@ export default {
     },
 
     todayPosition () {
-      const today = dayjs()
-      const startDate = dayjs(this.startMonth)
-      const endDate = dayjs(this.endMonth)
-      const diffFuture = today.diff(startDate, 'day')
-      const diffPast = endDate.diff(today, 'day') + endDate.daysInMonth()
+      const today = dateFactory()
+      const diffFuture = today.diff(this.startMonth, 'day')
+      const diffPast = this.endMonth.diff(today, 'day') + this.endMonth.daysInMonth()
       return (diffFuture >= 0 && diffPast > 0)
         ? diffFuture * BLOCK_SIZE + TASK_WIDTH
         : -1
@@ -195,7 +184,7 @@ export default {
 
   mounted () {
     this.initView()
-    this.makeTestData()
+    this.makeData()
     document.addEventListener('mousemove', this.onMouseDown_Moving)
     document.addEventListener('mouseup', this.onMouseDown_MoveStop)
     document.addEventListener('mousemove', this.onMouseDown_Resizing)
@@ -225,23 +214,21 @@ export default {
 
       const days = []
       for (let i = 0; i < startMonth.daysInMonth(); i++) {
-        const targetDate = startMonth.add(i, 'day')
+        const targetDate = startMonth.addDay(i) // FIXME: immutable
         days.push({
-          date: targetDate.date(),
-          dayOfWeek: dayOfWeek[targetDate.day()]
+          date: targetDate.get('date'),
+          dayOfWeek: dayOfWeek[targetDate.get('day')]
         })
       }
       return days
     },
 
     serCalendar () {
-      const startMonth = dayjs(this.startMonth)
-      const endMonth = dayjs(this.endMonth)
-      const betweenMonth = endMonth.diff(startMonth, 'month')
+      const betweenMonth = this.endMonth.diff(this.startMonth, 'month')
       for (let i = 0; i <= betweenMonth; i++) {
-        const targetMonth = startMonth.add(i, 'month')
+        const targetMonth = this.startMonth.add(i, 'month') // FIXME: immutable
         this.calendars.push({
-          title: targetMonth.format('YYYY-MM'),
+          title: targetMonth.format('YYYY年MM月'),
           days: this.getDays(targetMonth)
         })
       }
@@ -269,8 +256,8 @@ export default {
 
       if (days !== 0) {
         const task = this.tasks.find(task => task.id === this.target.task.id)
-        task['startDate'] = dayjs(task.startDate).add(-days, 'day').format('YYYY-MM-DD')
-        task['endDate'] = dayjs(task.endDate).add(-days, 'day').format('YYYY-MM-DD')
+        task['startDate'] = task.startDate.addDay(-days)
+        task['endDate'] = task.endDate.addDay(-days)
       } else {
         this.target.element.style.transform = `translateX(${this.target.task.pos.x}px)`
       }
@@ -314,7 +301,7 @@ export default {
 
         if (days !== 0) {
           const task = this.tasks.find(task => task.id === this.target.task.id)
-          task['startDate'] = dayjs(task.startDate).add(-days, 'day').format('YYYY-MM-DD')
+          task['startDate'] = task.startDate.addDay(-days)
         } else {
           this.target.element.style.transform = `translateX(${this.target.task.pos.x}px)`
           this.target.element.style.width = `${this.target.task.pos.width}px`
@@ -328,7 +315,7 @@ export default {
 
         if (days !== 0) {
           const task = this.tasks.find(task => task.id === this.target.task.id)
-          task['endDate'] = dayjs(task.endDate).add(-days, 'day').format('YYYY-MM-DD')
+          task['endDate'] = task.endDate.addDay(-days)
         } else {
           this.target.element.style.width = `${this.target.task.pos.width}px`
         }
@@ -398,32 +385,18 @@ export default {
       }
     },
 
-    dragTask (dragTask) {
-      this.task = dragTask
-    },
-
-    dragTaskOver (overTask) {
-      let deleteIndex
-      let addIndex
-      if (overTask.id !== this.task.id) {
-        this.tasks.forEach((task, index) => { if (task.id === this.task.id) { deleteIndex = index } })
-        this.tasks.forEach((task, index) => { if (task.id === overTask.id) { addIndex = index } })
-        this.tasks.splice(deleteIndex, 1)
-        this.tasks.splice(addIndex, 0, this.task)
-      }
-    },
-
-    // debug
-    makeTestData () {
-      const today = dayjs()
-      for (let i = 1; i <= 30; i++) {
-        this.tasks.push({
-          id: i,
-          name: `テスト${i}`,
-          startDate: today.format('YYYY-MM-DD'),
-          endDate: today.add(Math.floor(Math.random() * 5), 'day').format('YYYY-MM-DD')
+    async makeData () {
+      (await this.$store.getters['Todo/getFilteredTodos'])
+        .forEach((todo) => {
+          this.tasks.push({
+            id: todo.id,
+            name: todo.title,
+            // NOTE: 未設定の場合はシステム日付で表示する
+            startDate: dateFactory(todo.startdate),
+            endDate: dateFactory(todo.enddate),
+            isChanged: false // TODO: proxyで変更管理
+          })
         })
-      }
     }
   }
 }
