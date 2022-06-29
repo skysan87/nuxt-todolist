@@ -1,107 +1,128 @@
 <template>
-  <div class="flex flex-col h-full">
-    <div class="h-8 p-2 flex items-center">
-      <select class="block border py-1 px-2 bg-gray-200" @change="onSelectProject">
-        <option value="">プロジェクトを選択</option>
-        <option v-for="list in projectList" :key="list.id" :value="list.id">
-          {{ list.title }}
-        </option>
-      </select>
+  <div class="relative h-full">
+    <div class="flex flex-col h-full">
+      <div class="h-8 p-2 flex items-center">
+        <select class="block border py-1 px-2 bg-gray-200" @change="onSelectProject">
+          <option value="">プロジェクトを選択</option>
+          <option v-for="list in projectList" :key="list.id" :value="list.id">
+            {{ list.title }}
+          </option>
+        </select>
+      </div>
+
+      <div ref="calendar" class="flex-1 border-t border-black overflow-auto w-full select-none">
+        <div class="top-0 flex z-20 sticky" :style="`width: ${viewWidth}px;`">
+          <div
+            class="border-b border-black bg-green-100 flex sticky left-0 top-0"
+            :style="`min-width: ${taskWidth}px;`"
+          >
+            <div class="py-2 h-full px-2 border-r border-black text-sm" style="width: 120px">
+              タスク
+            </div>
+            <div class="py-2 h-full text-center border-r border-black text-sm" style="width: 90px">
+              開始日
+            </div>
+            <div class="py-2 h-full text-center border-r border-black text-sm" style="width: 90px">
+              期限日
+            </div>
+            <div class="py-2 h-full text-center border-r border-black text-sm" style="width: 20px" />
+          </div>
+
+          <div v-for="month of calendars" :key="month.title" class="border-b border-black bg-white" :style="`min-width: ${blockWidth * month.days}px;`">
+            <!-- 年月 -->
+            <div class="border-b border-r border-black px-2">
+              {{ month.title }}
+            </div>
+            <!-- 日付 -->
+            <div class="flex">
+              <div
+                v-for="day of month.days"
+                :key="day.date"
+                class="border-r border-black text-xs text-center"
+                :class="weekendColor(day.dayOfWeek)"
+                :style="`min-width: ${blockWidth}px;`"
+              >
+                {{ day.date }}
+              </div>
+            </div>
+            <!-- 曜日 -->
+            <div class="flex">
+              <div
+                v-for="day of month.days"
+                :key="day.date"
+                class="border-r border-black text-xs text-center"
+                :class="weekendColor(day.dayOfWeek)"
+                :style="`min-width: ${blockWidth}px;`"
+              >
+                {{ day.dayOfWeek }}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="relative" :style="`width: ${viewWidth}px;`">
+          <!-- timeline -->
+          <div
+            v-for="i of totalDays"
+            :key="`line-${i}`"
+            class="absolute bg-gray-200 h-full w-px"
+            :style="`left: ${i * blockWidth + taskWidth - 1}px;`"
+          />
+          <!-- today -->
+          <div
+            v-if="todayPosition >= 0"
+            class="absolute bg-red-300 h-full"
+            :style="`width: ${blockWidth - 1}px; left: ${todayPosition}px;`"
+          />
+          <!-- contents -->
+          <div v-for="task of taskRows" :key="`task-${task.id}`" class="h-10 border-b border-black flex">
+            <div class="bg-green-100 z-10 flex sticky left-0" :style="`min-width: ${taskWidth}px;`">
+              <div class="py-2 h-full px-2 border-r border-black text-sm" style="width: 120px">
+                {{ task.name }}
+              </div>
+              <div class="py-2 h-full text-center border-r border-black text-sm" style="width: 90px">
+                <span v-if="!task.undecided">{{ task.startDate.format('YYYY/MM/DD') }}</span>
+              </div>
+              <div class="py-2 h-full text-center border-r border-black text-sm" style="width: 90px">
+                <span v-if="!task.undecided">{{ task.endDate.format('YYYY/MM/DD') }}</span>
+              </div>
+              <div class="py-1 h-full text-center border-r border-black text-sm" style="width: 20px">
+                <button class="h-full" @click.stop="editRange(task.id)">
+                  <fa :icon="['fas', 'edit']" size="xs" />
+                </button>
+              </div>
+            </div>
+            <div
+              :style="task.style"
+              class="h-10 flex py-2 will-change-transform"
+              @mousedown="onMouseDown_MoveStart($event, task)"
+            >
+              <div
+                class="w-2 bg-yellow-200 rounded-l-lg cursor-col-resize"
+                @mousedown.stop="onMouseDown_ResizeStart($event, task, 'left')"
+              />
+              <div class="flex-1 bg-yellow-200 pointer-events-none" />
+              <div
+                class="w-2 bg-yellow-200 rounded-r-lg cursor-col-resize"
+                @mousedown.stop="onMouseDown_ResizeStart($event, task, 'right')"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <div ref="calendar" class="flex-1 overflow-auto w-full select-none">
-      <div class="top-0 flex z-20 sticky" :style="`width: ${viewWidth}px;`">
-        <div
-          class="border-b border-black bg-green-100 flex sticky left-0 top-0"
-          :style="`min-width: ${taskWidth}px;`"
-        >
-          <div class="py-2 h-full px-2 border-r border-black text-sm" style="width: 120px">
-            タスク
-          </div>
-          <div class="py-2 h-full text-center border-r border-black text-sm" style="width: 90px">
-            開始日
-          </div>
-          <div class="py-2 h-full text-center border-r border-black text-sm" style="width: 90px">
-            期限日
-          </div>
-        </div>
-
-        <div v-for="month of calendars" :key="month.title" class="border-b border-black bg-white" :style="`min-width: ${blockWidth * month.days}px;`">
-          <!-- 年月 -->
-          <div class="border-b border-r border-black px-2">
-            {{ month.title }}
-          </div>
-          <!-- 日付 -->
-          <div class="flex">
-            <div
-              v-for="day of month.days"
-              :key="day.date"
-              class="border-r border-black text-xs text-center"
-              :class="weekendColor(day.dayOfWeek)"
-              :style="`min-width: ${blockWidth}px;`"
-            >
-              {{ day.date }}
-            </div>
-          </div>
-          <!-- 曜日 -->
-          <div class="flex">
-            <div
-              v-for="day of month.days"
-              :key="day.date"
-              class="border-r border-black text-xs text-center"
-              :class="weekendColor(day.dayOfWeek)"
-              :style="`min-width: ${blockWidth}px;`"
-            >
-              {{ day.dayOfWeek }}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="relative" :style="`width: ${viewWidth}px;`">
-        <!-- timeline -->
-        <div
-          v-for="i of totalDays"
-          :key="`line-${i}`"
-          class="absolute bg-gray-200 h-full w-px"
-          :style="`left: ${i * blockWidth + taskWidth - 1}px;`"
-        />
-        <!-- today -->
-        <div
-          v-if="todayPosition >= 0"
-          class="absolute bg-red-300 h-full"
-          :style="`width: ${blockWidth - 1}px; left: ${todayPosition}px;`"
-        />
-        <!-- contents -->
-        <div v-for="task of taskRows" :key="`task-${task.id}`" class="h-10 border-b border-black flex">
-          <div class="bg-green-100 z-10 flex sticky left-0" :style="`min-width: ${taskWidth}px;`">
-            <div class="py-2 h-full px-2 border-r border-black text-sm" style="width: 120px">
-              {{ task.name }}
-            </div>
-            <div class="py-2 h-full text-center border-r border-black text-sm" style="width: 90px">
-              {{ task.startDate.format('YYYY/MM/DD') }}
-            </div>
-            <div class="py-2 h-full text-center border-r border-black text-sm" style="width: 90px">
-              {{ task.endDate.format('YYYY/MM/DD') }}
-            </div>
-          </div>
-          <div
-            :style="task.style"
-            class="h-10 flex py-2 will-change-transform"
-            @mousedown="onMouseDown_MoveStart($event, task)"
-          >
-            <div
-              class="w-2 bg-yellow-200 rounded-l-lg cursor-col-resize"
-              @mousedown.stop="onMouseDown_ResizeStart($event, task, 'left')"
-            />
-            <div class="flex-1 bg-yellow-200 pointer-events-none" />
-            <div
-              class="w-2 bg-yellow-200 rounded-r-lg cursor-col-resize"
-              @mousedown.stop="onMouseDown_ResizeStart($event, task, 'right')"
-            />
-          </div>
-        </div>
-      </div>
+    <div
+      v-show="datepickItem.visible"
+      class="block absolute z-30 inset-0 w-full h-full bg-transparent"
+    >
+      <v-date-picker
+        v-model="datepickRange"
+        :attributes="datepickItem.attributes"
+        class="mt-10 ml-4"
+        is-range
+        @input="changeRange"
+      />
     </div>
   </div>
 </template>
@@ -110,7 +131,7 @@
 import { dateFactory } from '@/util/DateFactory'
 
 const BLOCK_SIZE = 20
-const TASK_WIDTH = 300
+const TASK_WIDTH = 320
 
 export default {
   name: 'Gantt',
@@ -138,7 +159,14 @@ export default {
       endMonth: _today.add(1, 'month'),
       calendars: [],
       tasks: [],
-      projectList: []
+      projectList: [],
+      datepickItem: {
+        taskId: null,
+        visible: false,
+        attributes: []
+      },
+      // NOTE: objectのpropertyでは、変更が反映されない
+      datepickRange: null
     }
   },
 
@@ -163,7 +191,7 @@ export default {
 
         // 表示範囲外の日付を含む場合は表示しない
         const isHidden = !(start >= 0 && end > 0)
-        if (isHidden) {
+        if (isHidden || task.undecided) {
           style.display = 'none'
         }
 
@@ -404,6 +432,51 @@ export default {
       }
     },
 
+    editRange (taskId) {
+      const task = this.tasks.find(t => t.id === taskId)
+      this.datepickItem.taskId = taskId
+      this.datepickItem.attributes.push({
+        key: 'today',
+        dot: 'blue',
+        dates: [new Date()]
+      })
+      // 編集前の値
+      if (!task.undecided) {
+        // NOTE: datepickerのvalueに値を設定すると@inputが発動し、制御できないため
+        this.datepickItem.attributes.push({
+          key: 'range',
+          bar: 'green',
+          dates: { start: task.startDate.toDate(), end: task.endDate.toDate() }
+        })
+      }
+      this.datepickItem.visible = true
+    },
+
+    /**
+     * datepickRangeが変更されたタイミング
+     *
+     * @param {{state: Date, end: Date} | null} range
+     */
+    changeRange (range) {
+      if (!this.datepickItem.visible) {
+        // editRangeで設定したタイミング
+        return
+      }
+
+      if (range !== null) {
+        const task = this.tasks.find(t => t.id === this.datepickItem.taskId)
+        task.startDate = dateFactory(range.start)
+        task.endDate = dateFactory(range.end)
+        task.undecided = false
+        this.datepickItem.taskId = null
+        this.datepickItem.attributes = []
+      }
+      this.$nextTick(() => {
+        this.datepickItem.visible = false
+        this.datepickRange = null // trigger: @input
+      })
+    },
+
     async makeData () {
       this.tasks = []
       await this.$store.getters['Todo/getFilteredTodos']
@@ -414,6 +487,7 @@ export default {
             // NOTE: 未設定の場合はシステム日付で表示する
             startDate: dateFactory(todo.startdate),
             endDate: dateFactory(todo.enddate),
+            undecided: !todo.startdate || !todo.enddate, // 期限未未定
             isChanged: false // TODO: proxyで変更管理
           })
         })
