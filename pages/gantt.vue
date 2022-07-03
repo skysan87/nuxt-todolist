@@ -112,17 +112,23 @@
       </div>
     </div>
 
+    <!-- datepicker -->
     <div
       v-show="datepickItem.visible"
-      class="block absolute z-30 inset-0 w-full h-full bg-transparent"
+      class="data-picker absolute z-30 inset-0 w-full h-full"
     >
-      <v-date-picker
-        v-model="datepickRange"
-        :attributes="datepickItem.attributes"
-        class="mt-10 ml-4"
-        is-range
-        @input="changeRange"
-      />
+      <div class="absolute mt-10 ml-4">
+        <div class="text-right my-1">
+          <button class="btn btn-red-outline" @click="clearDatePicker">Clear</button>
+          <button class="btn btn-regular" @click="closeDatePicker">Close</button>
+        </div>
+        <v-date-picker
+          v-model="datepickRange"
+          :attributes="datepickItem.attributes"
+          is-range
+          @input="changeRange"
+        />
+      </div>
     </div>
   </div>
 </template>
@@ -468,13 +474,25 @@ export default {
         task.startDate = dateFactory(range.start)
         task.endDate = dateFactory(range.end)
         task.undecided = false
-        this.datepickItem.taskId = null
-        this.datepickItem.attributes = []
       }
+      this.closeDatePicker()
+    },
+
+    closeDatePicker () {
+      this.datepickItem.taskId = null
+      this.datepickItem.attributes = []
       this.$nextTick(() => {
         this.datepickItem.visible = false
         this.datepickRange = null // trigger: @input
       })
+    },
+
+    clearDatePicker () {
+      const task = this.tasks.find(t => t.id === this.datepickItem.taskId)
+      task.startDate = dateFactory(null)
+      task.endDate = dateFactory(null)
+      task.undecided = true
+      this.closeDatePicker()
     },
 
     async makeData () {
@@ -506,5 +524,8 @@ export default {
 }
 .cursor-col-resize {
   cursor: col-resize;
+}
+.data-picker {
+  background-color: rgba(215, 214, 214, 0.5);
 }
 </style>
