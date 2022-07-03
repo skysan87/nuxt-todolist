@@ -77,7 +77,7 @@
           <!-- contents -->
           <div v-for="task of taskRows" :key="`task-${task.id}`" class="h-10 border-b border-black flex">
             <div class="bg-green-100 z-10 flex sticky left-0" :style="`min-width: ${taskWidth}px;`">
-              <div class="py-2 h-full px-2 border-r border-black text-sm" style="width: 120px">
+              <div class="omit-text py-2 h-full px-2 border-r border-black text-sm" style="width: 120px">
                 {{ task.name }}
               </div>
               <div class="py-2 h-full text-center border-r border-black text-sm" style="width: 90px">
