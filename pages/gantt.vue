@@ -143,7 +143,8 @@ const TASK_WIDTH = 320
 export default {
   name: 'Gantt',
 
-  layout: 'board', // PC only
+  // PC only
+  layout: ctx => ctx.$device.isMobile ? 'not-supported' : 'board',
 
   data () {
     const _today = dateFactory().getFirstDayOfMonth()
