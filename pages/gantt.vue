@@ -123,6 +123,7 @@
           <button class="btn btn-regular" @click="closeDatePicker">Close</button>
         </div>
         <v-date-picker
+          ref="datepicker"
           v-model="datepickRange"
           :attributes="datepickItem.attributes"
           is-range
@@ -438,7 +439,7 @@ export default {
       }
     },
 
-    editRange (taskId) {
+    async editRange (taskId) {
       const task = this.tasks.find(t => t.id === taskId)
       this.datepickItem.taskId = taskId
       this.datepickItem.attributes.push({
@@ -446,6 +447,8 @@ export default {
         dot: 'blue',
         dates: [new Date()]
       })
+
+      let targetDate = new Date()
       // 編集前の値
       if (!task.undecided) {
         // NOTE: datepickerのvalueに値を設定すると@inputが発動し、制御できないため
@@ -454,7 +457,10 @@ export default {
           bar: 'green',
           dates: { start: task.startDate.toDate(), end: task.endDate.toDate() }
         })
+        targetDate = task.startDate.toDate()
       }
+
+      await this.$refs.datepicker.move(targetDate)
       this.datepickItem.visible = true
     },
 
