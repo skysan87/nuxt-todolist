@@ -8,6 +8,13 @@
             {{ list.title }}
           </option>
         </select>
+        <span class="ml-4">表示開始月:</span>
+        <input
+          type="month"
+          class="block border ml-2 py-1 px-2 bg-gray-200"
+          :value="startMonth.format('YYYY-MM')"
+          @change="changeStartMonth"
+        >
       </div>
 
       <div ref="calendar" class="flex-1 border-t border-black overflow-auto w-full select-none">
@@ -240,7 +247,7 @@ export default {
 
   methods: {
     initView () {
-      this.serCalendar()
+      this.setCalendar()
       this.totalDays = this.calendars.reduce((p, c) => p + c.days.length, 0)
       this.contentWidth = this.totalDays * this.blockWidth
       this.viewWidth = this.taskWidth + this.contentWidth
@@ -263,7 +270,8 @@ export default {
       return days
     },
 
-    serCalendar () {
+    setCalendar () {
+      this.calendars = []
       const betweenMonth = this.endMonth.diff(this.startMonth, 'month')
       for (let i = 0; i <= betweenMonth; i++) {
         const targetMonth = this.startMonth.add(i, 'month')
@@ -272,6 +280,18 @@ export default {
           days: this.getDays(targetMonth)
         })
       }
+    },
+
+    changeStartMonth (e) {
+      if (e.target.value === null || e.target.value === '') {
+        alert('表示する月を設定してください')
+        return
+      }
+      const target = dateFactory(e.target.value, 'YYYY-MM').getFirstDayOfMonth()
+      this.startMonth = target.add(0, 'month')
+      this.endMonth = target.add(1, 'month')
+
+      this.initView()
     },
 
     onMouseDown_MoveStart (e, task) {
