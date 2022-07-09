@@ -88,10 +88,10 @@
                 {{ task.name }}
               </div>
               <div class="py-2 h-full text-center border-r border-black text-sm" style="width: 90px">
-                <span v-if="!task.undecided">{{ task.startDate.format('YYYY/MM/DD') }}</span>
+                <span>{{ task.startDateString }}</span>
               </div>
               <div class="py-2 h-full text-center border-r border-black text-sm" style="width: 90px">
-                <span v-if="!task.undecided">{{ task.endDate.format('YYYY/MM/DD') }}</span>
+                <span>{{ task.endDateString }}</span>
               </div>
               <div class="py-1 h-full text-center border-r border-black text-sm" style="width: 20px">
                 <button class="h-full" @click.stop="editRange(task.id)">
@@ -147,6 +147,57 @@ import { dateFactory } from '@/util/DateFactory'
 const BLOCK_SIZE = 20
 const TASK_WIDTH = 320
 
+class TmpTask {
+  #srcStartDate
+  #srcEndDate
+
+  constructor (todo) {
+    this.id = todo.id
+    this.name = todo.title
+    this.startDate = todo.startdate ? dateFactory(todo.startdate) : null
+    this.endDate = todo.enddate ? dateFactory(todo.enddate) : null
+    this.#srcStartDate = todo.startdate ?? null
+    this.#srcEndDate = todo.enddate ?? null
+  }
+
+  get isChanged () {
+    const newStartDateNum = this.startDate?.getDateNumber() ?? null
+    const newEndDateNum = this.endDate?.getDateNumber() ?? null
+    return newStartDateNum !== this.#srcStartDate ||
+      newEndDateNum !== this.#srcEndDate
+  }
+
+  get undecided () {
+    return !this.startDate || !this.endDate
+  }
+
+  get startDateString () {
+    return this.startDate?.format('YYYY/MM/DD') ?? ''
+  }
+
+  get endDateString () {
+    return this.endDate?.format('YYYY/MM/DD') ?? ''
+  }
+
+  calcDiff (rangeStart, rangeEnd) {
+    if (this.undecided) {
+      return {
+        between: 0,
+        start: 0,
+        outOfRange: true
+      }
+    }
+    const between = this.endDate.diff(this.startDate, 'day') + 1
+    const start = this.startDate.diff(rangeStart, 'day')
+    const end = rangeEnd.diff(this.endDate, 'day')
+    return {
+      between,
+      start,
+      outOfRange: !(start >= 0 && end >= 0)
+    }
+  }
+}
+
 export default {
   name: 'Gantt',
 
@@ -188,13 +239,11 @@ export default {
   computed: {
     taskRows () {
       return this.tasks.map((task) => {
-        const between = task.endDate.diff(task.startDate, 'day') + 1
-        const startDiff = task.startDate.diff(this.startMonth, 'day')
-        const endDiff = this.endMonth.diff(task.endDate, 'day')
+        const diff = task.calcDiff(this.startMonth, this.endMonth)
 
         const pos = {
-          x: startDiff * BLOCK_SIZE,
-          width: BLOCK_SIZE * between
+          x: diff.start * BLOCK_SIZE,
+          width: BLOCK_SIZE * diff.between
         }
 
         const style = {
@@ -203,16 +252,16 @@ export default {
         }
 
         // 表示範囲外の日付を含む場合は表示しない
-        const isHidden = !(startDiff >= 0 && endDiff >= 0)
-        if (isHidden || task.undecided) {
+        if (diff.outOfRange) {
           style.display = 'none'
         }
 
         return {
           style,
           pos,
-          isHidden,
-          ...task
+          ...task,
+          startDateString: task.startDateString,
+          endDateString: task.endDateString
         }
       })
     },
@@ -502,7 +551,6 @@ export default {
         const task = this.tasks.find(t => t.id === this.datepickItem.taskId)
         task.startDate = dateFactory(range.start).resetTime()
         task.endDate = dateFactory(range.end).resetTime()
-        task.undecided = false
       }
       this.closeDatePicker()
     },
@@ -518,9 +566,8 @@ export default {
 
     clearDatePicker () {
       const task = this.tasks.find(t => t.id === this.datepickItem.taskId)
-      task.startDate = dateFactory(null)
-      task.endDate = dateFactory(null)
-      task.undecided = true
+      task.startDate = null
+      task.endDate = null
       this.closeDatePicker()
     },
 
@@ -528,15 +575,7 @@ export default {
       this.tasks = []
       await this.$store.getters['Todo/getFilteredTodos']
         .forEach((todo) => {
-          this.tasks.push({
-            id: todo.id,
-            name: todo.title,
-            // NOTE: 未設定の場合はシステム日付で表示する
-            startDate: dateFactory(todo.startdate),
-            endDate: dateFactory(todo.enddate),
-            undecided: !todo.startdate || !todo.enddate, // 期限未未定
-            isChanged: false // TODO: proxyで変更管理
-          })
+          this.tasks.push(new TmpTask(todo))
         })
     }
   }
