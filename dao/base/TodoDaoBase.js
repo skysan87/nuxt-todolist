@@ -24,8 +24,8 @@ export class TodoDaoBase {
       todo.title = `${listId}_${i}`
       todo.orderIndex = i * 1000,
       todo.detail = 'dummy_detail' + i
-      todo.startdate = dateFactory().getDateNumber()
-      todo.enddate = dateFactory().addDay(1).getDateNumber()
+      todo.startdate = i % 3 !== 0 ? dateFactory().getDateNumber() : null
+      todo.enddate = i % 3 !== 0 ? dateFactory().addDay(1).getDateNumber() : null
       todo.createdAt = Date.now()
       todo.updatedAt = Date.now()
       todo.subTasks = Array.from({ length: 3 }

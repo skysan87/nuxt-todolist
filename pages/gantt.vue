@@ -83,7 +83,11 @@
           />
           <!-- contents -->
           <div v-for="task of taskRows" :key="`task-${task.id}`" class="h-10 border-b border-black flex">
-            <div class="bg-green-100 z-10 flex sticky left-0" :style="`min-width: ${taskWidth}px;`">
+            <div
+              class="z-10 flex sticky left-0"
+              :style="`min-width: ${taskWidth}px;`"
+              :class="[task.isChanged ? 'bg-blue-100' : 'bg-green-100']"
+            >
               <div class="omit-text py-2 h-full px-2 border-r border-black text-sm" style="width: 120px" @click.stop="selectTask(task.id)">
                 {{ task.name }}
               </div>
@@ -261,7 +265,8 @@ export default {
           pos,
           ...task,
           startDateString: task.startDateString,
-          endDateString: task.endDateString
+          endDateString: task.endDateString,
+          isChanged: task.isChanged
         }
       })
     },
