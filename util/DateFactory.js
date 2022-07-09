@@ -64,7 +64,17 @@ class Wrapper {
   }
 
   getFirstDayOfMonth () {
-    return new Wrapper(this.instance.format('YYYY-MM'))
+    return new Wrapper(this.instance.startOf('month'))
+  }
+
+  getEndDayOfMonth () {
+    // 00:00
+    return new Wrapper(this.instance.endOf('month').startOf('date'))
+  }
+
+  resetTime () {
+    // 00:00
+    return new Wrapper(this.instance.startOf('date'))
   }
   /* ==== Method Chain ==== */
 

@@ -170,8 +170,8 @@ export default {
       viewWidth: 0,
       contentWidth: 0,
       totalDays: 0,
-      startMonth: _today.add(0, 'month'),
-      endMonth: _today.add(1, 'month'),
+      startMonth: _today,
+      endMonth: _today.add(1, 'month').getEndDayOfMonth(),
       calendars: [],
       tasks: [],
       projectList: [],
@@ -188,14 +188,12 @@ export default {
   computed: {
     taskRows () {
       return this.tasks.map((task) => {
-        // const dateFrom = dateFactory(task.startDate)
-        // const dateTo = dateFactory(task.endDate)
         const between = task.endDate.diff(task.startDate, 'day') + 1
-        const start = task.startDate.diff(this.startMonth, 'day')
-        const end = this.endMonth.diff(task.endDate, 'day') + this.endMonth.daysInMonth()
+        const startDiff = task.startDate.diff(this.startMonth, 'day')
+        const endDiff = this.endMonth.diff(task.endDate, 'day')
 
         const pos = {
-          x: start * BLOCK_SIZE,
+          x: startDiff * BLOCK_SIZE,
           width: BLOCK_SIZE * between
         }
 
@@ -205,7 +203,7 @@ export default {
         }
 
         // 表示範囲外の日付を含む場合は表示しない
-        const isHidden = !(start >= 0 && end > 0)
+        const isHidden = !(startDiff >= 0 && endDiff >= 0)
         if (isHidden || task.undecided) {
           style.display = 'none'
         }
@@ -288,8 +286,8 @@ export default {
         return
       }
       const target = dateFactory(e.target.value, 'YYYY-MM').getFirstDayOfMonth()
-      this.startMonth = target.add(0, 'month')
-      this.endMonth = target.add(1, 'month')
+      this.startMonth = target.getFirstDayOfMonth()
+      this.endMonth = target.add(1, 'month').getEndDayOfMonth()
 
       this.initView()
     },
@@ -502,8 +500,8 @@ export default {
 
       if (range !== null) {
         const task = this.tasks.find(t => t.id === this.datepickItem.taskId)
-        task.startDate = dateFactory(range.start)
-        task.endDate = dateFactory(range.end)
+        task.startDate = dateFactory(range.start).resetTime()
+        task.endDate = dateFactory(range.end).resetTime()
         task.undecided = false
       }
       this.closeDatePicker()
