@@ -15,6 +15,7 @@
           :value="startMonth.format('YYYY-MM')"
           @change="changeStartMonth"
         >
+        <button v-if="tasks.length > 0" class="btn btn-regular ml-auto" @click="saveAll">保存</button>
       </div>
 
       <div ref="calendar" class="flex-1 border-t border-black overflow-auto w-full select-none">
@@ -509,6 +510,30 @@ export default {
       } catch (error) {
         console.error(error)
         this.$toast.error('プロジェクトの読み込みに失敗しました')
+      }
+    },
+
+    async saveAll () {
+      try {
+        if (!confirm('期限を変更しますか？')) {
+          return
+        }
+
+        const targets = this.tasks
+          .filter(tmp => tmp.isChanged)
+          .map((tmp) => {
+            return {
+              id: tmp.id,
+              startdate: tmp.startDate?.getDateNumber() ?? null,
+              enddate: tmp.endDate?.getDateNumber() ?? null
+            }
+          })
+        await this.$store.dispatch('Todo/setDeadline', targets)
+        await this.makeData()
+        this.$toast.success('変更しました')
+      } catch (error) {
+        console.error(error)
+        this.$toast.error('変更に失敗しました')
       }
     },
 

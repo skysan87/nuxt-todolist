@@ -166,6 +166,25 @@ export class TodoDao extends TodoDaoBase {
     return true
   }
 
+  /**
+   * 期間の変更
+   * @param {Array<{id: String, startdate: Number, enddate: Number}>} targets
+   */
+  async updateDeadlines (targets) {
+    const batch = writeBatch(firestore)
+    for (const todo of targets) {
+      const todoDocRef = doc(todosRef, todo.id)
+      batch.update(todoDocRef, {
+        startdate: todo.startdate,
+        enddate: todo.enddate,
+        updatedAt: serverTimestamp()
+      })
+    }
+
+    await batch.commit()
+    return true
+  }
+
   async updateHabit (todo, habit, habitCounter) {
     // habitsRef
     const habitSubRef = collection(firestore, 'habits', habit.rootId, 'habits')
