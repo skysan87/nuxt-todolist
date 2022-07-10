@@ -6,6 +6,7 @@
   "private": true,
   "scripts": {
     "run-dev": "NUXT_HOST=0.0.0.0 NUXT_PORT=3000 nuxt dev",
+    "dev-emulator-start": "firebase emulators:start --import=emulator_data --export-on-exit=emulator_data",
     "run-prod": "nuxt generate && NUXT_HOST=0.0.0.0 NUXT_PORT=3000 nuxt start",
     "release-build": "nuxt build && nuxt generate",
     "build": "nuxt build",
