@@ -30,7 +30,11 @@
       class="cursor-pointer px-1"
       @click.stop="editEventHandler"
     />
-    <div v-if="option.showEdit" class="check-icon m-1 cursor-pointer" @click.stop="handleChecked">
+    <div
+      v-if="option.showEdit"
+      class="check-icon py-1 px-2 cursor-pointer rounded-full hover:bg-gray-200"
+      @click.stop="handleChecked"
+    >
       <fa
         :icon="['fas', 'circle-check']"
         :class="{'text-gray-300' : !isChecked}"
