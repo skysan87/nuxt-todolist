@@ -34,7 +34,7 @@ export class Todo {
   }
 
   getData () {
-    const params = {
+    return {
       title: this.title,
       type: this.type,
       state: this.state,
@@ -51,7 +51,6 @@ export class Todo {
       updatedAt: this.updatedAt,
       subTasks: this.subTasks.map(t => t.getData())
     }
-    return params
   }
 
   static valueOf (params) {
