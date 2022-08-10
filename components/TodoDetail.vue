@@ -82,7 +82,6 @@
 <script>
 import { TaskState } from '@/util/TaskState'
 import { dateFactory } from '@/util/DateFactory'
-import { Todo } from '@/model/Todo'
 import ExpandPanel from '@/components/parts/ExpandPanel.vue'
 
 export default {

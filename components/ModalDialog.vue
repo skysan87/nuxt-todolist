@@ -15,7 +15,7 @@
           </div>
         </div>
 
-        <div v-if="todo.type === 'todo'" class="modal-body">
+        <div v-if="isTypeTodo" class="modal-body">
           <label class="input-label">プロジェクト</label>
           <select v-model="todo.listId" class="input-text">
             <option v-for="list in projectList" :key="list.id" :value="list.id">
@@ -265,6 +265,9 @@ export default {
     }
   },
   computed: {
+    isTypeTodo () {
+      return this.todo.type === Todo.TYPE.TODO
+    },
     subtaskDoneCount () {
       return this.todo.subTasks.filter(t => t.isDone).length
     }

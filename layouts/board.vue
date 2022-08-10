@@ -401,7 +401,7 @@ export default {
     /**
      * サイドメニュー ドラッグ開始
      */
-    dragStartSidebar (ev) {
+    dragStartSidebar () {
       this.isDragging = true
       this.clientWidth = window.innerWidth
     },
@@ -424,11 +424,11 @@ export default {
     /**
      * サイドメニュー ドラッグ終了
      */
-    dragEndSidebar (ev) {
+    dragEndSidebar () {
       this.isDragging = false
     },
 
-    resizeSidebar (ev) {
+    resizeSidebar () {
       if (this.sidewidth >= window.innerWidth) {
         this.sidewidth = window.innerWidth - MAX_SIDEBAR_WIDTH_MARGIN
       }
