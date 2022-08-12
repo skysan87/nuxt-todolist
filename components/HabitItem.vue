@@ -1,19 +1,24 @@
 <template>
   <div>
-    <div class="flex w-full">
+    <div class="flex items-center w-full">
       <div :title="habit.title" class="flex-1 no-wrap text-left p-1">
         {{ habit.title }}
       </div>
-      <div class="p-1" @click.stop="editEventHandler">
-        <fa :icon="['fas', 'edit']" size="xs" class="cursor-pointer" />
-      </div>
+      <icon-button @click.stop.native="editEventHandler">
+        <fa :icon="['fas', 'edit']" size="xs" />
+      </icon-button>
     </div>
   </div>
 </template>
 
 <script>
+import IconButton from '@/components/parts/IconButton'
+
 export default {
   name: 'TodoItem',
+  components: {
+    IconButton
+  },
   props: {
     habit: Object
   },

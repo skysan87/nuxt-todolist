@@ -88,14 +88,13 @@
                     # {{ todolist.title }}
                   </div>
                   <div
-                    class="flex-none m-0 pr-4 opacity-0"
+                    class="flex-none mr-2 px-2 opacity-0 cursor-pointer rounded-full hover:bg-blue-400"
                     :class="{'opacity-100': activeItemId === todolist.id}"
                     @click.left.prevent="editTodolist(todolist.id)"
                   >
                     <fa
                       :icon="['fas', 'edit']"
                       size="xs"
-                      class="cursor-pointer"
                       title="プロジェクトを編集する"
                     />
                   </div>
@@ -158,6 +157,7 @@ import draggable from 'vuedraggable'
 import NewListDialog from '@/components/NewListDialog'
 import InputDialog from '@/components/InputDialog'
 import ExpandPanel from '@/components/parts/ExpandPanel'
+import IconButton from '@/components/parts/IconButton'
 import { HabitFilter } from '@/util/HabitFilter'
 import { TodayFilter } from '@/util/TodayFilter'
 import { dateFactory } from '@/util/DateFactory'
@@ -173,6 +173,7 @@ export default {
   components: {
     draggable,
     ExpandPanel,
+    IconButton,
     TodoDetail: () => import('@/components/TodoDetail')
   },
   data () {
