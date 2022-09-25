@@ -101,3 +101,17 @@ $ npx firebase emulators:start --import=<エクスポート先フォルダ>
 # エミュレータのデータと同期
 npx firebase emulators:start --import=<エクスポート先フォルダ> --export-on-exit=<エクスポート先フォルダ>
 ```
+
+### デプロイ
+
+複数サイトをホスティングするため、デプロイ時にターゲットを指定する
+
+* タグ(`firebase.json`のhosting.targetの値)を指定して、デプロイ
+* このプロジェクトは`default`
+* `.firebaserc`を参照(Git管理外)
+* https://firebase.google.com/docs/hosting/multisites?hl=ja#set_up_deploy_targets
+
+```bash
+# firebase deploy --only hosting:TARGET_NAME
+$ npx firebase deploy --only hosting:default
+```
