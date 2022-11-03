@@ -43,7 +43,7 @@
     "babel-jest": "^27.5.1",
     "eslint": "^8.11.0",
     "eslint-plugin-nuxt": ">=3.1.0",
-    "firebase-tools": "^10.6.0",
+    "firebase-tools": "^11.16.0",
     "jest": "^27.5.1",
     "sass": "^1.49.9",
     "sass-loader": "^10.3.1",
