@@ -87,3 +87,14 @@
 .layout-enter, .layout-leave-to {
   opacity: 0;
 }
+
+.badge {
+  display: inline-block;
+  padding: 2px 5px;
+  text-align: center;
+  border-radius: .25rem;
+  vertical-align: baseline;
+  font-size: 75%;
+  white-space: nowrap;
+  font-weight: bold;
+}

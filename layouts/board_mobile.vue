@@ -66,6 +66,17 @@
                 >
                   # {{ filter.label }}
                 </div>
+
+                <nuxt-link to="/healthcare">
+                  <div
+                    class="py-1 px-5 cursor-pointer hover:bg-blue-700 hover:opacity-75"
+                    :class="{'bg-blue-700' : selectedType === viewType.HealthCare}"
+                    @click.left="isMenuExpanded = false"
+                  >
+                    # ヘルスケア
+                  </div>
+                </nuxt-link>
+
                 <div class="mt-5 px-4 flex justify-between items-center">
                   <div class="font-bold text-lg">
                     プロジェクト
@@ -138,7 +149,7 @@ import { dateFactory } from '@/util/DateFactory'
 
 const DialogController = Vue.extend(NewListDialog)
 const InputDialogController = Vue.extend(InputDialog)
-const viewType = { Todo: 0, Habit: 1, Today: 2 }
+const viewType = { Todo: 0, Habit: 1, Today: 2, HealthCare: 4 }
 
 export default {
   data () {
@@ -183,6 +194,8 @@ export default {
           return viewType.Todo
         } else if (this.$route.name.startsWith('habit')) {
           return viewType.Habit
+        } else if (this.$route.name.startsWith('healthcare')) {
+          return viewType.HealthCare
         } else {
           return viewType.Today
         }

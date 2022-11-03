@@ -23,3 +23,11 @@ export function CreateHabitDao () {
 export function CreateConfigDao () {
   return FB_MODE ? new fb.ConfigDao() : new base.ConfigDaoBase()
 }
+
+export function CreateActivityDao () {
+  return FB_MODE ? new fb.ActivityDao() : new base.ActivityDaoBase()
+}
+
+export function CreateHealthDao () {
+  return FB_MODE ? new fb.HealthDao() : new base.HealthDaoBase()
+}

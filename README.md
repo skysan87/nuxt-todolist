@@ -42,6 +42,34 @@ What to do Today
   * Tailwind CSS
 
 
+## データ構造(firestore)
+
+* health
+  * id = userId
+  * latest: { timestamp, weight: min(number) }
+  * createdAt: Date
+  * updatedAt: Date
+  * コレクション
+    * id: ランダム生成
+    * year: number
+    * month: number
+    * date: number
+    * type: string
+    * value: number
+    * createdAt: Date
+    * updatedAt: Date
+
+* activity
+  * id = userId
+  * menu: [{ label: string, value: number, unit: string }]
+  * createdAt: Date
+  * updatedAt: Date
+  * コレクション
+    * id = YYYYMMDD
+    * totao: number
+    * records: [{ timestamp, name: string, value: number }]
+    * createdAt: Date
+    * updatedAt: Date
 
 ## Firestore エミュレータ設定
 

@@ -216,17 +216,6 @@ export default {
   margin: 0 auto;
 }
 
-.badge {
-  display: inline-block;
-  padding: 2px 5px;
-  text-align: center;
-  border-radius: .25rem;
-  vertical-align: baseline;
-  font-size: 75%;
-  white-space: nowrap;
-  font-weight: bold;
-}
-
 .dropdown-menu {
   ul {
     margin: 0;
