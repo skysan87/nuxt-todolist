@@ -57,6 +57,15 @@
                 </div>
               </nuxt-link>
 
+              <nuxt-link to="/healthcare">
+                <div
+                  class="py-1 px-5 cursor-pointer hover:bg-blue-700 hover:opacity-75"
+                  :class="{'bg-blue-700' : selectedType === viewType.HealthCare}"
+                >
+                  # ヘルスケア
+                </div>
+              </nuxt-link>
+
               <div class="mt-5 px-4 flex justify-between items-center">
                 <div class="font-bold text-lg">
                   プロジェクト
@@ -164,7 +173,7 @@ import { dateFactory } from '@/util/DateFactory'
 
 const DialogController = Vue.extend(NewListDialog)
 const InputDialogController = Vue.extend(InputDialog)
-const viewType = { Todo: 0, Habit: 1, Today: 2, Gantt: 3 }
+const viewType = { Todo: 0, Habit: 1, Today: 2, Gantt: 3, HealthCare: 4 }
 
 const MIN_SIDEBAR_WIDTH = 180
 const MAX_SIDEBAR_WIDTH_MARGIN = 255
@@ -224,6 +233,8 @@ export default {
           return viewType.Habit
         } else if (this.$route.name.startsWith('gantt')) {
           return viewType.Gantt
+        } else if (this.$route.name.startsWith('healthcare')) {
+          return viewType.HealthCare
         } else {
           return viewType.Today
         }
