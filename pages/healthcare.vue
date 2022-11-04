@@ -37,22 +37,26 @@
 
     <!-- 運動記録 -->
     <div v-if="selectedMenu === menu.Activity" class="pt-2 px-2">
-      <div class="relative">
-        <button class="absolute top-0 right-0 h-8 w-8 btn btn-outline" @click="openDialog">
-          <fa :icon="['fas', 'edit']" size="sm" />
-        </button>
-        <div v-for="m in activityMenu" :key="m.label">
-          <label class="ml-2 align-middle">
-            <input v-model="selectedActivity" type="radio" :value="m" @change="onChangeActivity">
-            <span>{{ m.label }}</span>
-          </label>
+      <div class="flex flex-row">
+        <div class="flex-1">
+          <div v-for="m in activityMenu" :key="m.label">
+            <label class="ml-2 align-middle">
+              <input v-model="selectedActivity" type="radio" :value="m" @change="onChangeActivity">
+              <span>{{ m.label }}</span>
+            </label>
+          </div>
+          <div class="flex items-center">
+            <label class="ml-2 align-middle">
+              <input v-model="selectedActivity" type="radio" :value="activityOther" @change="onChangeActivity">
+              <span>{{ activityOther.label }}</span>
+            </label>
+            <input type="text" class="ml-2 input-text" style="width: fit-content;">
+          </div>
         </div>
-        <div class="flex items-center">
-          <label class="ml-2 align-middle">
-            <input v-model="selectedActivity" type="radio" :value="activityOther" @change="onChangeActivity">
-            <span>{{ activityOther.label }}</span>
-          </label>
-          <input type="text" class="ml-2 input-text" style="width: fit-content;">
+        <div class="flex-none">
+          <button class="m-1 h-8 w-8 btn btn-outline" @click="openDialog">
+            <fa :icon="['fas', 'edit']" size="sm" />
+          </button>
         </div>
       </div>
 
