@@ -41,6 +41,7 @@
     <div v-if="selectedMenu === menu.Activity" class="pt-2 px-2">
       <div class="flex flex-row">
         <div class="flex-1">
+          <span>運動メニュー</span>
           <div v-for="m in activityMenu" :key="m.label">
             <label class="ml-2 align-middle">
               <input v-model="selectedActivity" type="radio" :value="m" @change="onChangeActivity">
@@ -68,7 +69,7 @@
         <div class="pb-2">
           <div class="flex items-center">
             <span>実施単位</span>
-            <span v-if="selectedActivity?.unit" class="ml-1 badge bg-blue-200">{{ selectedActivity?.value }} {{ selectedActivity?.unit }}</span>
+            <span v-if="selectedActivity?.unit" class="ml-1 badge bg-blue-200">{{ selectedActivity?.value }}kcal / {{ selectedActivity?.unit }}</span>
           </div>
           <input
             v-model="valueUnit"
