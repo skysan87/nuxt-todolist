@@ -1,9 +1,9 @@
 <template>
   <div>
     <div class="pt-2 px-2">
-      <span class="ml-2">体重：{{ latestData?.weight }}</span>
-      <span class="ml-2">身長：{{ latestData?.height }}</span>
-      <span class="ml-2">消費カロリー：{{ totalCalorie }}</span>
+      <span class="ml-2">運動(kcal)：{{ totalCalorie }}</span>
+      <span class="ml-2">体重(kg)：{{ latestData?.weight }}</span>
+      <span class="ml-2">身長(cm)：{{ latestData?.height }}</span>
     </div>
 
     <!-- ラジオボタンで表示切り替え -->
