@@ -1,16 +1,15 @@
 <template>
   <div>
     <div class="pt-2 px-2">
-      <!-- TODO: 日時に変更 -->
-      <span>{{ latestData?.timestamp }}</span>
       <span class="ml-2">体重：{{ latestData?.weight }}</span>
+      <span class="ml-2">身長：{{ latestData?.height }}</span>
       <span class="ml-2">消費カロリー：{{ totalCalorie }}</span>
     </div>
 
     <!-- ラジオボタンで表示切り替え -->
     <div class="flex-1 flex flex-row pt-2 px-2">
       <label v-for="m in menu" :key="m.value" class="ml-2 align-middle">
-        <input v-model="selectedMenu" type="radio" :value="m">
+        <input v-model="selectedMenu" type="radio" :value="m" @change="changeMenu">
         <span>{{ m.label }}</span>
       </label>
     </div>
@@ -18,18 +17,21 @@
     <div class="border-b pt-2" />
 
     <!-- 体重記録 -->
-    <div v-if="selectedMenu === menu.Weight" class="pt-2 px-2">
+    <div
+      v-if="selectedMenu === menu.Weight || selectedMenu === menu.Height"
+      class="pt-2 px-2"
+    >
       <div>
         <input
-          v-model="valueWeight"
+          v-model="valueHealth"
           type="number"
           class="input-text"
           step="0.1"
-          placeholder="体重(kg)を追加"
+          :placeholder="selectedMenu.placeholder"
         >
       </div>
       <div class="pt-2">
-        <button class="btn btn-regular" @click="recordWeight">
+        <button class="btn btn-regular" @click="recordHealth">
           登録
         </button>
       </div>
@@ -110,7 +112,8 @@ const DialogController = Vue.extend(ActivityMenuDialog)
 
 const menu = {
   Activity: { label: '運動', value: 'activity' },
-  Weight: { label: '体重', value: 'weight' }
+  Weight: { label: '体重', value: Health.TYPE_WEIGHT, placeholder: '体重(kg)を追加' },
+  Height: { label: '身長', value: Health.TYPE_HEIGHT, placeholder: '身長(cm)を追加' }
 }
 
 const activityOther = { label: 'その他', value: 1, unit: '' }
@@ -126,7 +129,7 @@ export default {
       selectedActivity: null,
       valueKcal: null,
       valueUnit: null,
-      valueWeight: null,
+      valueHealth: null,
       dialog: null
     }
   },
@@ -158,6 +161,12 @@ export default {
         console.error(error)
         this.$toast.error('初期化に失敗しました')
       }
+    },
+
+    changeMenu () {
+      this.valueUnit = null
+      this.valueKcal = null
+      this.valueHealth = null
     },
 
     onChangeActivity () {
@@ -197,21 +206,23 @@ export default {
       this.dialog.$mount()
     },
 
-    recordWeight () {
-      if (this.selectedMenu !== menu.Weight) {
+    recordHealth () {
+      const targets = [menu.Height, menu.Weight]
+
+      if (!targets.includes(this.selectedMenu)) {
         return
       }
 
-      if (!this.valueWeight) {
+      if (!this.valueHealth) {
         return
       }
 
       this.$store.dispatch('Health/add', {
-        type: Health.TYPE_WEIGHT,
-        value: fixFloat(this.valueWeight)
+        type: this.selectedMenu.value,
+        value: fixFloat(this.valueHealth)
       })
         .then(() => {
-          this.valueWeight = null
+          this.valueHealth = null
         })
         .catch((error) => {
           console.error(error)
