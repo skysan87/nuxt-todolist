@@ -1,12 +1,23 @@
 <template>
   <div class="inline-block p-1">
     <div class="flex flex-row">
-      <input v-model="newInputValue" :type="inputType" class="flex-1 border p-1 bg-gray-200" :class="{ 'btn-disabled': disabled }" :disabled="disabled">
-      <button class="p-1 ml-2" :class="[ disabled ? 'btn-disabled' : '', buttonClass ]" :disabled="disabled" @click.stop="clickHandler">
+      <input
+        v-model="newInputValue"
+        :type="inputType"
+        class="flex-1 border p-1 bg-gray-200"
+        :class="{ 'btn-disabled': disabled }"
+        :disabled="disabled"
+      >
+      <button
+        class="p-1 ml-2"
+        :class="[disabled ? 'btn-disabled' : '', buttonClass]"
+        :disabled="disabled"
+        @click.stop="clickHandler"
+      >
         <fa :icon="['fas', 'floppy-disk']" />
       </button>
     </div>
-    <div class="w-full p-0 m-0">
+    <div class="w-full p-0 m-0 leading-none">
       <span class="text-xs text-red-500">{{ errorMessage }}</span>
     </div>
   </div>
