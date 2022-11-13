@@ -7,7 +7,7 @@
       </button>
     </div>
     <div class="w-full p-0 m-0">
-      <span class="text-xs">{{ errorMessage }}</span>
+      <span class="text-xs text-red-500">{{ errorMessage }}</span>
     </div>
   </div>
 </template>
@@ -52,15 +52,26 @@ export default {
     async clickHandler () {
       this.disabled = true
       this.errorMessage = ''
+      let hasError = false
 
       try {
         if (this.update) {
-          await this.update(this.newInputValue)
+          // NOTE: バリデーションはcallbackで実行し、エラーの場合は例外を投げる
+          const result = await this.update(this.newInputValue)
+          // NOTE: callback内の非同期処理の例外はキャッチできないので、戻り値で判定
+          if (!result) {
+            console.info('callback action failed')
+            hasError = true
+          }
         }
       } catch (err) {
-        this.errorMessage = err
-        throw err
+        console.error(err)
+        hasError = true
+        this.errorMessage = err.message
       } finally {
+        if (hasError) {
+          this.newInputValue = this.value
+        }
         this.disabled = false
       }
     }
