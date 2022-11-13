@@ -16,24 +16,23 @@
 
     <div class="border-b pt-2" />
 
-    <!-- 体重記録 -->
-    <div
-      v-if="selectedMenu === menu.Weight || selectedMenu === menu.Height"
-      class="pt-2 px-2"
-    >
-      <div>
-        <input
-          v-model="valueHealth"
-          type="number"
-          class="input-text"
-          step="0.1"
-          :placeholder="selectedMenu.placeholder"
-        >
+    <!-- 健康記録 -->
+    <div v-if="selectedMenu === menu.Health" class="pt-2 px-2">
+      <div class="pb-1 flex items-start">
+        <span class="p-2">体重</span>
+        <commandable-input
+          input-type="number"
+          :value="latestData?.weight"
+          :update="recordWeight"
+        />
       </div>
-      <div class="pt-2">
-        <button class="btn btn-regular" @click="recordHealth">
-          登録
-        </button>
+      <div class="pb-1 flex items-start">
+        <span class="p-2">身長</span>
+        <commandable-input
+          input-type="number"
+          :value="latestData?.height"
+          :update="recordHeight"
+        />
       </div>
     </div>
 
@@ -108,23 +107,31 @@ import Vue from 'vue'
 import ActivityMenuDialog from '@/components/ActivityMenuDialog'
 import { Health } from '@/model/Health'
 import { fixFloat } from '@/util/NumberUtil'
+import CommandableInput from '@/components/parts/CommandableInput'
 
 const DialogController = Vue.extend(ActivityMenuDialog)
 
 const menu = {
   Activity: { label: '運動', value: 'activity' },
-  Weight: { label: '体重', value: Health.TYPE_WEIGHT, placeholder: '体重(kg)を追加' },
-  Height: { label: '身長', value: Health.TYPE_HEIGHT, placeholder: '身長(cm)を追加' }
+  Health: { label: '健康', value: 'health' }
 }
+
+const healthType = { weight: Health.TYPE_WEIGHT, height: Health.TYPE_HEIGHT }
 
 const activityOther = { label: 'その他', value: 1, unit: '' }
 
 export default {
+
+  components: {
+    CommandableInput
+  },
+
   layout: ctx => ctx.$device.isMobile ? 'board_mobile' : 'board',
 
   data () {
     return {
       menu,
+      healthType,
       selectedMenu: null,
       activityOther,
       selectedActivity: null,
@@ -207,28 +214,40 @@ export default {
       this.dialog.$mount()
     },
 
-    recordHealth () {
-      const targets = [menu.Height, menu.Weight]
-
-      if (!targets.includes(this.selectedMenu)) {
-        return
+    // コールバック処理
+    async recordWeight (inputValue) {
+      if (!inputValue) {
+        return true
       }
-
-      if (!this.valueHealth) {
-        return
+      try {
+        await this.$store.dispatch('Health/add', {
+          type: Health.TYPE_WEIGHT,
+          value: fixFloat(inputValue)
+        })
+      } catch (error) {
+        console.log(error)
+        this.$toast.error('登録に失敗しました')
+        return false
       }
+      return true
+    },
 
-      this.$store.dispatch('Health/add', {
-        type: this.selectedMenu.value,
-        value: fixFloat(this.valueHealth)
-      })
-        .then(() => {
-          this.valueHealth = null
+    // コールバック処理
+    async recordHeight (inputValue) {
+      if (!inputValue) {
+        return true
+      }
+      try {
+        await this.$store.dispatch('Health/add', {
+          type: Health.TYPE_HEIGHT,
+          value: fixFloat(inputValue)
         })
-        .catch((error) => {
-          console.error(error)
-          this.$toast.error('登録に失敗しました')
-        })
+      } catch (error) {
+        console.log(error)
+        this.$toast.error('登録に失敗しました')
+        return false
+      }
+      return true
     },
 
     recordActivity () {
