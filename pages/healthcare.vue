@@ -1,37 +1,38 @@
 <template>
   <div>
-    <div class="pt-2 px-2">
-      <!-- TODO: 日時に変更 -->
-      <span>{{ latestData?.timestamp }}</span>
-      <span class="ml-2">体重：{{ latestData?.weight }}</span>
-      <span class="ml-2">消費カロリー：{{ totalCalorie }}</span>
+    <div class="pt-2 px-2 flex flex-wrap">
+      <span class="ml-2">●運動 {{ totalCalorie }}kcal</span>
+      <span class="ml-2">●体重 {{ latestData?.weight }}kg</span>
+      <span class="ml-2">●BMI {{ BMI }}</span>
     </div>
 
     <!-- ラジオボタンで表示切り替え -->
     <div class="flex-1 flex flex-row pt-2 px-2">
       <label v-for="m in menu" :key="m.value" class="ml-2 align-middle">
-        <input v-model="selectedMenu" type="radio" :value="m">
+        <input v-model="selectedMenu" type="radio" :value="m" @change="changeMenu">
         <span>{{ m.label }}</span>
       </label>
     </div>
 
     <div class="border-b pt-2" />
 
-    <!-- 体重記録 -->
-    <div v-if="selectedMenu === menu.Weight" class="pt-2 px-2">
-      <div>
-        <input
-          v-model="valueWeight"
-          type="number"
-          class="input-text"
-          step="0.1"
-          placeholder="体重(kg)を追加"
-        >
+    <!-- 健康記録 -->
+    <div v-if="selectedMenu === menu.Health" class="pt-2 px-2">
+      <div class="pb-1 flex items-start">
+        <span class="p-2">体重</span>
+        <commandable-input
+          input-type="number"
+          :value="latestData?.weight"
+          :update="recordWeight"
+        />
       </div>
-      <div class="pt-2">
-        <button class="btn btn-regular" @click="recordWeight">
-          登録
-        </button>
+      <div class="pb-1 flex items-start">
+        <span class="p-2">身長</span>
+        <commandable-input
+          input-type="number"
+          :value="latestData?.height"
+          :update="recordHeight"
+        />
       </div>
     </div>
 
@@ -39,6 +40,7 @@
     <div v-if="selectedMenu === menu.Activity" class="pt-2 px-2">
       <div class="flex flex-row">
         <div class="flex-1">
+          <span>運動メニュー</span>
           <div v-for="m in activityMenu" :key="m.label">
             <label class="ml-2 align-middle">
               <input v-model="selectedActivity" type="radio" :value="m" @change="onChangeActivity">
@@ -66,7 +68,7 @@
         <div class="pb-2">
           <div class="flex items-center">
             <span>実施単位</span>
-            <span v-if="selectedActivity?.unit" class="ml-1 badge bg-blue-200">{{ selectedActivity?.value }} {{ selectedActivity?.unit }}</span>
+            <span v-if="selectedActivity?.unit" class="ml-1 badge bg-blue-200">{{ selectedActivity?.value }}kcal / {{ selectedActivity?.unit }}</span>
           </div>
           <input
             v-model="valueUnit"
@@ -79,13 +81,7 @@
         </div>
         <div>
           <span>消費エネルギー</span>
-          <input
-            v-model="valueKcal"
-            type="number"
-            class="input-text"
-            step="0.1"
-            placeholder="kcalを追加"
-          >
+          <span class="output-text">{{ valueKcal ?? 0 }}</span>
         </div>
 
         <div class="pt-2">
@@ -105,28 +101,37 @@ import Vue from 'vue'
 import ActivityMenuDialog from '@/components/ActivityMenuDialog'
 import { Health } from '@/model/Health'
 import { fixFloat } from '@/util/NumberUtil'
+import CommandableInput from '@/components/parts/CommandableInput'
 
 const DialogController = Vue.extend(ActivityMenuDialog)
 
 const menu = {
   Activity: { label: '運動', value: 'activity' },
-  Weight: { label: '体重', value: 'weight' }
+  Health: { label: '健康', value: 'health' }
 }
+
+const healthType = { weight: Health.TYPE_WEIGHT, height: Health.TYPE_HEIGHT }
 
 const activityOther = { label: 'その他', value: 1, unit: '' }
 
 export default {
+
+  components: {
+    CommandableInput
+  },
+
   layout: ctx => ctx.$device.isMobile ? 'board_mobile' : 'board',
 
   data () {
     return {
       menu,
+      healthType,
       selectedMenu: null,
       activityOther,
       selectedActivity: null,
       valueKcal: null,
       valueUnit: null,
-      valueWeight: null,
+      valueHealth: null,
       dialog: null
     }
   },
@@ -136,12 +141,17 @@ export default {
       return this.$store.getters['Health/getLatest']
     },
 
+    BMI () {
+      return this.$store.getters['Health/calcBMI']
+    },
+
     activityMenu () {
       return this.$store.getters['Activity/getMenu']
     },
 
     totalCalorie () {
-      return this.$store.getters['Activity/getTotal']
+      const cal = this.$store.getters['Activity/getTotal']
+      return parseFloat(cal.toFixed(2))
     }
   },
 
@@ -158,6 +168,12 @@ export default {
         console.error(error)
         this.$toast.error('初期化に失敗しました')
       }
+    },
+
+    changeMenu () {
+      this.valueUnit = null
+      this.valueKcal = null
+      this.valueHealth = null
     },
 
     onChangeActivity () {
@@ -197,26 +213,40 @@ export default {
       this.dialog.$mount()
     },
 
-    recordWeight () {
-      if (this.selectedMenu !== menu.Weight) {
-        return
+    // コールバック処理
+    async recordWeight (inputValue) {
+      if (!inputValue) {
+        return true
       }
-
-      if (!this.valueWeight) {
-        return
+      try {
+        await this.$store.dispatch('Health/add', {
+          type: Health.TYPE_WEIGHT,
+          value: fixFloat(inputValue)
+        })
+      } catch (error) {
+        console.log(error)
+        this.$toast.error('登録に失敗しました')
+        return false
       }
+      return true
+    },
 
-      this.$store.dispatch('Health/add', {
-        type: Health.TYPE_WEIGHT,
-        value: fixFloat(this.valueWeight)
-      })
-        .then(() => {
-          this.valueWeight = null
+    // コールバック処理
+    async recordHeight (inputValue) {
+      if (!inputValue) {
+        return true
+      }
+      try {
+        await this.$store.dispatch('Health/add', {
+          type: Health.TYPE_HEIGHT,
+          value: fixFloat(inputValue)
         })
-        .catch((error) => {
-          console.error(error)
-          this.$toast.error('登録に失敗しました')
-        })
+      } catch (error) {
+        console.log(error)
+        this.$toast.error('登録に失敗しました')
+        return false
+      }
+      return true
     },
 
     recordActivity () {

@@ -1,4 +1,5 @@
 import { CreateHealthDao } from '@/dao'
+import { Health } from '@/model/Health'
 
 const dao = CreateHealthDao()
 
@@ -7,7 +8,15 @@ export const state = () => ({
 })
 
 export const getters = {
-  getLatest: state => state.latest
+  getLatest: state => state.latest,
+  calcBMI: (state) => {
+    const weight = state.latest[Health.TYPE_WEIGHT] // kg
+    const height = state.latest[Health.TYPE_HEIGHT] // cm
+    if (!weight || !height) {
+      return ''
+    }
+    return (weight / Math.pow(height / 100, 2)).toFixed(2)
+  }
 }
 
 export const mutations = {

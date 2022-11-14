@@ -13,8 +13,4 @@ export class Healthlist {
       updatedAt: this.updatedAt
     }
   }
-
-  setLatest (timestamp, values) {
-    this.latest = { timestamp, ...values }
-  }
 }

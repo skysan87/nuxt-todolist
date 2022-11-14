@@ -1,5 +1,6 @@
 export class Health {
   static TYPE_WEIGHT = 'weight'
+  static TYPE_HEIGHT = 'height'
 
   constructor (id, params) {
     const today = new Date()

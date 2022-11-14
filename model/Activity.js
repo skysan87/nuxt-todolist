@@ -27,7 +27,8 @@ export class Activity {
   }
 
   get total () {
-    return this.records.reduce((sum, item) => sum + (item.value ?? 0), 0)
+    const tmp = this.records.reduce((sum, item) => sum + (item.value ?? 0), 0)
+    return parseFloat(tmp.toFixed(2))
   }
 
   static valueOf (params) {
