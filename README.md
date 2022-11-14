@@ -46,7 +46,7 @@ What to do Today
 
 * health
   * id = userId
-  * latest: { timestamp, weight: min(number) }
+  * latest: { weight: number, height: number }
   * createdAt: Date
   * updatedAt: Date
   * コレクション
@@ -66,7 +66,7 @@ What to do Today
   * updatedAt: Date
   * コレクション
     * id = YYYYMMDD
-    * totao: number
+    * total: number
     * records: [{ timestamp, name: string, value: number }]
     * createdAt: Date
     * updatedAt: Date
