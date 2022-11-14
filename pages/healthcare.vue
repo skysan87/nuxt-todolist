@@ -152,7 +152,8 @@ export default {
     },
 
     totalCalorie () {
-      return this.$store.getters['Activity/getTotal']
+      const cal = this.$store.getters['Activity/getTotal']
+      return parseFloat(cal.toFixed(2))
     }
   },
 
