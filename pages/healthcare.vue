@@ -1,9 +1,10 @@
 <template>
   <div>
-    <div class="pt-2 px-2">
+    <div class="pt-2 px-2 flex flex-wrap">
       <span class="ml-2">運動(kcal)：{{ totalCalorie }}</span>
       <span class="ml-2">体重(kg)：{{ latestData?.weight }}</span>
       <span class="ml-2">身長(cm)：{{ latestData?.height }}</span>
+      <span class="ml-2">●BMI: {{ BMI }}</span>
     </div>
 
     <!-- ラジオボタンで表示切り替え -->
@@ -145,6 +146,10 @@ export default {
   computed: {
     latestData () {
       return this.$store.getters['Health/getLatest']
+    },
+
+    BMI () {
+      return this.$store.getters['Health/calcBMI']
     },
 
     activityMenu () {
