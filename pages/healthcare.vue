@@ -82,13 +82,7 @@
         </div>
         <div>
           <span>消費エネルギー</span>
-          <input
-            v-model="valueKcal"
-            type="number"
-            class="input-text"
-            step="0.1"
-            placeholder="kcalを追加"
-          >
+          <span class="output-text">{{ valueKcal ?? 0 }}</span>
         </div>
 
         <div class="pt-2">
