@@ -1,6 +1,11 @@
 <template>
   <div>
     <div class="pt-2 px-2 flex flex-wrap">
+      <span class="ml-2">
+        <button title="リロード" @click="init">
+          <fa :icon="['fas', 'sync-alt']" size="lg" />
+        </button>
+      </span>
       <span class="ml-2">●運動 {{ totalCalorie }}kcal</span>
       <span class="ml-2">●体重 {{ latestData?.weight }}kg</span>
       <span class="ml-2">●BMI {{ BMI }}</span>
