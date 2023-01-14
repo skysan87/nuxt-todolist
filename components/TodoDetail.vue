@@ -1,5 +1,5 @@
 <template>
-  <div v-if="todo !== null" class="p-2">
+  <div v-if="todo !== null" class="p-2 select-text">
     <div>
       <button class="btn-sm btn-outline" @click="close">閉じる</button>
     </div>
