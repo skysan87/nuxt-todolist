@@ -27,7 +27,7 @@
     "@nuxtjs/toast": "^3.3.1",
     "dayjs": "^1.11.6",
     "firebase": "^9.13.0",
-    "nuxt": "^2.15.8",
+    "nuxt": "^3.0.0",
     "v-calendar": "^2.4.1",
     "vuedraggable": "^2.24.3"
   },
